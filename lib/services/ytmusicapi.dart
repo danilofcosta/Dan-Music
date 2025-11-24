@@ -1,0 +1,86 @@
+import 'package:audio_service/audio_service.dart';
+import 'package:ytmusicapi_dart/ytmusicapi_dart.dart' as api1;
+import 'package:dart_ytmusic_api/yt_music.dart' as api2;
+import 'package:dart_ytmusic_api/types.dart' as api2_types;
+
+import 'package:danmusic/models/home_section.dart';
+import 'package:danmusic/models/playlist_full.dart';
+import 'package:danmusic/services/parsers/parser.dart';
+import 'package:danmusic/services/parsers/parser_playlist.dart';
+import 'package:flutter/material.dart';
+
+/// Instância global
+YouTubeMusicService youTubeMusicServiceInstance = YouTubeMusicService._();
+
+class YouTubeMusicService {
+  api1.YTMusic? _ytmusic;
+  late api2.YTMusic _ytmusic2;
+
+  /// Construtor privado
+  YouTubeMusicService._();
+
+  /// Inicialização async do serviço
+  static Future<void> init() async {
+    youTubeMusicServiceInstance._ytmusic = await api1.YTMusic.create(
+      language: 'pt',
+    );
+
+    // inicializa a segunda API (esta é síncrona)
+    youTubeMusicServiceInstance._ytmusic2 = api2.YTMusic();
+    youTubeMusicServiceInstance._ytmusic2.initialize();
+  }
+
+  /// Getter seguro da API principal
+  static api1.YTMusic get ytmusic {
+    final api = youTubeMusicServiceInstance._ytmusic;
+    if (api == null) {
+      throw Exception(
+        'YouTubeMusicService NÃO FOI inicializado. '
+        'Chame YouTubeMusicService.init() primeiro.',
+      );
+    }
+    return api;
+  }
+
+  /// Homepage
+  static Future<List<HomeSection>> homePage() async {
+    final service = await ytmusic.getHome();
+    return service.map(Parser.parseHomeSection).toList();
+  }
+
+  /// Playlist completa
+  static Future<PlaylistFull> getPlaylist(String playlistId) async {
+    final service = await ytmusic.getPlaylist(playlistId);
+    return ParserPlaylist.parsePlaylistFull(service);
+  }
+
+  /// Recomendados / "UpNext" da outra lib
+  static Future<List<MediaItem>> getRelatedPlaylist(String videoId) async {
+    final api2Instance = youTubeMusicServiceInstance._ytmusic2;
+
+    final List<api2_types.UpNextsDetails> upNextsDetailsList =
+        await api2Instance.getUpNexts(videoId);
+
+    final List<MediaItem> newQueue = upNextsDetailsList
+        .map(
+          (e) => MediaItem(
+            id: e.videoId,
+            title: e.title,
+            artist: e.artists.name,
+            album: e.album == null ? "" : e.album?.name, // se existir
+            artUri: Uri.parse(e.thumbnails.first.url),
+            duration: Duration(seconds: e.duration), // se existir
+          ),
+        )
+        .toList();
+    //  debugPrint(newQueue.toString());
+    return newQueue;
+  }
+
+  /// Fecha API1
+  void close() {
+    _ytmusic?.close();
+    _ytmusic = null;
+    debugPrint("Conexão YTMusic fechada.");
+  }
+}
