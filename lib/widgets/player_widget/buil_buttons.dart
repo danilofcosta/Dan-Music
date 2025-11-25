@@ -1,4 +1,4 @@
-import 'package:danmusic/services/globais_vars.dart';
+import '/services/globais_vars.dart';
 import 'package:flutter/material.dart';
 
 class BuilButtons extends StatelessWidget {

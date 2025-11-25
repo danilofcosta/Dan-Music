@@ -1,11 +1,15 @@
-import 'package:danmusic/models/song.dart';
-import 'package:danmusic/widgets/ui/song_ui.dart';
+import '/models/song.dart';
+import '/widgets/ui/song_ui.dart';
 import 'package:flutter/material.dart';
 
 class BuidListHorizotal extends StatefulWidget {
   final String title;
   final List<Song> songs;
-  const BuidListHorizotal({super.key, required this.title, required this.songs});
+  const BuidListHorizotal({
+    super.key,
+    required this.title,
+    required this.songs,
+  });
 
   @override
   State<BuidListHorizotal> createState() => _BuidListHorizotalState();

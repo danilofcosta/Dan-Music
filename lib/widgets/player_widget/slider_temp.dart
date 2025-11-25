@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:danmusic/services/format_duration.dart';
-import 'package:danmusic/services/globais_vars.dart';
+import '/services/format_duration.dart';
+import '/services/globais_vars.dart';
 import 'package:flutter/material.dart';
 
 class SliderTemp extends StatefulWidget {

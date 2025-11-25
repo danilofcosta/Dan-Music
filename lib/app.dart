@@ -1,8 +1,9 @@
-import 'package:danmusic/provaders/confing_css.dart';
-import 'package:danmusic/screens/file_player.dart';
-import 'package:danmusic/screens/home_page.dart';
-import 'package:danmusic/screens/player_page.dart';
-import 'package:danmusic/screens/search_page.dart';
+import '/provaders/confing_css.dart';
+import '/screens/file_player.dart';
+import '/screens/home_page.dart';
+import '/screens/player_page.dart';
+import '/screens/playlist_page.dart';
+import '/screens/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         '/search': (context) => const SearchPage(),
         '/player': (context) => const PlayerPage(),
         '/fileplayer': (context) => const FilePlayer(),
+        '/playlist': (context) => const PlaylistPage(),
       },
       initialRoute: '/',
     );

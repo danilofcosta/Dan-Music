@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/provaders/player_provider.dart';
-import 'package:danmusic/widgets/ui/text_conf_ui.dart';
+import '/provaders/player_provider.dart';
+import '/widgets/ui/text_conf_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

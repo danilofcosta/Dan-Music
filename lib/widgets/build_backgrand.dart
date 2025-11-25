@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:danmusic/provaders/confing_css.dart';
+import '/provaders/confing_css.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

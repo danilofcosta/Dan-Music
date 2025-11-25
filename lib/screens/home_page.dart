@@ -1,14 +1,15 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/models/Playlist.dart';
-import 'package:danmusic/models/home_section.dart' show HomeSection;
-import 'package:danmusic/models/song.dart';
-import 'package:danmusic/services/globais_vars.dart';
-import 'package:danmusic/services/ytmusicapi.dart';
-import 'package:danmusic/widgets/buid_list_horizotal.dart';
-import 'package:danmusic/widgets/build_backgrand.dart';
-import 'package:danmusic/widgets/s.dart';
-import 'package:danmusic/widgets/thememode.dart';
-import 'package:danmusic/widgets/ui/mini_player.dart';
+import '/models/Playlist.dart';
+import '/models/home_section.dart' show HomeSection;
+import '/models/song.dart';
+import '/screens/playlist_page.dart';
+import '/services/globais_vars.dart';
+import '/services/ytmusicapi.dart';
+import '/widgets/buid_list_horizotal.dart';
+import '/widgets/build_backgrand.dart';
+import '/widgets/s.dart';
+import '/widgets/thememode.dart';
+import '/widgets/ui/mini_player.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -143,9 +144,20 @@ class _HomePageState extends State<HomePage> {
                             return;
                           }
                           if (d is Playlist) {
-                            audioHandler.playPlaylistId(d.playlistId);
+                            Navigator.of(
+                              context,
+                            ).pushNamed('/playlist', arguments: d);
+
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute<void>(
+                            //     builder: (context) =>
+                            //         PlaylistPage(playlistModel: d),
+                            //   ),
+                            // );
+                            //audioHandler.playPlaylistId(d.playlistId);
                           }
-                          Navigator.of(context).pushNamed('/player');
+                          // Navigator.of(context).pushNamed('/player');
 
                           return;
                         },

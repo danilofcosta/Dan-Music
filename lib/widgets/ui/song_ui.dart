@@ -1,8 +1,8 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/models/song.dart';
-import 'package:danmusic/provaders/player_provider.dart';
-import 'package:danmusic/services/globais_vars.dart';
-import 'package:danmusic/widgets/ui/text_conf_ui.dart';
+import '/models/song.dart';
+import '/provaders/player_provider.dart';
+import '/services/globais_vars.dart';
+import '/widgets/ui/text_conf_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

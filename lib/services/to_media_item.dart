@@ -1,5 +1,5 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/models/song.dart';
+import '/models/song.dart';
 import 'package:flutter_new_pipe_extractor/flutter_new_pipe_extractor.dart';
 
 class ToMediaItem {
@@ -10,10 +10,10 @@ class ToMediaItem {
       id: videoInfo.id,
       title: videoInfo.name,
       artist: videoInfo.uploaderName,
-//artUri: Uri.parse(videoInfo.thumbnails.last.url),
+      //artUri: Uri.parse(videoInfo.thumbnails.last.url),
       artUri: artUri,
       duration: Duration(seconds: videoInfo.duration),
-    //  extras: map,
+      //  extras: map,
     );
   }
 

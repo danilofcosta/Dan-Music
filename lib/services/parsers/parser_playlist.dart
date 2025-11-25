@@ -1,7 +1,7 @@
-import 'package:danmusic/models/Playlist.dart';
-import 'package:danmusic/models/playlist_full.dart';
-import 'package:danmusic/models/song.dart';
-import 'package:danmusic/services/parsers/parser_song.dart';
+import '/models/Playlist.dart';
+import '/models/playlist_full.dart';
+import '/models/song.dart';
+import '/services/parsers/parser_song.dart';
 import 'package:flutter/material.dart';
 
 class ParserPlaylist {

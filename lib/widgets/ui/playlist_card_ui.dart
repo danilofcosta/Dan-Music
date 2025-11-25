@@ -1,5 +1,5 @@
-import 'package:danmusic/models/Playlist.dart';
-import 'package:danmusic/services/globais_vars.dart';
+import '/models/Playlist.dart';
+import '/services/globais_vars.dart';
 import 'package:flutter/material.dart';
 
 class PlaylistUi extends StatefulWidget {
@@ -23,7 +23,10 @@ class _PlaylistUiState extends State<PlaylistUi> {
         ),
       ),
       child: FilledButton.icon(
-        onPressed: () { audioHandler.playPlaylistId(widget.playlist.playlistId); Navigator.of(context).pushNamed('/player'); },
+        onPressed: () {
+          audioHandler.playPlaylistId(widget.playlist.playlistId);
+          Navigator.of(context).pushNamed('/player');
+        },
         label: Text(widget.playlist.title),
         icon: const Icon(Icons.play_arrow),
       ),

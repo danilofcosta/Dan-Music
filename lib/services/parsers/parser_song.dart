@@ -1,10 +1,9 @@
-import 'package:danmusic/models/album_info.dart';
-import 'package:danmusic/models/artist.dart';
-import 'package:danmusic/models/song.dart';
+import '/models/album_info.dart';
+import '/models/artist.dart';
+import '/models/song.dart';
 
 class ParserSong {
   static Song parseSong(Map<String, dynamic> itemMap) {
-    
     return Song(
       videoid: itemMap['videoId'] as String,
       title: itemMap['title'] ?? 'Sem Título',
@@ -21,8 +20,8 @@ class ParserSong {
           ?.map((a) => Artistdetail(artistName: a['name'], artistId: a['id']))
           .toList(),
 
-      duration: itemMap['duration'] ,
-      secondsduration: itemMap['duration_seconds'] ,
+      duration: itemMap['duration'],
+      secondsduration: itemMap['duration_seconds'],
 
       artist:
           (itemMap['artists'] as List<dynamic>?)

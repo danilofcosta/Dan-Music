@@ -1,8 +1,8 @@
-import 'package:danmusic/widgets/build_backgrand.dart';
-import 'package:danmusic/widgets/player_widget/buil_buttons.dart';
-import 'package:danmusic/widgets/player_widget/build_cover.dart';
-import 'package:danmusic/widgets/player_widget/bulid_text.dart';
-import 'package:danmusic/widgets/player_widget/slider_temp.dart';
+import '/widgets/build_backgrand.dart';
+import '/widgets/player_widget/buil_buttons.dart';
+import '/widgets/player_widget/build_cover.dart';
+import '/widgets/player_widget/bulid_text.dart';
+import '/widgets/player_widget/slider_temp.dart';
 import 'package:flutter/material.dart';
 
 class PlayerPage extends StatefulWidget {

@@ -1,10 +1,12 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/provaders/player_provider.dart';
-import 'package:danmusic/services/globais_vars.dart';
-import 'package:danmusic/services/uteis/load_image.dart';
-import 'package:danmusic/widgets/ui/text_conf_ui.dart';
+import '/provaders/player_provider.dart';
+import '/services/globais_vars.dart';
+import '/services/manage_audio/audio_handler.dart';
+import '/services/uteis/load_image.dart';
+import '/widgets/ui/text_conf_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 
 class MiniPlayer extends StatefulWidget {
   const MiniPlayer({super.key});

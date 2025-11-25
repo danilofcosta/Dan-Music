@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/provaders/player_provider.dart';
-import 'package:danmusic/services/uteis/load_image.dart';
+import '/provaders/player_provider.dart';
+import '/services/uteis/load_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +27,7 @@ class BuildCover extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                     image: DecorationImage(
                       //  alignment: Alignment.center,
-                      fit: BoxFit.contain,
+                      fit: BoxFit.cover,
                       image:
                           LoadImage.loadProvider(
                                 mediaItemNow?.artUri?.toString() ?? '',

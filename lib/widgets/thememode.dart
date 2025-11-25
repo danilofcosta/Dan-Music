@@ -1,7 +1,6 @@
-import 'package:danmusic/provaders/confing_css.dart';
+import '/provaders/confing_css.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 
 class ThemeSwitcherButton extends StatelessWidget {
   const ThemeSwitcherButton({super.key});
@@ -17,14 +16,8 @@ class ThemeSwitcherButton extends StatelessWidget {
             confingCss.setThemeMode(mode);
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: ThemeMode.light,
-              child: Text('Claro'),
-            ),
-            const PopupMenuItem(
-              value: ThemeMode.dark,
-              child: Text('Escuro'),
-            ),
+            const PopupMenuItem(value: ThemeMode.light, child: Text('Claro')),
+            const PopupMenuItem(value: ThemeMode.dark, child: Text('Escuro')),
             const PopupMenuItem(
               value: ThemeMode.system,
               child: Text('Sistema'),

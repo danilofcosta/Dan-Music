@@ -3,10 +3,10 @@ import 'package:ytmusicapi_dart/ytmusicapi_dart.dart' as api1;
 import 'package:dart_ytmusic_api/yt_music.dart' as api2;
 import 'package:dart_ytmusic_api/types.dart' as api2_types;
 
-import 'package:danmusic/models/home_section.dart';
-import 'package:danmusic/models/playlist_full.dart';
-import 'package:danmusic/services/parsers/parser.dart';
-import 'package:danmusic/services/parsers/parser_playlist.dart';
+import '/models/home_section.dart';
+import '/models/playlist_full.dart';
+import '/services/parsers/parser.dart';
+import '/services/parsers/parser_playlist.dart';
 import 'package:flutter/material.dart';
 
 /// Instância global

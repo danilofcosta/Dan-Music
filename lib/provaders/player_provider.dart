@@ -1,5 +1,5 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/services/globais_vars.dart';
+import '/services/globais_vars.dart';
 import 'package:flutter/material.dart';
 
 class PlayerProvider with ChangeNotifier {

@@ -1,19 +1,44 @@
+import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/models/playlist_full.dart';
-import 'package:danmusic/services/manage_audio/cached_stream_audio_source.dart';
-import 'package:danmusic/services/to_media_item.dart';
-import 'package:danmusic/services/uteis/newpipe.dart';
-import 'package:danmusic/services/ytmusicapi.dart';
+import 'package:audio_session/audio_session.dart';
+import 'package:flutter/services.dart';
+import '/models/playlist_full.dart';
+import '/services/manage_audio/cached_stream_audio_source.dart';
+import '/services/to_media_item.dart';
+import '/services/uteis/helper.dart';
+import '/services/ytmusicapi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_new_pipe_extractor/flutter_new_pipe_extractor.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
 // ignore: depend_on_referenced_packages, implementation_imports
 import 'package:rxdart/src/subjects/behavior_subject.dart';
 
+Future<MyAudioHandler> initAudioService() async {
+  final session = await AudioSession.instance;
+  await session.configure(AudioSessionConfiguration.speech());
+  return await AudioService.init(
+    builder: () => MyAudioHandler(),
+    config: const AudioServiceConfig(
+      androidNotificationChannelId: 'com.mycompany.myapp.audio',
+      androidNotificationOngoing: true,
+      androidStopForegroundOnPause: true,
+    ),
+  );
+}
+
 class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
-  final _player = AudioPlayer();
+  late AudioPlayer _player;
+  late final _cacheDir;
+
+  dynamic currentIndex;
+  bool shuffleModeEnabled = false;
+  bool isSongLoading = true;
+
+  bool isPlayingUsingLockCachingSource = false;
   BehaviorSubject<MediaItem?> get songNow => mediaItem;
   AudioPlayer get player => _player;
+  String get cacheDir => _cacheDir;
 
   Stream<Duration> get positionStream => _player.positionStream;
   Stream<Duration> get positionBuffered => _player.bufferedPositionStream;
@@ -23,41 +48,44 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   MyAudioHandler() {
     _listenPlayerChanges();
 
+    _player = AudioPlayer(
+      audioLoadConfiguration: const AudioLoadConfiguration(
+        androidLoadControl: AndroidLoadControl(
+          minBufferDuration: Duration(seconds: 50),
+          maxBufferDuration: Duration(seconds: 120),
+          bufferForPlaybackDuration: Duration(milliseconds: 50),
+          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 2),
+        ),
+      ),
+    );
+
+    //  _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
     player.errorStream.listen((PlayerException e) {
-      print('Error code: ${e.code}');
-      print('Error message: ${e.message}');
-      print('AudioSource index: ${e.index}');
+      printErrorDebug('AudioPlayer Error code: ${e.code}');
+      printErrorDebug('AudioPlayer Error message: ${e.message}');
+      printErrorDebug('AudioSource index: ${e.index}');
     });
+
+    _createCacheDir();
+    _notifyAudioHandlerAboutPlaybackEvents();
+    _listenForDurationChanges();
   }
 
   // Escuta mudanças de índice e estado
   void _listenPlayerChanges() {
     /// Atualiza o MediaItem automaticamente
-    _player.currentIndexStream.listen((index) {
-      final q = queue.value;
-      if (index != null && index >= 0 && index < q.length) {
-        // CachedStreamAudioSource? temp =
-        // //     _player.sequence[index] as CachedStreamAudioSource?;
-        // if (temp != null) {
-        //   //  debugPrint(temp.toMediaItem.toString());
-        // }
-        if (_player.sequence[index].tag == null) {
-          debugPrint(
-            '-------------_sequence[index].tag-------------------------------- -',
-          );
-        }
-        CachedStreamAudioSource? temp =   _player.sequence[index] as CachedStreamAudioSource?;
-        mediaItem.add(temp?.toMediaItem);
-        if (_player.sequence[index].tag != null) {
-          debugPrint(
-            '-------------_player.sequence[index].tag-------------------------------- -',
-          );
-        }
-      }
-    });
+    // _player.currentIndexStream.listen((index) {
+    //  /// final q = queue.value;
+    //   );
 
     /// Atualiza estado de playback
-    _player.playbackEventStream.listen(_broadcastState);
+  }
+
+  Future<void> _createCacheDir() async {
+    _cacheDir = (await getTemporaryDirectory()).path;
+    if (!Directory("$_cacheDir/cachedSongs/").existsSync()) {
+      Directory("$_cacheDir/cachedSongs/").createSync(recursive: true);
+    }
   }
 
   @override
@@ -75,16 +103,13 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         return;
       }
 
-      VideoInfo videoInfo = await DownloaderChannel.getAudioUrl(mediaItem.id);
+      //VideoInfo videoInfo = await DownloaderChannel.getAudioUrl(mediaItem.id);
 
       // debugPrint(g);
-      mediaItem = await ToMediaItem.videoInfo(videoInfo);
+      // MediaItem mediaItem = await ToMediaItem.videoInfo(videoInfo);
       songNow.add(mediaItem);
       // Download and cache audio while playing it (experimental)
-      final audioSource = LockCachingAudioSource(
-        Uri.parse(videoInfo.audioStreams.first.content),
-        tag: mediaItem,
-      );
+      final audioSource = CachedStreamAudioSource(videoId: mediaItem.id,tag: mediaItem);
       await _player.setAudioSource(audioSource);
       // Delete the cached file
       _player.play();
@@ -97,7 +122,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       queue.add([mediaItem, ...newQueue]);
 
       _player.addAudioSources(
-        newQueue.map((e) => CachedStreamAudioSource(videoId: e.id)).toList(),
+        newQueue.map((e) => CachedStreamAudioSource(videoId: e.id,tag: e)).toList(),
       );
     } catch (e) {
       debugPrint("ERRO NO AUDIO SERVICE: $e");
@@ -153,34 +178,98 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   Future<void> skipToNext() => _player.seekToNext();
 
   @override
+  Future<void> skipToPrevious() => _player.seekToPrevious();
+
+  @override
   Future<void> skipToQueueItem(int index) =>
       _player.seek(Duration.zero, index: index);
 
   @override
-  Future<void> skipToPrevious() => _player.seekToPrevious();
-
+  Future<void> customAction(String name, [Map<String, dynamic>? extras]) async {
+    debugPrint('customAction: $name, $extras');
+    switch (name) {
+      case 'shuffle':
+        return shuffle();
+      case 'repeat':
+        return repeat();
+    }
+  }
   // Função interna para atualizar o estado
-  void _broadcastState(PlaybackEvent event) {
-    playbackState.add(
-      playbackState.value.copyWith(
-        controls: [
-          MediaControl.pause,
-          MediaControl.stop,
-          MediaControl.skipToNext,
-          MediaControl.skipToPrevious,
-        ],
-        playing: _player.playing,
-        processingState: {
-          ProcessingState.idle: AudioProcessingState.idle,
-          ProcessingState.loading: AudioProcessingState.loading,
-          ProcessingState.buffering: AudioProcessingState.buffering,
-          ProcessingState.ready: AudioProcessingState.ready,
-          ProcessingState.completed: AudioProcessingState.completed,
-        }[_player.processingState]!,
-        updatePosition: _player.position,
-        bufferedPosition: _player.bufferedPosition,
-        speed: _player.speed,
-      ),
+
+  void _notifyAudioHandlerAboutPlaybackEvents() {
+    _player.playbackEventStream.listen(
+      (PlaybackEvent event) {
+        final playing = _player.playing;
+        playbackState.add(
+          playbackState.value.copyWith(
+            controls: [
+              MediaControl.skipToPrevious,
+              if (playing) MediaControl.pause else MediaControl.play,
+              MediaControl.skipToNext,
+            ],
+            systemActions: const {MediaAction.seek},
+            androidCompactActionIndices: const [0, 1, 2],
+            processingState: isSongLoading
+                ? AudioProcessingState.loading
+                : const {
+                    ProcessingState.idle: AudioProcessingState.idle,
+                    ProcessingState.loading: AudioProcessingState.loading,
+                    ProcessingState.buffering: AudioProcessingState.buffering,
+                    ProcessingState.ready: AudioProcessingState.ready,
+                    ProcessingState.completed: AudioProcessingState.completed,
+                  }[_player.processingState]!,
+            repeatMode: const {
+              LoopMode.off: AudioServiceRepeatMode.none,
+              LoopMode.one: AudioServiceRepeatMode.one,
+              LoopMode.all: AudioServiceRepeatMode.all,
+            }[_player.loopMode]!,
+            shuffleMode: (shuffleModeEnabled)
+                ? AudioServiceShuffleMode.all
+                : AudioServiceShuffleMode.none,
+            playing: playing,
+            updatePosition: _player.position,
+            bufferedPosition: _player.bufferedPosition,
+            speed: _player.speed,
+            queueIndex: currentIndex,
+          ),
+        );
+
+        debugPrint(
+          "set ${playbackState.value.queueIndex},${event.currentIndex}",
+        );
+      },
+      onError: (Object e, StackTrace st) async {
+        if (e is PlayerException) {
+          printErrorDebug('Error code: ${e.code}');
+          printErrorDebug('Error message: ${e.message}');
+        } else {
+          printErrorDebug('An error occurred: $e');
+          Duration curPos = _player.position;
+          await _player.stop();
+
+          if (isPlayingUsingLockCachingSource &&
+              e.toString().contains("Connection closed while receiving data")) {
+            await _player.seek(curPos, index: 0);
+            await _player.play();
+            return;
+          }
+
+          customAction("playByIndex", {'index': currentIndex, 'newUrl': true});
+          await _player.seek(curPos, index: 0);
+        }
+      },
     );
   }
-}
+
+  void _listenForDurationChanges() {
+    _player.durationStream.listen((duration) async {
+      final currQueue = queue.value;
+      if (currentIndex == null || currQueue.isEmpty || duration == null) return;
+      final currentSong = queue.value[currentIndex];
+      if (currentSong.duration == null || currentIndex == 0) {
+        final newMediaItem = currentSong.copyWith(duration: duration);
+        mediaItem.add(newMediaItem);
+      }
+    });
+  }
+  }

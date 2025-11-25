@@ -1,6 +1,7 @@
-import 'package:danmusic/models/song.dart';
-import 'package:danmusic/services/globais_vars.dart';
-import 'package:danmusic/widgets/ui/song_ui.dart';
+import 'package:audio_service/audio_service.dart';
+import '/models/song.dart';
+import '/services/globais_vars.dart';
+import '/widgets/ui/song_ui.dart';
 import 'package:flutter/material.dart';
 
 class FilePlayer extends StatefulWidget {
@@ -12,6 +13,7 @@ class FilePlayer extends StatefulWidget {
 
 class _FilePlayerState extends State<FilePlayer> {
   ScrollController scrollController = ScrollController();
+  List<MediaItem> file = [];
   @override
   void initState() {
     super.initState();
@@ -37,10 +39,12 @@ class _FilePlayerState extends State<FilePlayer> {
     });
   }
 
+  void fechada() async {
+    var r = audioHandler.player.sequence;
+  }
+
   @override
   Widget build(BuildContext context) {
-    var file = audioHandler.queue.valueOrNull;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
