@@ -1,84 +1,83 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:get/get.dart';
 import '/models/song.dart';
-import '/provaders/player_provider.dart';
-import '/services/globais_vars.dart';
+import '../../provaders/player_controller.dart';
 import '/widgets/ui/text_conf_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-class SongUi extends StatefulWidget {
+class SongUi extends StatelessWidget {
   final Song song;
-  const SongUi({super.key, required this.song});
 
-  @override
-  State<SongUi> createState() => _SongUiState();
-}
+  SongUi({super.key, required this.song});
 
-class _SongUiState extends State<SongUi> {
+  final audio = Get.find<AudioHandler>();
+  final player = Get.find<PlayerController>();
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<PlayerProvider>(
-      builder: (context, player, _) {
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          // margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-          child: ListTile(
-            selected: player.playNowId == widget.song.videoid,
+    return Obx(() {
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        child: ListTile(
+          selected: player.playNowId == song.videoid,
 
-            onTap: () {
-              audioHandler.playMediaItem(
+          onTap: () {
+            int index = audio.queue.value
+                .indexWhere((e) => e.id == song.videoid);
+
+            if (index == -1) {
+              audio.playMediaItem(
                 MediaItem(
-                  id: widget.song.videoid,
-                  title: widget.song.title,
-                  artUri: Uri.parse(widget.song.thumbnails?.firstOrNull ?? ''),
-                  artist: widget.song.artist,
-                  album: widget.song.albumInfo?.albumName ?? '',
+                  id: song.videoid,
+                  title: song.title,
+                  artUri: Uri.parse(song.thumbnails?.firstOrNull ?? ''),
+                  artist: song.artist,
+                  album: song.albumInfo?.albumName ?? '',
                 ),
               );
-              // Navigator.of(context).pushNamed('/player');
-              //debugPrintStack(label: 'Tocando musica');
-            },
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.network(
-                widget.song.thumbnails?.firstOrNull ?? '',
+              return;
+            }
+
+            audio.customAction("playByIndex", {"index": index});
+          },
+
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Image.network(
+              song.thumbnails?.firstOrNull ?? '',
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
                 width: 50,
                 height: 50,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 50,
-                    height: 50,
-                    color: Colors.grey,
-                    child: const Icon(Icons.music_note, color: Colors.white),
-                  );
-                },
+                color: Colors.grey,
+                child: const Icon(Icons.music_note, color: Colors.white),
               ),
-            ),
-            title: TextUi(
-              widget.song.title,
-              style: TextStyle(
-                color: player.playNowId == widget.song.videoid
-                    ? Theme.of(context).colorScheme.primary
-                    // ? Colors.amber
-                    : null,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(child: TextUi(widget.song.artist ?? '')),
-
-                TextUi(widget.song.duration ?? ''),
-              ],
             ),
           ),
-        );
-      },
-    );
+
+          title: TextUi(
+            song.title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: player.playNowId == song.videoid
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(child: TextUi(song.artist ?? '')),
+              TextUi(song.duration ?? ''),
+            ],
+          ),
+        ),
+      );
+    });
   }
 }

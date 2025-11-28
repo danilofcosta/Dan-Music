@@ -36,7 +36,8 @@ class _PlayerPageState extends State<PlayerPage> {
           children: [
             BuildCover(),
             BulidText(),
-            const SliderTemp(),
+            // const SliderTemp(),
+            MusicProgressBar(),
             const BuilButtons(),
           ],
         ),

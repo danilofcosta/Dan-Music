@@ -1,6 +1,8 @@
-import '/models/Playlist.dart';
-import '/services/globais_vars.dart';
+import 'package:audio_service/audio_service.dart';
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+ 
+import '/models/Playlist.dart';
 
 class PlaylistUi extends StatefulWidget {
   final Playlist playlist;
@@ -11,6 +13,7 @@ class PlaylistUi extends StatefulWidget {
 }
 
 class _PlaylistUiState extends State<PlaylistUi> {
+  final AudioHandler _audioHandler = Get.find<AudioHandler>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -24,7 +27,7 @@ class _PlaylistUiState extends State<PlaylistUi> {
       ),
       child: FilledButton.icon(
         onPressed: () {
-          audioHandler.playPlaylistId(widget.playlist.playlistId);
+          //_audioHandler.playPlaylistId(widget.playlist.playlistId);
           Navigator.of(context).pushNamed('/player');
         },
         label: Text(widget.playlist.title),

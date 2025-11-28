@@ -1,13 +1,13 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:get/get.dart';
+
 import '/models/Playlist.dart';
 import '/models/home_section.dart' show HomeSection;
 import '/models/song.dart';
-import '/screens/playlist_page.dart';
-import '/services/globais_vars.dart';
 import '/services/ytmusicapi.dart';
 import '/widgets/buid_list_horizotal.dart';
 import '/widgets/build_backgrand.dart';
-import '/widgets/s.dart';
+import '../widgets/greeting.dart';
 import '/widgets/thememode.dart';
 import '/widgets/ui/mini_player.dart';
 import 'package:flutter/material.dart';
@@ -83,18 +83,21 @@ class _HomePageState extends State<HomePage> {
               ),
             SliverToBoxAdapter(
               child: IconButton.filledTonal(
-                onPressed: () {
-                  audioHandler.playMediaItem(
+                onPressed: () async {
+                  await Get.find<AudioHandler>().playMediaItem(
                     MediaItem(
-                      id: 'S5PwZNmyhlw',
+                      id: 'l20M2NArfq8',
                       title: 'Teste',
                       artist: 'Teste',
                       artUri: Uri.parse(
                         'https://i.pinimg.com/736x/7d/fb/50/7dfb50e22c3cea76e6b36e3c3d19ddea.jpg',
                       ),
-                      duration: const Duration(seconds: 5),
+                      //   duration: const Duration(seconds: 5),
                     ),
                   );
+                  Get.find<AudioHandler>().customAction("playByIndex", {
+                    "index": 0,
+                  });
                 },
                 icon: Icon(Icons.ac_unit),
               ),
@@ -137,9 +140,9 @@ class _HomePageState extends State<HomePage> {
                         onTap: (value) {
                           final d = section.content[value];
                           if (d is Song) {
-                            audioHandler.playMediaItem(
-                              MediaItem(id: d.videoid, title: d.title),
-                            );
+                            // audioHandler.playMediaItem(
+                            //   MediaItem(id: d.videoid, title: d.title),
+                            // );
                             Navigator.of(context).pushNamed('/player');
                             return;
                           }

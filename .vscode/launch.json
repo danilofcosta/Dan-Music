@@ -6,18 +6,18 @@
     "configurations": [
     
         {
-            "name": "danmusic",
+            "name": "DEBUG",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "danmusic (profile mode)",
+            "name": "PROFILE",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "danmusic (release mode)",
+            "name": "RELEASE",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

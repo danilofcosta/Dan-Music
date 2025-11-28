@@ -27,3 +27,16 @@
 //     expect(find.text('1'), findsOneWidget);
 //   });
 // }
+
+
+import 'package:danmusic/services/manage_audio/manage_audio_url.dart';
+import 'package:dart_ytmusic_api/yt_music.dart' ;
+void main() async{
+ YTMusic f=YTMusic();
+ f.initialize();
+ var q= await f.getSong( 'NILIAwLFp58');
+ print(q);
+
+
+
+}

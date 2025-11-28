@@ -77,6 +77,22 @@ class YouTubeMusicService {
     return newQueue;
   }
 
+
+  static Future<MediaItem> getSong(String videoId) async {
+    api2_types.SongFull song = await youTubeMusicServiceInstance._ytmusic2.getSong(videoId);
+
+
+    return MediaItem(
+      id: song.videoId,
+      title: song.name,
+      artist: song.artist.name,
+      album: "",
+      artUri: Uri.parse(song.thumbnails.last.url),
+      duration: Duration(seconds: song.duration),
+      extras: {'Type': song.type, 'VideoId': song.videoId,'artist': song.artist.artistId},  
+    );
+    
+  }
   /// Fecha API1
   void close() {
     _ytmusic?.close();
