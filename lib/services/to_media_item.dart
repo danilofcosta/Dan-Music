@@ -22,7 +22,7 @@ class ToMediaItem {
   //   );
   // }
 
-  static Future<MediaItem> song(Song song) async {
+  static MediaItem song(Song song) {
     /// final Map<String, dynamic> map = song.toJson();
     return MediaItem(
       id: song.videoid,

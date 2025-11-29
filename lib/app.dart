@@ -1,11 +1,15 @@
+import 'package:get/get.dart';
+
 import '/provaders/confing_css.dart';
-import '/screens/file_player.dart';
-import '/screens/home_page.dart';
-import '/screens/player_page.dart';
-import '/screens/playlist_page.dart';
-import '/screens/search_page.dart';
+import 'ui/screens/file_player.dart';
+import 'ui/screens/home_page.dart';
+import 'ui/screens/player_page/player_page.dart';
+import 'ui/screens/playlist_page/playlist_page.dart';
+import 'ui/screens/search_page/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'home.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final confingCss = Provider.of<ConfingCss>(context);
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'DanMusic',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(useMaterial3: true).copyWith(
@@ -26,14 +30,14 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(backgroundColor: Colors.black),
       ),
       themeMode: confingCss.getThemeMode,
-      routes: {
-        '/': (context) => const HomePage(),
-        '/search': (context) => const SearchPage(),
-        '/player': (context) => const PlayerPage(),
-        '/fileplayer': (context) => const FilePlayer(),
-        '/playlist': (context) => const PlaylistPage(),
-      },
-      initialRoute: '/',
+      // routes: {
+      //   Rotas.home: (context) => const HomePage,
+      //   Rotas.search: (context) => const SearchPage(),
+      //   Rotas.player: (context) => const PlayerPage(),
+      //   Rotas.fileplayer: (context) => const FilePlayer(),
+      // },
+      // initialRoute: Rotas.home,
+      home: Home(),
     );
   }
 }

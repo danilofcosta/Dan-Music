@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ConfingCss extends ChangeNotifier {
   final String _bgImage =
-      'https://i.pinimg.com/736x/e3/ad/f8/e3adf86992adc7c7d4b08ca86dd53d13.jpg';
+      'https://i.pinimg.com/736x/57/4c/93/574c932a137c5d7506b704179afb5195.jpg';
   ThemeMode _themeMode = ThemeMode.system;
 
   String get getBgImage => _bgImage;

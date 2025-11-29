@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
-import '/widgets/ui/text_conf_ui.dart';
+import '../ui/text_conf_ui.dart';
 import 'package:flutter/material.dart';
 
 import '/provaders/player_controller.dart';

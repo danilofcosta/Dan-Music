@@ -1,15 +1,17 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:danmusic/app.dart';
+import 'package:danmusic/navigator.dart';
 import 'package:get/get.dart';
 
 import '/models/Playlist.dart';
 import '/models/home_section.dart' show HomeSection;
 import '/models/song.dart';
 import '/services/ytmusicapi.dart';
-import '/widgets/buid_list_horizotal.dart';
-import '/widgets/build_backgrand.dart';
+import '../widgets/buid_list_horizotal.dart';
+import '../widgets/build_backgrand.dart';
 import '../widgets/greeting.dart';
-import '/widgets/thememode.dart';
-import '/widgets/ui/mini_player.dart';
+import '../widgets/thememode.dart';
+import '../widgets/ui/mini_player.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -40,10 +42,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: MiniPlayer(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.toNamed(
+            ScreenNavigationSetup.searchScreen,
+            id: ScreenNavigationSetup.id,
+          );
+        },
+        child: const Icon(Icons.search),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      // bottomNavigationBar: buildMiniPlayer(),
-      //bottomSheet: buildMiniPlayer(),
+      bottomNavigationBar: MiniPlayer(),
+      // bottomSheet: MiniPlayer(),
       //  bottomSheetScrimBuilder: (_, _) => Container(child: Text('data')),
       body: BuildBackgrand(
         child: CustomScrollView(
@@ -66,7 +76,7 @@ class _HomePageState extends State<HomePage> {
               actions: [
                 IconButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed('/player');
+                    //Navigator.of(context).pushNamed('/player');
                   },
                   icon: Image.asset('assets/lupa.png', width: 24, height: 24),
                 ),
@@ -86,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () async {
                   await Get.find<AudioHandler>().playMediaItem(
                     MediaItem(
-                      id: 'l20M2NArfq8',
+                      id: '4FDIWr0K6sA',
                       title: 'Teste',
                       artist: 'Teste',
                       artUri: Uri.parse(
@@ -138,18 +148,21 @@ class _HomePageState extends State<HomePage> {
                         shrinkExtent: 8.0,
                         elevation: 5,
                         onTap: (value) {
-                          final d = section.content[value];
-                          if (d is Song) {
+                          final content = section.content[value];
+                          if (content is Song) {
                             // audioHandler.playMediaItem(
                             //   MediaItem(id: d.videoid, title: d.title),
                             // );
-                            Navigator.of(context).pushNamed('/player');
+                            debugPrint('id: ${content.videoid}');
+
                             return;
                           }
-                          if (d is Playlist) {
-                            Navigator.of(
-                              context,
-                            ).pushNamed('/playlist', arguments: d);
+                          if (content is Playlist) {
+                            Get.toNamed(
+                              ScreenNavigationSetup.playlistScreen,
+                              id: ScreenNavigationSetup.id,
+                              arguments: [content, content.playlistId],
+                            );
 
                             // Navigator.push(
                             //   context,

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 class LoadImage {
   static bool _isUrl(String s) {
     if (s.trim().isEmpty) return false;
@@ -23,6 +24,7 @@ class LoadImage {
     double? width,
     double? height,
     IconData errorBuildericon = Icons.music_note_outlined,
+    BoxFit fit = BoxFit.cover,
   }) {
     path = path.trim();
 
@@ -35,11 +37,10 @@ class LoadImage {
         imageUrl: path,
         width: width,
         height: height,
-        fit: BoxFit.cover,
+        fit: fit,
         progressIndicatorBuilder: (_, __, progress) =>
-            CircularProgressIndicator(value: progress.progress),
-        errorWidget: (_, __, ___) =>
             _fallback(width, height, errorBuildericon),
+        errorWidget: (_, __, ___) => _fallback(width, height, errorBuildericon),
       );
     }
 
@@ -48,7 +49,7 @@ class LoadImage {
         File(path),
         width: width,
         height: height,
-        fit: BoxFit.cover,
+        fit: fit,
         errorBuilder: (_, __, ___) =>
             _fallback(width, height, errorBuildericon),
       );
@@ -94,12 +95,7 @@ class LoadImage {
   // ------------------------------------------------------------------
   // Fallback
   // ------------------------------------------------------------------
-  static Widget _fallback(
-      double? width, double? height, IconData icon) {
-    return SizedBox(
-      width: width,
-      height: height,
-      child: Icon(icon),
-    );
-    }
+  static Widget _fallback(double? width, double? height, IconData icon) {
+    return SizedBox(width: width, height: height, child: Icon(icon));
+  }
 }

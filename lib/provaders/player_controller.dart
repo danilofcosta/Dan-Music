@@ -27,6 +27,10 @@ class PlayerController extends GetxController  with BasicComanos {
     super.onInit();
     listenAudioHandler();
   }
+  void updateQueuenew(List<MediaItem> queue) async {
+    await audioHandler.updateQueue(queue);
+    audioHandler.customAction( 'playByIndex',  {'index': 0});
+  }
 
   void listenMediaItem() {
     audioHandler.mediaItem.listen((item) {

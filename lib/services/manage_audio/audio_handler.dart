@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:danmusic/services/manage_audio/manage_audio_url.dart';
-import '/services/to_media_item.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import '/services/uteis/helper.dart';
 import '/services/ytmusicapi.dart';
 import 'package:just_audio/just_audio.dart';
@@ -24,7 +25,8 @@ Future<AudioHandler> initAudioService() async {
   );
 }
 
-class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
+class MyAudioHandler extends BaseAudioHandler
+    with QueueHandler, SeekHandler, AudioHandlerMixin {
   late AudioPlayer _player;
   late final String _cacheDir;
 
@@ -60,6 +62,9 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       printErrorDebug('AudioPlayer Error code: ${e.code}');
       printErrorDebug('AudioPlayer Error message: ${e.message}');
       printErrorDebug('AudioSource index: ${e.index}');
+      if (e.message == 'Source error') {
+        printErrorDebug('AudioPlayer Error message: ${e.message}');
+      }
     });
 
     _createCacheDir();
@@ -220,10 +225,13 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     required String urlAudio,
     required MediaItem mediaItem,
   }) {
+    if (urlAudio.contains("http")) {
+      return AudioSource.uri(Uri.parse(urlAudio), tag: mediaItem);
+      
+    }
     return LockCachingAudioSource(
       Uri.parse(urlAudio),
       cacheFile: File("$_cacheDir/${mediaItem.id}.mp3"),
-
       tag: mediaItem,
     );
   }
@@ -259,7 +267,11 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
         if (currentIndex != null) _player.pause();
         // evita carregamento duplicado
-        if (currentIndex == songIndex && _player.playing) return;
+        if (currentIndex == songIndex && _player.playing) {
+          printInfoDebug("index set tocando: $songIndex");
+          return;
+        }
+
         currentIndex = songIndex;
 
         MediaItem currentsonf = queue.value[songIndex];
@@ -267,11 +279,32 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         playbackState.value.copyWith(
           processingState: AudioProcessingState.loading,
         );
+
         currentsonf = await YouTubeMusicService.getSong(currentsonf.id);
 
         mediaItem.add(currentsonf);
 
-        String videoInfo = await ManageAudioURL.getAudioUrlNewpipe(currentsonf.id);
+        if (await fileExist(File('$_cacheDir/${currentsonf.id}.mp3'))) {
+          printInfoDebug(
+            'arquivo encontrado: $_cacheDir/${currentsonf.id}.mp3',
+          );
+          await _player.clearAudioSources();
+
+          await _player.setAudioSource(
+            _createAudioSource(
+              urlAudio: 'file://$_cacheDir/${currentsonf.id}.mp3',
+              mediaItem: currentsonf,
+            ),
+          );
+          _player.play();
+        }
+        // busca o link do áudio online
+        printInfoDebug(
+          'arquivo nao encontrado: $_cacheDir/${currentsonf.id}.mp3 buscando online',
+        );
+        String videoInfo = await ManageAudioURL.getAudioUrlNewpipe(
+          currentsonf.id,
+        );
 
         await _player.clearAudioSources();
 
@@ -315,7 +348,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
         MediaAction.seekForward,
         MediaAction.seekBackward,
       },
-      androidCompactActionIndices: const [0, 1, 3],
+      androidCompactActionIndices: const [0, 1, 2],
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
         ProcessingState.loading: AudioProcessingState.loading,
@@ -329,5 +362,11 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       speed: _player.speed,
       queueIndex: event.currentIndex,
     );
+  }
+}
+
+mixin AudioHandlerMixin {
+  Future<bool> fileExist(File file) async {
+    return file.existsSync();
   }
 }

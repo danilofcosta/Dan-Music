@@ -2,7 +2,7 @@ import 'package:danmusic/models/durationstate.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../provaders/player_controller.dart';
+import '../../../provaders/player_controller.dart';
 
 class MusicProgressBar extends StatelessWidget {
   const MusicProgressBar({super.key});

@@ -1,8 +1,10 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:danmusic/services/parsers/parser_result_search.dart';
 import 'package:ytmusicapi_dart/ytmusicapi_dart.dart' as api1;
 import 'package:dart_ytmusic_api/yt_music.dart' as api2;
 import 'package:dart_ytmusic_api/types.dart' as api2_types;
 
+import '../models/search_result.dart';
 import '/models/home_section.dart';
 import '/models/playlist_full.dart';
 import '/services/parsers/parser.dart';
@@ -77,11 +79,9 @@ class YouTubeMusicService {
     return newQueue;
   }
 
-
   static Future<MediaItem> getSong(String videoId) async {
-    api2_types.SongFull song = await youTubeMusicServiceInstance._ytmusic2.getSong(videoId);
-
-
+    api2_types.SongFull song = await youTubeMusicServiceInstance._ytmusic2
+        .getSong(videoId);
     return MediaItem(
       id: song.videoId,
       title: song.name,
@@ -89,10 +89,22 @@ class YouTubeMusicService {
       album: "",
       artUri: Uri.parse(song.thumbnails.last.url),
       duration: Duration(seconds: song.duration),
-      extras: {'Type': song.type, 'VideoId': song.videoId,'artist': song.artist.artistId},  
+      extras: {
+        'Type': song.type,
+        'VideoId': song.videoId,
+        'artist': song.artist.artistId,
+      },
     );
-    
   }
+
+  static Future<List<SearchResult>> search(String textInputAction) async {
+    List<dynamic> s = await youTubeMusicServiceInstance._ytmusic2.search(
+      textInputAction,
+    );
+
+    return ParserResultSearch.parseResultSearchdartYtmusicapi(s);
+  }
+
   /// Fecha API1
   void close() {
     _ytmusic?.close();

@@ -1,5 +1,5 @@
 import '/models/song.dart';
-import '/widgets/ui/song_ui.dart';
+import 'ui/song_ui.dart';
 import 'package:flutter/material.dart';
 
 class BuidListHorizotal extends StatefulWidget {

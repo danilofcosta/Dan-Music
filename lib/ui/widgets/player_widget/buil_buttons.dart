@@ -1,7 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 
-import '../../provaders/player_controller.dart';
+import '../../../provaders/player_controller.dart';
 import 'package:flutter/material.dart';
 
 class BuilButtons extends StatelessWidget {
@@ -35,15 +35,17 @@ class BuilButtons extends StatelessWidget {
           //     );
           //   },
           // )
-          FilledButton.icon(
-            onPressed: () => audioHandler.play(),
-            label: Icon(Icons.play_arrow),
+          // FilledButton.icon(
+          //   onPressed: () => audioHandler.play(),
+          //   label: Icon(Icons.play_arrow),
 
-          ),
-AnimatedPlayButton(iconSize: 42,),
+          // ),
+          AnimatedPlayButton(iconSize: 42),
           FilledButton.icon(
             onPressed: () => audioHandler.skipToNext(),
             label: Icon(Icons.skip_next),
+            
+            
           ),
           // FilledButton(
           //   onPressed: () => audioHandler.shuffle(),
@@ -54,6 +56,7 @@ AnimatedPlayButton(iconSize: 42,),
     );
   }
 }
+
 class AnimatedPlayButton extends StatefulWidget {
   /// size of the icon.
   final double iconSize;
@@ -67,7 +70,7 @@ class AnimatedPlayButton extends StatefulWidget {
 class _AnimatedPlayButtonState extends State<AnimatedPlayButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  
+
   @override
   void initState() {
     super.initState();
@@ -85,30 +88,31 @@ class _AnimatedPlayButtonState extends State<AnimatedPlayButton>
 
   @override
   Widget build(BuildContext context) {
-    return GetX<PlayerController>(builder: (controller) {
-      final buttonState 
-      = controller.buttonState.value;
-      final isPlaying = buttonState == PlayButtonState.playing;
-      final isLoading = buttonState == PlayButtonState.loading;
+    return GetX<PlayerController>(
+      builder: (controller) {
+        final buttonState = controller.buttonState.value;
+        final isPlaying = buttonState == PlayButtonState.playing;
+        final isLoading = buttonState == PlayButtonState.loading;
 
-      if (isPlaying) {
-        _controller.forward();
-      } else if (!isLoading) {
-        _controller.reverse();
-      }
+        if (isPlaying) {
+          _controller.forward();
+        } else if (!isLoading) {
+          _controller.reverse();
+        }
 
-      return IconButton(
-        iconSize: widget.iconSize,
-        onPressed: () {
-         isPlaying ? controller.pause() : controller.play();
-        },
-        icon: isLoading
-            ? const CircularProgressIndicator()
-            : AnimatedIcon(
-                icon: AnimatedIcons.play_pause,
-                progress: _controller,
-              ),
-      );
-    });
+        return IconButton(
+          iconSize: widget.iconSize,
+          onPressed: () {
+            isPlaying ? controller.pause() : controller.play();
+          },
+          icon: isLoading
+              ? const CircularProgressIndicator()
+              : AnimatedIcon(
+                  icon: AnimatedIcons.play_pause,
+                  progress: _controller,
+                ),
+        );
+      },
+    );
   }
 }

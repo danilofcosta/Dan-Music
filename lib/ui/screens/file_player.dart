@@ -1,7 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 import '/models/song.dart';
-import '/widgets/ui/song_ui.dart';
+import '../widgets/ui/song_ui.dart';
 import 'package:flutter/material.dart';
 
 class FilePlayer extends StatefulWidget {
@@ -66,13 +66,7 @@ class _FilePlayerState extends State<FilePlayer> {
               children: file
                   .map(
                     (e) => SongUi(
-                      song: Song(
-                        videoid: e.id,
-                        title: e.title,
-                        artist: e.artist,
-                        thumbnails: [e.artUri.toString()],
-                        duration: e.duration.toString(),
-                      ),
+                    mediaItem: e,
                     ),
                   )
                   .toList(),
