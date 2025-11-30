@@ -78,7 +78,12 @@ class LoadImage {
     if (path.isEmpty || path == ",") return null;
 
     if (_isUrl(path)) {
-      return CachedNetworkImageProvider(path);
+      return CachedNetworkImageProvider(path,
+      
+      
+      
+      
+      );
     }
 
     if (File(path).existsSync()) {

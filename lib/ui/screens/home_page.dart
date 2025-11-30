@@ -1,9 +1,9 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/app.dart';
+
 import 'package:danmusic/navigator.dart';
 import 'package:get/get.dart';
 
-import '/models/Playlist.dart';
+import '../../../models/playlist.dart';
 import '/models/home_section.dart' show HomeSection;
 import '/models/song.dart';
 import '/services/ytmusicapi.dart';
@@ -23,11 +23,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<HomeSection> data = [];
+  List<MediaItem> data2 = [];
 
   @override
   void initState() {
     super.initState();
-    fechada();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fechada();
+      //  fechada2();
+    });
   }
 
   void fechada() async {
@@ -36,7 +40,20 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       data = temp;
     });
+    fechada2();
+
     // debugPrint(data.toString());
+  }
+
+  void fechada2() async {
+    List<MediaItem> S = await YouTubeMusicService.getRelatedPlaylist(
+      'iwGEX183sMk',
+    );
+    setState(() {
+      data2 = S;
+    });
+
+    // Lógica para fechar a conexão
   }
 
   @override
@@ -51,7 +68,7 @@ class _HomePageState extends State<HomePage> {
         },
         child: const Icon(Icons.search),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
       bottomNavigationBar: MiniPlayer(),
       // bottomSheet: MiniPlayer(),
       //  bottomSheetScrimBuilder: (_, _) => Container(child: Text('data')),
@@ -89,7 +106,9 @@ class _HomePageState extends State<HomePage> {
             ),
             if (data.isEmpty)
               const SliverToBoxAdapter(
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(
+                  child: CircularProgressIndicator(strokeWidth: 2.0),
+                ),
               ),
             SliverToBoxAdapter(
               child: IconButton.filledTonal(
@@ -119,7 +138,10 @@ class _HomePageState extends State<HomePage> {
                   songs: data.first.content.whereType<Song>().toList(),
                 ),
               ),
-
+            if (data2.isNotEmpty)
+              SliverToBoxAdapter(
+                child: BuildListHorizontal(title: 'Sugestoes', items: data2),
+              ),
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 final HomeSection section = data[index];

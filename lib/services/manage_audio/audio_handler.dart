@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 // ignore: depend_on_referenced_packages, implementation_imports
 import 'package:rxdart/src/subjects/behavior_subject.dart';
 
+import 'package:path/path.dart' as p;
 Future<AudioHandler> initAudioService() async {
   final session = await AudioSession.instance;
   await session.configure(AudioSessionConfiguration.speech());
@@ -28,7 +29,8 @@ Future<AudioHandler> initAudioService() async {
 class MyAudioHandler extends BaseAudioHandler
     with QueueHandler, SeekHandler, AudioHandlerMixin {
   late AudioPlayer _player;
-  late final String _cacheDir;
+  //late final String _cacheDir;
+   String _cacheDir = '';
 
   dynamic currentIndex;
   bool shuffleModeEnabled = false;
@@ -52,7 +54,7 @@ class MyAudioHandler extends BaseAudioHandler
           minBufferDuration: Duration(seconds: 50),
           maxBufferDuration: Duration(seconds: 120),
           bufferForPlaybackDuration: Duration(milliseconds: 50),
-          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 2),
+          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 5),
         ),
       ),
     );
@@ -72,12 +74,27 @@ class MyAudioHandler extends BaseAudioHandler
     _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
   }
 
-  Future<void> _createCacheDir() async {
-    _cacheDir = (await getTemporaryDirectory()).path;
-    if (!Directory("$_cacheDir/cachedSongs/").existsSync()) {
-      Directory("$_cacheDir/cachedSongs/").createSync(recursive: true);
-    }
+
+Future<void> _createCacheDir() async {
+  // 1. Começa com o diretório temporário padrão
+  Directory tempDir = await getTemporaryDirectory();
+  _cacheDir = tempDir.path;
+
+  // 2. Tenta usar o diretório de cache externo (Android)
+  final externalDirs = await getExternalCacheDirectories();
+  if (externalDirs != null && externalDirs.isNotEmpty) {
+    _cacheDir = externalDirs.first.path;
   }
+
+  // 3. Monta o caminho final da pasta de músicas em cache
+  final cachedSongsDir = Directory(p.join(_cacheDir, "cachedSongs"));
+
+  // 4. Cria o diretório se não existir
+  if (!await cachedSongsDir.exists()) {
+    await cachedSongsDir.create(recursive: true);
+    printInfoDebug("created cache dir: ${cachedSongsDir.path}");
+  }
+}
 
   @override
   Future<void> updateQueue(List<MediaItem> queue) async {
@@ -221,20 +238,6 @@ class MyAudioHandler extends BaseAudioHandler
     }
   }
 
-  AudioSource _createAudioSource({
-    required String urlAudio,
-    required MediaItem mediaItem,
-  }) {
-    if (urlAudio.contains("http")) {
-      return AudioSource.uri(Uri.parse(urlAudio), tag: mediaItem);
-      
-    }
-    return LockCachingAudioSource(
-      Uri.parse(urlAudio),
-      cacheFile: File("$_cacheDir/${mediaItem.id}.mp3"),
-      tag: mediaItem,
-    );
-  }
 
   @override
   Future<void> skipToQueueItem(int index) =>
@@ -260,58 +263,44 @@ class MyAudioHandler extends BaseAudioHandler
     switch (name) {
       case 'playByIndex':
         final songIndex = extras!['index'] as int;
-        if (songIndex == -1) {
-          printErrorDebug("index invalid: $songIndex");
-          return;
-        }
+        if (songIndex == -1) return;
 
         if (currentIndex != null) _player.pause();
-        // evita carregamento duplicado
-        if (currentIndex == songIndex && _player.playing) {
-          printInfoDebug("index set tocando: $songIndex");
-          return;
-        }
+        if (currentIndex == songIndex && _player.playing) return;
 
         currentIndex = songIndex;
 
-        MediaItem currentsonf = queue.value[songIndex];
+        MediaItem song = queue.value[songIndex];
+        song = await YouTubeMusicService.getSong(song.id);
+        mediaItem.add(song);
 
-        playbackState.value.copyWith(
-          processingState: AudioProcessingState.loading,
-        );
+        final cachedPath = '$_cacheDir/cachedSongs/${song.id}.mp3';
+        final cachedFile = File(cachedPath);
 
-        currentsonf = await YouTubeMusicService.getSong(currentsonf.id);
+        // ---- 1) VERIFICA CACHE CORRETAMENTE ----
+        if (fileExists(cachedFile)) {
+          printInfoDebug('CACHE encontrado: $cachedPath');
 
-        mediaItem.add(currentsonf);
-
-        if (await fileExist(File('$_cacheDir/${currentsonf.id}.mp3'))) {
-          printInfoDebug(
-            'arquivo encontrado: $_cacheDir/${currentsonf.id}.mp3',
-          );
           await _player.clearAudioSources();
-
           await _player.setAudioSource(
-            _createAudioSource(
-              urlAudio: 'file://$_cacheDir/${currentsonf.id}.mp3',
-              mediaItem: currentsonf,
-            ),
+            AudioSource.uri(Uri.file(cachedPath), tag: song),
           );
           _player.play();
+          return;
         }
-        // busca o link do áudio online
-        printInfoDebug(
-          'arquivo nao encontrado: $_cacheDir/${currentsonf.id}.mp3 buscando online',
-        );
-        String videoInfo = await ManageAudioURL.getAudioUrlNewpipe(
-          currentsonf.id,
-        );
+
+        // ---- 2) CACHE NÃO EXISTE → BUSCAR STREAM ----
+        printInfoDebug('CACHE NAO encontrado, baixando $cachedPath');
+
+        final url = await ManageAudioURL.getAudioUrlNewpipe(song.id);
 
         await _player.clearAudioSources();
-
         await _player.setAudioSource(
-          _createAudioSource(urlAudio: videoInfo, mediaItem: currentsonf),
+          _createAudioSource(urlAudio: url, mediaItem: song, cachedFile: cachedFile),
         );
+
         _player.play();
+        return;
     }
   }
 
@@ -366,7 +355,27 @@ class MyAudioHandler extends BaseAudioHandler
 }
 
 mixin AudioHandlerMixin {
-  Future<bool> fileExist(File file) async {
+  bool fileExists(File file) {
     return file.existsSync();
+  }
+
+  
+  AudioSource _createAudioSource({
+    required String urlAudio,
+    required MediaItem mediaItem,
+    required File cachedFile
+  }) {
+   // final cachedFile = File("$_cacheDir/cachedSongs/${mediaItem.id}.mp3");
+
+    final uri = Uri.parse(urlAudio);
+
+    // Se for uma URL HTTP → usar cache automático
+    if (uri.scheme.startsWith("http")) {
+      //return LockCachingAudioSource(uri, cacheFile: cachedFile, tag: mediaItem);
+            return AudioSource.uri(uri, tag: mediaItem);
+    }
+
+    // Se já for caminho local (file://)
+    return AudioSource.uri(uri, tag: mediaItem);
   }
 }

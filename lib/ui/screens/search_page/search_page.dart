@@ -1,9 +1,13 @@
 import 'package:danmusic/services/to_media_item.dart';
 import 'package:danmusic/ui/screens/search_page/search_page_controler.dart';
+import 'package:danmusic/ui/widgets/ui/album_card.dart';
+import 'package:danmusic/ui/widgets/ui/playlist_card.dart';
 import 'package:danmusic/ui/widgets/ui/song_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../widgets/ui/artist_card.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -18,6 +22,29 @@ class _SearchPageState extends State<SearchPage> {
   void _onSearch(String text) {
     // Aqui você faz a lógica de busca
     debugPrint('Pesquisando: $text');
+  }
+
+  List<Widget> buildSearchResults() {
+    if (controller.resuts.isEmpty) {
+      return [Center(child: Text('Nenhum resultado encontrado'))];
+    }
+
+    return controller.resuts.map((result) {
+      switch (result.type) {
+        case 'SONG':
+          return SongUi(mediaItem: result.songMedia);
+
+        case 'ARTIST':
+          return ArtistCard(artist: result.artist);
+        case 'ALBUM':
+          return AlbumCard(album: result.album);
+        case 'PLAYLIST':
+          return PlaylistCard(playlist: result.playlist);
+
+        default:
+          return ListTile(title: Text(result.type.toString()));
+      }
+    }).toList();
   }
 
   @override
@@ -74,15 +101,7 @@ class _SearchPageState extends State<SearchPage> {
               Expanded(
                 child: ListView(
                   shrinkWrap: true,
-                  children: controller.resuts.value.isEmpty
-                      ? [
-                          const Center(
-                            child: Text("Nenhum resultado encontrado"),
-                          ),
-                        ]
-                      : controller.resuts.value
-                            .map((e) => SongUi(mediaItem: e.songMedia,))
-                            .toList(),
+                  children: buildSearchResults(),
                 ),
               ),
             ],

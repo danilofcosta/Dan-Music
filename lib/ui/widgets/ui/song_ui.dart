@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
+import '../../../services/uteis/load_image.dart';
 import '/models/song.dart';
 import '../../../provaders/player_controller.dart';
 import 'text_conf_ui.dart';
@@ -51,9 +52,7 @@ class SongUi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return ListTile(
-        selected: player.playNowId == id,
-
+      return InkWell(
         onTap: () {
           int index = audio.queue.value.indexWhere((e) => e.id == id);
 
@@ -73,34 +72,38 @@ class SongUi extends StatelessWidget {
           audio.customAction("playByIndex", {"index": index});
         },
 
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            thumbnail,
-            width: 50,
-            height: 50,
-            fit: BoxFit.cover,
-          ),
-        ),
+        child: ListTile(
+          selected: player.playNowId == id,
 
-        title: TextUi(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: player.playNowId == id
-                ? Theme.of(context).colorScheme.primary
-                : null,
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LoadImage.loadWidget(
+              thumbnail,
+              width: 50,
+              height: 50,
+              errorBuildericon: Icons.music_note,
+            ),
           ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
 
-        subtitle: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(child: TextUi(artist)),
-            TextUi(duration!),
-          ],
+          title: TextUi(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: player.playNowId == id
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(child: TextUi(artist)),
+              TextUi(duration!),
+            ],
+          ),
         ),
       );
     });

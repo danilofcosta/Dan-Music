@@ -1,4 +1,4 @@
-import '/models/Playlist.dart';
+import '../../../models/playlist.dart';
 import '/models/playlist_full.dart';
 import '/models/song.dart';
 import '/services/parsers/parser_song.dart';

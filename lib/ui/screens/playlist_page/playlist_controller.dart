@@ -2,10 +2,10 @@ import 'package:audio_service/audio_service.dart';
 import 'package:danmusic/provaders/player_controller.dart';
 import 'package:danmusic/services/to_media_item.dart';
 import 'package:get/get.dart';
-
+import '../../../models/playlist.dart';
 import '../../../models/playlist_full.dart';
 import '../../../services/ytmusicapi.dart';
-import '/models/Playlist.dart';
+
 
 class PlaylistController extends GetxController {
   final audiohander = Get.find<PlayerController>();
@@ -15,7 +15,7 @@ class PlaylistController extends GetxController {
     thumbnails: [
       'https://i.pinimg.com/736x/03/0a/7e/030a7eaf812f0aa200f48b64ba667f51.jpg',
     ],
-    desciption: " Descrição",
+    desciption: "Descrição",
   ).obs;
 
   late final playlistfull = PlaylistFull(

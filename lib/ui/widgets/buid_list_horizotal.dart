@@ -1,3 +1,5 @@
+import 'package:audio_service/audio_service.dart';
+
 import '/models/song.dart';
 import 'ui/song_ui.dart';
 import 'package:flutter/material.dart';
@@ -88,3 +90,97 @@ class _BuidListHorizotalState extends State<BuidListHorizotal> {
     );
   }
 }
+
+
+
+
+class BuildListHorizontal extends StatefulWidget {
+  final String title;
+  final List<MediaItem> items;
+
+  const BuildListHorizontal({
+    super.key,
+    required this.title,
+    required this.items,
+  });
+
+  @override
+  State<BuildListHorizontal> createState() => _BuildListHorizontalState();
+}
+
+class _BuildListHorizontalState extends State<BuildListHorizontal> {
+  List<List<MediaItem>> chunks = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    chunks = List.generate(
+      3,
+      (index) => widget.items.skip(index * 3).take(3).toList(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 300,
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.6),
+        border: Border.all(
+          color: Theme.of(context).textTheme.bodyLarge!.color!,
+          width: 2,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          // Title + arrow
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text(
+                  widget.title,
+                  style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward, color: Colors.white),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+
+          // Horizontal list
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: chunks.length,
+              itemBuilder: (context, index) {
+                List<MediaItem> columnItems = chunks[index];
+
+                return SizedBox(
+                  width: 300,
+                  child: Column(
+                    children: columnItems
+                        .map(
+                          (item) => SongUi(mediaItem: item),
+                        )
+                        .toList(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

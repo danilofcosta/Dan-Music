@@ -5,7 +5,7 @@ import '/models/song.dart';
 class ParserSong {
   static Song parseSong(Map<String, dynamic> itemMap) {
     return Song(
-      videoid: itemMap['videoId'] as String,
+      videoid: itemMap['videoId'] ?? '',
       title: itemMap['title'] ?? 'Sem Título',
       thumbnails: (itemMap['thumbnails'] as List<dynamic>?)
           ?.map((thumb) => thumb['url'] as String)
