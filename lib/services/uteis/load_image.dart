@@ -38,9 +38,9 @@ class LoadImage {
         width: width,
         height: height,
         fit: fit,
-        progressIndicatorBuilder: (_, __, progress) =>
+        progressIndicatorBuilder: (_, _, progress) =>
             _fallback(width, height, errorBuildericon),
-        errorWidget: (_, __, ___) => _fallback(width, height, errorBuildericon),
+        errorWidget: (_, _, _) => _fallback(width, height, errorBuildericon),
       );
     }
 
@@ -50,7 +50,7 @@ class LoadImage {
         width: width,
         height: height,
         fit: fit,
-        errorBuilder: (_, __, ___) =>
+        errorBuilder: (_, _, _) =>
             _fallback(width, height, errorBuildericon),
       );
     }
@@ -61,7 +61,7 @@ class LoadImage {
         width: width,
         height: height,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) =>
+        errorBuilder: (_, _, _) =>
             _fallback(width, height, errorBuildericon),
       );
     }

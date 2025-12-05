@@ -1,16 +1,18 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
-import '../../../services/uteis/load_image.dart';
 import '/models/song.dart';
-import '../../../provaders/player_controller.dart';
+import '../../screens/player_page/player_controller.dart';
 import 'text_conf_ui.dart';
 import 'package:flutter/material.dart';
+
+import '../../../services/uteis/load_image.dart';
 
 class SongUi extends StatelessWidget {
   final Song? song;
   final MediaItem? mediaItem;
+  final Function()? onTap;
 
-  SongUi({super.key, this.song, this.mediaItem})
+  SongUi({super.key, this.song, this.mediaItem, this.onTap})
     : assert(
         song != null || mediaItem != null,
         "SongUi precisa de song ou mediaItem!",
@@ -32,13 +34,13 @@ class SongUi extends StatelessWidget {
     if (song != null) return song?.duration ?? "";
 
     if (mediaItem?.duration != null) {
-      Duration? _duration = mediaItem!.duration;
+      Duration? duration = mediaItem!.duration;
 
-      final minutes = _duration!.inMinutes
+      final minutes = duration!.inMinutes
           .remainder(60)
           .toString()
           .padLeft(2, '0');
-      final seconds = _duration!.inSeconds
+      final seconds = duration.inSeconds
           .remainder(60)
           .toString()
           .padLeft(2, '0');
@@ -47,6 +49,7 @@ class SongUi extends StatelessWidget {
     if (mediaItem?.duration == null) {
       return '';
     }
+    return null;
   }
 
   @override
@@ -54,42 +57,48 @@ class SongUi extends StatelessWidget {
     return Obx(() {
       return InkWell(
         onTap: () {
-          int index = audio.queue.value.indexWhere((e) => e.id == id);
-
-          if (index == -1) {
-            audio.playMediaItem(
-              MediaItem(
-                id: id,
-                title: title,
-                artUri: Uri.parse(thumbnail),
-                artist: artist,
-                album: album,
-              ),
-            );
+          if (onTap != null) {
+            onTap!();
             return;
           }
 
-          audio.customAction("playByIndex", {"index": index});
+          Get.find<PlayerController>().playByVideoId(id);
         },
-
         child: ListTile(
-          selected: player.playNowId == id,
+          selected: player.songNow.value?.id == id,
 
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LoadImage.loadWidget(
-              thumbnail,
-              width: 50,
-              height: 50,
-              errorBuildericon: Icons.music_note,
-            ),
+          leading: Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LoadImage.loadWidget(
+                  thumbnail,
+                  width: 50,
+                  height: 50,
+                  errorBuildericon: Icons.music_note,
+                ),
+              ),
+
+              if (player.songNow.value?.id == id)
+                Container(
+                  width: 50,
+                  height: 50,
+                  color: Colors.black54,
+
+                  child: Icon(
+                    Icons.play_circle_outline_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 50,
+                  ),
+                ),
+            ],
           ),
 
           title: TextUi(
             title,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: player.playNowId == id
+              color: player.songNow.value?.id == id
                   ? Theme.of(context).colorScheme.primary
                   : null,
             ),

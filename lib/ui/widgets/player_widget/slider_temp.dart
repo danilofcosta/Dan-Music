@@ -1,8 +1,7 @@
-import 'package:danmusic/models/durationstate.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../provaders/player_controller.dart';
+import '../../screens/player_page/player_controller.dart';
 
 class MusicProgressBar extends StatelessWidget {
   const MusicProgressBar({super.key});
@@ -38,10 +37,10 @@ class MusicProgressBar extends StatelessWidget {
         children: [
           /// Slider de progresso
           Slider(
-          value: positionMs,
+            value: positionMs,
             min: 0,
             max: durationMs,
-            year2023: false,
+            //  year2023: false,
 
             /// Seek na música
             onChanged: (value) {
@@ -56,6 +55,8 @@ class MusicProgressBar extends StatelessWidget {
               );
             },
             secondaryTrackValue: bufferedMs,
+            //çp padding: EdgeInsets.all(8.0),
+            focusNode: FocusNode(skipTraversal: true),
           ),
 
           /// Tempo atual / total

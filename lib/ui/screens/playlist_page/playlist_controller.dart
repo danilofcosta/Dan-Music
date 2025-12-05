@@ -1,5 +1,5 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/provaders/player_controller.dart';
+import 'package:danmusic/ui/screens/player_page/player_controller.dart';
 import 'package:danmusic/services/to_media_item.dart';
 import 'package:get/get.dart';
 import '../../../models/playlist.dart';
@@ -43,8 +43,8 @@ class PlaylistController extends GetxController {
     if (playlist_ != null) {
       playlist.value = playlist_;
 
-      final _playlistFull = await YouTubeMusicService.getPlaylist(playlistId);
-      playlistfull.value = _playlistFull;
+      final playlistFull = await YouTubeMusicService.getPlaylist(playlistId);
+      playlistfull.value = playlistFull;
     }
   }
 

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get/get.dart';
 import '/provaders/confing_css.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class BuildBackgrand extends StatelessWidget {
   final Widget child;
@@ -10,9 +10,8 @@ class BuildBackgrand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ConfingCss>(
-      builder: (context, confingCss, _) {
-        final bgImageUrl = confingCss.getBgImage;
+    return Obx(() {
+        final bgImageUrl = Get.find<ConfigCss>().bgImage.value;
 
         return Container(
           width: double.infinity,
@@ -24,7 +23,7 @@ class BuildBackgrand extends StatelessWidget {
                     image: CachedNetworkImageProvider(bgImageUrl),
                     fit: BoxFit.cover,
                     onError: (error, stackTrace) {
-                      print('Erro ao carregar background: $error');
+                      debugPrint('Erro ao carregar background: $error');
                     },
                   )
                 : null,

@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:dart_ytmusic_api/dart_ytmusic_api.dart' show SongDetailed, VideoDetailed;
 import '/models/song.dart';
 
 class ToMediaItem {
@@ -35,5 +36,28 @@ class ToMediaItem {
 
       ///extras: e.toJson(),
     );
+
+
   }
-}
+
+  static MediaItem songDetailed(SongDetailed song) {
+    return MediaItem(
+      id: song.videoId,
+      title: song.name,
+      artist: song.artist.name,
+      album: song.album?.name ?? '',
+      artUri: Uri.parse(song.thumbnails.last.url),
+      duration: song.duration != null ? Duration(seconds: song.duration!) : null,
+    );}
+  static MediaItem videoDetailed(VideoDetailed song) {
+    return MediaItem(
+      id: song.videoId,
+      title: song.name,
+      artist: song.artist.name,
+      album: '',
+      artUri: Uri.parse(song.thumbnails.last.url),
+      duration: song.duration != null ? Duration(seconds: song.duration!) : null,
+    );
+  }
+  }
+

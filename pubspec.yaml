@@ -13,7 +13,13 @@ dependencies:
 
   ytmusicapi_dart: ^2.3.0
   audio_service: ^0.18.18
-  just_audio: ^0.10.5
+  # just_audio: ^0.10.5
+  just_audio: 
+    path: ../just_audio/just_audio
+
+
+
+  
   cached_network_image: ^3.4.1
   flutter_new_pipe_extractor:
     git:

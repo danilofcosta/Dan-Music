@@ -25,7 +25,6 @@ class PlaylistPage extends StatelessWidget {
         : Get.put(PlaylistController(), tag: tag);
 
     final size = MediaQuery.of(context).size;
-    final landscape = size.width > size.height;
 
     return BuildBackgrand(
       child: Scaffold(

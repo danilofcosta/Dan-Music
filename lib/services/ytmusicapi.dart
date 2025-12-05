@@ -1,15 +1,17 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:danmusic/models/album.dart';
 import 'package:danmusic/services/parsers/parser_result_search.dart';
 import 'package:ytmusicapi_dart/ytmusicapi_dart.dart' as api1;
 import 'package:dart_ytmusic_api/yt_music.dart' as api2;
 import 'package:dart_ytmusic_api/types.dart' as api2_types;
 
 import '../models/search_result.dart';
-import '/models/home_section.dart';
+
 import '/models/playlist_full.dart';
-import '/services/parsers/parser.dart';
 import '/services/parsers/parser_playlist.dart';
 import 'package:flutter/material.dart';
+
+import 'parsers/parser_album.dart';
 
 /// Instância global
 YouTubeMusicService youTubeMusicServiceInstance = YouTubeMusicService._();
@@ -22,7 +24,7 @@ class YouTubeMusicService {
   YouTubeMusicService._();
 
   /// Inicialização async do serviço
-  static Future<void> init() async {
+  static Future<bool> init() async {
     youTubeMusicServiceInstance._ytmusic = await api1.YTMusic.create(
       language: 'pt',
     );
@@ -30,12 +32,13 @@ class YouTubeMusicService {
     // inicializa a segunda API (esta é síncrona)
     youTubeMusicServiceInstance._ytmusic2 = api2.YTMusic();
     youTubeMusicServiceInstance._ytmusic2.initialize();
+     await Future.delayed(Duration(seconds: 3));
+
+    return true;
   }
 
   /// Getter seguro da API principal
-  static api1.YTMusic get ytmusic {
-    final api = youTubeMusicServiceInstance._ytmusic;
-    if (api == null) {
+  static api1.YTMusic get ytmusic {final api = youTubeMusicServiceInstance._ytmusic;if (api == null) {
       throw Exception(
         'YouTubeMusicService NÃO FOI inicializado. '
         'Chame YouTubeMusicService.init() primeiro.',
@@ -45,9 +48,11 @@ class YouTubeMusicService {
   }
 
   /// Homepage
-  static Future<List<HomeSection>> homePage() async {
-    final service = await ytmusic.getHome();
-    return service.map(Parser.parseHomeSection).toList();
+  static Future<List<api2_types.HomeSection>> homePage() async {
+    final List<api2_types.HomeSection> service = await youTubeMusicServiceInstance._ytmusic2.getHomeSections();
+    return service;
+    
+  //  return service.map(Parser.parseHomeSection).toList();
   }
 
   /// Playlist completa
@@ -104,6 +109,21 @@ class YouTubeMusicService {
 
     return ParserResultSearch.parseResultSearchdartYtmusicapi(s);
   }
+
+
+
+
+
+
+  static Future<Album> getAlbum( String albumId) async {
+       api2_types.AlbumFull resultAlbum = await youTubeMusicServiceInstance._ytmusic2.getAlbum(albumId);
+
+    return  AlbumParser.parseAlbum(resultAlbum);
+
+
+
+  }
+
 
   /// Fecha API1
   void close() {

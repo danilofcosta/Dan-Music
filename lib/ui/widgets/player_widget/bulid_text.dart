@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../ui/text_conf_ui.dart';
 import 'package:flutter/material.dart';
 
-import '/provaders/player_controller.dart';
+import '../../screens/player_page/player_controller.dart';
 
 class BulidText extends StatelessWidget {
   const BulidText({super.key});

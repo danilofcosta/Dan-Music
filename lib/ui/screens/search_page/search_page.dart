@@ -1,9 +1,7 @@
-import 'package:danmusic/services/to_media_item.dart';
 import 'package:danmusic/ui/screens/search_page/search_page_controler.dart';
 import 'package:danmusic/ui/widgets/ui/album_card.dart';
 import 'package:danmusic/ui/widgets/ui/playlist_card.dart';
 import 'package:danmusic/ui/widgets/ui/song_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

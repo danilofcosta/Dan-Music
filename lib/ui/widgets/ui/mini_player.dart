@@ -3,7 +3,7 @@ import 'package:danmusic/navigator.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-import '../../../provaders/player_controller.dart';
+import '../../screens/player_page/player_controller.dart';
 import '/services/uteis/load_image.dart';
 import 'text_conf_ui.dart';
 

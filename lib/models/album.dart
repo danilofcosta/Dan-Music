@@ -1,10 +1,14 @@
+import 'package:audio_service/audio_service.dart';
+
 class Album {
   final String albumId;
   final String playlistId;
   final String name;
   final String artist;
+  final String? artistId;
   final int? year;
   final List<String> thumbnails;
+  List<MediaItem> songs;
 
   Album({
     required this.albumId,
@@ -13,5 +17,9 @@ class Album {
     required this.artist,
     required this.year,
     required this.thumbnails,
+    this.artistId,
+    this.songs = const [],
   });
 }
+
+

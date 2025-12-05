@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:danmusic/services/manage_audio/manage_audio_url.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
+
 import '/services/uteis/helper.dart';
 import '/services/ytmusicapi.dart';
 import 'package:just_audio/just_audio.dart';
@@ -12,7 +11,6 @@ import 'package:path_provider/path_provider.dart';
 // ignore: depend_on_referenced_packages, implementation_imports
 import 'package:rxdart/src/subjects/behavior_subject.dart';
 
-import 'package:path/path.dart' as p;
 Future<AudioHandler> initAudioService() async {
   final session = await AudioSession.instance;
   await session.configure(AudioSessionConfiguration.speech());
@@ -30,7 +28,7 @@ class MyAudioHandler extends BaseAudioHandler
     with QueueHandler, SeekHandler, AudioHandlerMixin {
   late AudioPlayer _player;
   //late final String _cacheDir;
-   String _cacheDir = '';
+  String _cacheDir = '';
 
   dynamic currentIndex;
   bool shuffleModeEnabled = false;
@@ -49,52 +47,59 @@ class MyAudioHandler extends BaseAudioHandler
 
   MyAudioHandler() {
     _player = AudioPlayer(
-      audioLoadConfiguration: const AudioLoadConfiguration(
-        androidLoadControl: AndroidLoadControl(
-          minBufferDuration: Duration(seconds: 50),
-          maxBufferDuration: Duration(seconds: 120),
-          bufferForPlaybackDuration: Duration(milliseconds: 50),
-          bufferForPlaybackAfterRebufferDuration: Duration(seconds: 5),
-        ),
-      ),
+      // audioLoadConfiguration: const AudioLoadConfiguration(
+      //   androidLoadControl: AndroidLoadControl(
+      //     minBufferDuration: Duration(seconds: 60), // Aumenta buffer mínimo
+      //     maxBufferDuration: Duration(minutes: 3), // Aumenta buffer máximo
+      //     bufferForPlaybackDuration: Duration(seconds: 1),
+      //     bufferForPlaybackAfterRebufferDuration: Duration(seconds: 10),
+      //   ),
+      // ),
     );
 
-    //  _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
     player.errorStream.listen((PlayerException e) {
       printErrorDebug('AudioPlayer Error code: ${e.code}');
       printErrorDebug('AudioPlayer Error message: ${e.message}');
       printErrorDebug('AudioSource index: ${e.index}');
-      if (e.message == 'Source error') {
-        printErrorDebug('AudioPlayer Error message: ${e.message}');
-      }
     });
 
     _createCacheDir();
     _listenToPlaybackForNextSong();
     _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
   }
+  // void _listenToPlaybackForNextSong() {
+  //   _player.currentIndexStream.listen((value) async {
+  //     if (currentIndex != value) {
+  //       printInfoDebug('AudioPlayer index: $value | ');
+  //       currentIndex = value;
+  //       MediaItem song = queue.value[currentIndex!];
+  //       song = await YouTubeMusicService.getSong(song.id);
+  //       mediaItem.add(song);
+  //       //  mediaItem.add(song);
+  //     }
+  //   });
+  // }
 
+  Future<void> _createCacheDir() async {
+    // 1. Começa com o diretório temporário padrão
+    Directory tempDir = await getTemporaryDirectory();
+    _cacheDir = tempDir.path;
 
-Future<void> _createCacheDir() async {
-  // 1. Começa com o diretório temporário padrão
-  Directory tempDir = await getTemporaryDirectory();
-  _cacheDir = tempDir.path;
+    // 2. Tenta usar o diretório de cache externo (Android)
+    final externalDirs = await getExternalCacheDirectories();
+    if (externalDirs != null && externalDirs.isNotEmpty) {
+      _cacheDir = externalDirs.first.path;
+    }
 
-  // 2. Tenta usar o diretório de cache externo (Android)
-  final externalDirs = await getExternalCacheDirectories();
-  if (externalDirs != null && externalDirs.isNotEmpty) {
-    _cacheDir = externalDirs.first.path;
+    // 3. Monta o caminho final da pasta de músicas em cache
+    final cachedSongsDir = Directory('$_cacheDir/cachedSongs');
+
+    // 4. Cria o diretório se não existir
+    if (!await cachedSongsDir.exists()) {
+      await cachedSongsDir.create(recursive: true);
+      printInfoDebug("created cache dir: ${cachedSongsDir.path}");
+    }
   }
-
-  // 3. Monta o caminho final da pasta de músicas em cache
-  final cachedSongsDir = Directory(p.join(_cacheDir, "cachedSongs"));
-
-  // 4. Cria o diretório se não existir
-  if (!await cachedSongsDir.exists()) {
-    await cachedSongsDir.create(recursive: true);
-    printInfoDebug("created cache dir: ${cachedSongsDir.path}");
-  }
-}
 
   @override
   Future<void> updateQueue(List<MediaItem> queue) async {
@@ -103,103 +108,24 @@ Future<void> _createCacheDir() async {
     this.queue.add(newQueue);
   }
 
-  // @override
-  // Future<void> playMediaItem(MediaItem mediaItem) async {
-  //   final index = queue.value.indexWhere((e) => e.id == mediaItem.id);
-  //   try {
-  //     if (_player.playing) {
-  //       // _player.pause();
-  //     }
-
-  //     if (index != -1) {
-  //       // A música já está na fila → tocar ela
-  //       skipToQueueItem(index);
-
-  //       return;
-  //     }
-
-  //     //VideoInfo videoInfo = await DownloaderChannel.getAudioUrl(mediaItem.id);
-
-  //     // debugPrint(g);
-  //     // MediaItem mediaItem = await ToMediaItem.videoInfo(videoInfo);
-  //     songNow.add(mediaItem);
-  //     // Download and cache audio while playing it (experimental)
-  //     final audioSource = CachedStreamAudioSource(
-  //       videoId: mediaItem.id,
-  //       tag: mediaItem,
-  //     );
-  //     await _player.setAudioSource(audioSource);
-  //     // Delete the cached file
-  //     _player.play();
-  //     // queue.add([mediaItem]);
-
-  //     List<MediaItem> newQueue = await YouTubeMusicService.getRelatedPlaylist(
-  //       mediaItem.id,
-  //     );
-
-  //     queue.add([mediaItem, ...newQueue]);
-
-  //     _player.addAudioSources(
-  //       newQueue
-  //           .map((e) => CachedStreamAudioSource(videoId: e.id, tag: e))
-  //           .toList(),
-  //     );
-  //   } catch (e) {
-  //     debugPrint("ERRO NO AUDIO SERVICE: $e");
-  //   }
-  // }
   @override
   Future<void> playMediaItem(MediaItem mediaItem) async {
-    List<MediaItem> newQueue = await YouTubeMusicService.getRelatedPlaylist(
-      mediaItem.id,
-    );
-
-    queue.add([mediaItem, ...newQueue]);
+    var currentIndex = queue.value.indexWhere((e) => e.id == mediaItem.id);
+    if (currentIndex != -1) {
+      // A música já está na fila → tocar ela
+      currentIndex = currentIndex;
+      await _triggerNext(index: currentIndex);
+      //  return super.skipToNext();
+    } else {
+      // A música não está na fila → adicionar e tocar
+      final newQueue = List<MediaItem>.from(queue.value)..add(mediaItem);
+      queue.add(newQueue);
+      currentIndex = newQueue.length - 1;
+      await _triggerNext(index: currentIndex);
+    }
   }
-
-  // Future<void> playPlaylistId(String playlistid) async {
-  //   PlaylistFull? playlist = await YouTubeMusicService.getPlaylist(playlistid);
-  //   try {
-  //     if (_player.playing) {
-  //       _player.pause();
-  //     }
-  //     var audioSources = playlist.tracks!
-  //         .map((e) => CachedStreamAudioSource(videoId: e.videoid))
-  //         .toList();
-
-  //     await _player.setAudioSources(audioSources);
-  //     // Delete the cached file
-
-  //     List<MediaItem> queueN = await Future.wait(
-  //       playlist.tracks!.map((e) async {
-  //         return await ToMediaItem.song(e);
-  //       }),
-  //     );
-
-  //     queue.add(queueN);
-  //     //     mediaItem.add(queueN.first);
-  //     _player.play();
-  //     //debugPrint(playlist.trackCount.toString());
-  //   } catch (e) {
-  //     debugPrint("ERRO NO AUDIO SERVICE: $e");
-  //   }
-  // }
 
   // Comandos padrões
-
-  int _getNextSongIndex() {
-    if (queue.value.isEmpty) return 0;
-    int index = currentIndex + 1;
-    if (index >= queue.value.length) index = 0;
-    return index;
-  }
-
-  int _getPreviousSongIndex() {
-    int index = currentIndex - 1;
-    if (index >= queue.value.length) index = 0;
-    return index;
-  }
-
   @override
   Future<void> play() => _player.play();
 
@@ -213,110 +139,120 @@ Future<void> _createCacheDir() async {
   Future<void> seek(Duration position) => _player.seek(position);
 
   @override
+  Future<void> skipToQueueItem(int index) async {
+    await _triggerNext(index: index);
+  //  return super.skipToNext();
+    //  _player.seek(Duration.zero, index: index);
+  }
+
+  @override
   Future<void> skipToNext() async {
-    if (currentIndex == null) return;
-    final index = _getNextSongIndex();
-    if (index != currentIndex) {
-      if (_player.position != Duration.zero) _player.seek(Duration.zero);
-      await customAction("playByIndex", {'index': index});
-    } else {
-      _player.seek(Duration.zero);
-      _player.pause();
-    }
+    await _triggerNext();
+  //  return super.skipToNext();
   }
 
   @override
   Future<void> skipToPrevious() async {
-    final index = _getPreviousSongIndex();
-    if (index != currentIndex) {
-      if (_player.position != Duration.zero) _player.seek(Duration.zero);
-
-      await customAction("playByIndex", {'index': index});
-    } else {
-      _player.seek(Duration.zero);
-      _player.pause();
-    }
-  }
-
-
-  @override
-  Future<void> skipToQueueItem(int index) =>
-      _player.seek(Duration.zero, index: index);
-  Future<void> _triggerNext() async {
-    if (loopModeEnabled) {
-      await _player.seek(Duration.zero);
-      if (!_player.playing) {
-        _player.play();
-      }
-      return;
-    }
-    skipToNext();
-  }
-
-  void seekByIndex(int index) {
-    customAction("playByIndex", {"index": index});
+    await _triggerPrev();
+    return super.skipToPrevious();
   }
 
   @override
   Future<void> customAction(String name, [Map<String, dynamic>? extras]) async {
     printInfoDebug('customAction: $name, $extras');
+    //  printInfoDebug('customAction: ${player.currentIndex}, $extras');
     switch (name) {
-      case 'playByIndex':
-        final songIndex = extras!['index'] as int;
-        if (songIndex == -1) return;
-
-        if (currentIndex != null) _player.pause();
-        if (currentIndex == songIndex && _player.playing) return;
-
-        currentIndex = songIndex;
-
-        MediaItem song = queue.value[songIndex];
-        song = await YouTubeMusicService.getSong(song.id);
-        mediaItem.add(song);
-
-        final cachedPath = '$_cacheDir/cachedSongs/${song.id}.mp3';
-        final cachedFile = File(cachedPath);
-
-        // ---- 1) VERIFICA CACHE CORRETAMENTE ----
-        if (fileExists(cachedFile)) {
-          printInfoDebug('CACHE encontrado: $cachedPath');
-
-          await _player.clearAudioSources();
-          await _player.setAudioSource(
-            AudioSource.uri(Uri.file(cachedPath), tag: song),
-          );
-          _player.play();
-          return;
-        }
-
-        // ---- 2) CACHE NÃO EXISTE → BUSCAR STREAM ----
-        printInfoDebug('CACHE NAO encontrado, baixando $cachedPath');
-
-        final url = await ManageAudioURL.getAudioUrlNewpipe(song.id);
-
-        await _player.clearAudioSources();
-        await _player.setAudioSource(
-          _createAudioSource(urlAudio: url, mediaItem: song, cachedFile: cachedFile),
+      case 'playByVideoId':
+        final String videoId = extras!['VideoId'];
+        MediaItem songMediaItem = await YouTubeMusicService.getSong(videoId);
+        queue.value = [songMediaItem];
+        currentIndex = 0;
+        songNow.add(songMediaItem);
+        _player.setAudioSource(
+          AudioSource.uri(
+            Uri.parse(await ManageAudioURL.getAudioUrlNewpipe(videoId)),
+            tag: songMediaItem,
+          ),
         );
-
         _player.play();
+        // return;
+
+        List<MediaItem> newQueue = await YouTubeMusicService.getRelatedPlaylist(
+          videoId,
+        );
+        // _player.addAudioSources(
+        //   newQueue.map((e) => CustomVideoAudioSource(e.id)).toList(),
+        // );
+
+        queue.add([songMediaItem, ...newQueue]);
+
+        //_player.play();
+
         return;
+      case 'getIndex':
+        return currentIndex;
+      default:
+        printErrorDebug('Ação personalizada desconhecida: $name');
     }
   }
 
-  void _listenToPlaybackForNextSong() {
-    // final playerDurationOffset = GetPlatform.isWindows
-    //     ? 200
-    //     : GetPlatform.isLinux
-    //         ? 700
-    //         : 0;
-    final playerDurationOffset = 0;
+  Future<void> _triggerPrev() async {
+    
+    // _player.pause();
+    currentIndex = (currentIndex - 1 + queue.value.length) % queue.value.length;
+    MediaItem songMediaItem = queue.value[currentIndex!];
+    songMediaItem = await YouTubeMusicService.getSong(songMediaItem.id);
+    mediaItem.add(songMediaItem);
+    // var s =_player.sequenceState!.currentSource;
+    List<AudioSource> sources = _player.sequence;
 
+    for (AudioSource source in sources) {
+      MediaItem tag = source.sequence.first.tag as MediaItem;
+
+      if (tag.id == songMediaItem.id) {
+        printInfoDebug('Found source for previous song');
+        _player.seek(Duration.zero, index: sources.indexOf(source));
+        _player.play();
+        return;
+      }
+    }
+
+    _player.setAudioSource(
+      AudioSource.uri(
+        Uri.parse(
+          await ManageAudioURL.getAudioUrlNewpipe(queue.value[currentIndex].id),
+        ),
+        tag: queue.value[currentIndex],
+      ),
+    );
+    _player.play();
+    return;
+  }
+
+  Future<void> _triggerNext({int? index}) async {
+    if (queue.value.isEmpty) return;
+    // _player.pause();
+    currentIndex = index ?? (currentIndex + 1) % queue.value.length;
+    MediaItem song = queue.value[currentIndex!];
+
+    _player.setAudioSource(
+      AudioSource.uri(
+        Uri.parse(await ManageAudioURL.getAudioUrlNewpipe(song.id)),
+        tag: queue.value[currentIndex],
+      ),
+    );
+    song = await YouTubeMusicService.getSong(song.id);
+    mediaItem.add(song);
+    _player.play();
+  }
+
+  void _listenToPlaybackForNextSong() {
+    final playerDurationOffset = 0;
     _player.positionStream.listen((value) async {
       if (_player.duration != null && _player.duration?.inSeconds != 0) {
         if (value.inMilliseconds >=
             (_player.duration!.inMilliseconds - playerDurationOffset)) {
-          await _triggerNext();
+          _triggerNext();
         }
       }
     });
@@ -357,25 +293,5 @@ Future<void> _createCacheDir() async {
 mixin AudioHandlerMixin {
   bool fileExists(File file) {
     return file.existsSync();
-  }
-
-  
-  AudioSource _createAudioSource({
-    required String urlAudio,
-    required MediaItem mediaItem,
-    required File cachedFile
-  }) {
-   // final cachedFile = File("$_cacheDir/cachedSongs/${mediaItem.id}.mp3");
-
-    final uri = Uri.parse(urlAudio);
-
-    // Se for uma URL HTTP → usar cache automático
-    if (uri.scheme.startsWith("http")) {
-      //return LockCachingAudioSource(uri, cacheFile: cachedFile, tag: mediaItem);
-            return AudioSource.uri(uri, tag: mediaItem);
-    }
-
-    // Se já for caminho local (file://)
-    return AudioSource.uri(uri, tag: mediaItem);
   }
 }

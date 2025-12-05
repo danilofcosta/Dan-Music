@@ -2,7 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-import '../../../provaders/player_controller.dart';
+import '../../screens/player_page/player_controller.dart';
 import '/services/uteis/load_image.dart';
 import '../../../services/uteis/helper.dart';
 
@@ -19,7 +19,6 @@ class BuildCover extends StatelessWidget {
 
       printInfoDebug(mediaItemNow?.extras.toString());
       // bool istop=mediaItemNow.extras.containsKey('isTop')??false;
-      bool istop = false;
 
       // Tem capa?
       final hasCover =
@@ -37,7 +36,7 @@ class BuildCover extends StatelessWidget {
               image: DecorationImage(
                 fit: BoxFit.contain,
                 image:
-                    LoadImage.loadProvider(mediaItemNow!.artUri.toString())
+                    LoadImage.loadProvider(mediaItemNow.artUri.toString())
                         as ImageProvider,
               ),
             ),

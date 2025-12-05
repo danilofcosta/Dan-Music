@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 
 import '/provaders/confing_css.dart';
-import 'ui/screens/file_player.dart';
-import 'ui/screens/home_page.dart';
-import 'ui/screens/player_page/player_page.dart';
-import 'ui/screens/playlist_page/playlist_page.dart';
-import 'ui/screens/search_page/search_page.dart';
+// import 'ui/screens/file_player.dart';
+// import 'ui/screens/home_page.dart';
+// import 'ui/screens/player_page/player_page.dart';
+// import 'ui/screens/playlist_page/playlist_page.dart';
+// import 'ui/screens/search_page/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final confingCss = Provider.of<ConfingCss>(context);
+    
     return GetMaterialApp(
       title: 'DanMusic',
       debugShowCheckedModeBanner: false,
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
         appBarTheme: const AppBarTheme(backgroundColor: Colors.black),
       ),
-      themeMode: confingCss.getThemeMode,
+      themeMode: Get.find<ConfigCss>().themeMode.value,
       // routes: {
       //   Rotas.home: (context) => const HomePage,
       //   Rotas.search: (context) => const SearchPage(),

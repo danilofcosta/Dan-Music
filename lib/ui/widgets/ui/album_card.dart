@@ -1,6 +1,8 @@
-import 'package:danmusic/models/album.dart';
+import 'package:danmusic/navigator.dart';
 import 'package:danmusic/services/uteis/load_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
+import '../../../models/album.dart';
 
 class AlbumCard extends StatelessWidget {
   final Album album;
@@ -8,20 +10,29 @@ class AlbumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
-        child: LoadImage.loadWidget(
-          album.thumbnails.first,
-          width: 50,
-          height: 50,
-          errorBuildericon: Icons.album,
+    return InkWell(
+      onTap: () {
+        Get.toNamed(
+          ScreenNavigationSetup.albumScreen,
+          id: ScreenNavigationSetup.id,
+          arguments: [album, album.playlistId],
+        );
+      },
+      child: ListTile(
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: LoadImage.loadWidget(
+            album.thumbnails.first,
+            width: 50,
+            height: 50,
+            errorBuildericon: Icons.album,
+          ),
         ),
-      ),
-      title: Text(album.name),
-      subtitle: Text(album.artist),
+        title: Text(album.name),
+        subtitle: Text(album.artist),
 
-      trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.album)),
+        trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.album)),
+      ),
     );
   }
 }

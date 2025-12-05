@@ -1,9 +1,11 @@
-import 'package:danmusic/ui/screens/home_page.dart';
-import 'package:danmusic/ui/screens/playlist_page/playlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'ui/screens/file_player.dart';
+import '/ui/screens/album_page/album_page.dart';
+import '/ui/screens/home_page/home_page.dart';
+import '/ui/screens/playlist_page/playlist_page.dart';
+import 'ui/screens/artist_page/artist_page.dart';
+import 'ui/screens/fila_player/file_player.dart';
 import 'ui/screens/player_page/player_page.dart';
 import 'ui/screens/search_page/search_page.dart';
 
@@ -14,8 +16,10 @@ class ScreenNavigationSetup {
   static const homeScreen = '/homeScreen';
   static const searchScreen = '/searchScreen';
   static const playerScreen = '/playerScreen';
+  static const albumScreen = '/albumScreen';
   static const filaScreen = '/filaScreen';
   static const playlistScreen = '/playlistScreen';
+  static const artistScreen = '/artistScreen';
 }
 
 class NavigationRotes extends StatelessWidget {
@@ -68,6 +72,13 @@ class NavigationRotes extends StatelessWidget {
                   )
                   as Route;
 
+            case ScreenNavigationSetup.albumScreen:
+              final id = (settings.arguments as List)[1] as String;
+              return GetPageRoute(
+                page: () => AlbumPage(key: Key(id)),
+                settings: settings,
+              );
+
             case ScreenNavigationSetup.filaScreen:
               return GetPageRoute(
                 page: () => const FilePlayer(),
@@ -79,7 +90,12 @@ class NavigationRotes extends StatelessWidget {
                 page: () => const SearchPage(),
                 settings: settings,
               );
-
+            case ScreenNavigationSetup.artistScreen:
+              final id = (settings.arguments as List)[1] as String;
+              return GetPageRoute(
+                page: () => ArtistPage(key: Key(id)),
+                settings: settings,
+              );
             default:
               return null;
           }

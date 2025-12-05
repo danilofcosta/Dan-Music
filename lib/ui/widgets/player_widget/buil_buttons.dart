@@ -1,7 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 
-import '../../../provaders/player_controller.dart';
+import '../../screens/player_page/player_controller.dart';
 import 'package:flutter/material.dart';
 
 class BuilButtons extends StatelessWidget {
