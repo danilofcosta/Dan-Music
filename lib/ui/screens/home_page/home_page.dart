@@ -1,5 +1,4 @@
 import 'package:danmusic/navigator.dart';
-import 'package:danmusic/services/uteis/helper.dart';
 import 'package:danmusic/services/uteis/load_image.dart';
 import 'package:danmusic/ui/widgets/ui/mini_player.dart';
 import 'package:dart_ytmusic_api/types.dart';
@@ -19,16 +18,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final controller = Get.find<HomeController>();
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // WidgetsBinding.instance.addPostFrameCallback((_) async {
-  //   //   controller.loadApiData();
-
-  //   //   printInfoDebug('HomePage initState called');
-  //   // });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -73,16 +62,14 @@ class _HomePageState extends State<HomePage> {
                     if (section.contents.isEmpty) {
                       return const SizedBox.shrink();
                     }
-                    return buildSectionCarousel(
-                      ///  title: sect
-                      ///  ion.title,
-                      section,
-                      context,
-                    );
+                    return buildSectionCarousel(section, context);
                   }, childCount: controller.homeSections.length),
                 ),
 
-              SliverFillRemaining(),
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Container(height: 150),
+              ),
             ],
           ),
           floatingActionButtonLocation:
@@ -112,56 +99,55 @@ class _HomePageState extends State<HomePage> {
       );
     });
   }
-}
 
-Widget buildSectionCarousel(HomeSection section, BuildContext context) {
-  final String title = section.title;
-  final double rIn = 8;
-  final double paddingExt = 3;
-  final List<dynamic> contents = section.contents;
+  Widget buildSectionCarousel(HomeSection section, BuildContext context) {
+    final String title = section.title;
+    final double rIn = 8;
+    final double paddingExt = 3;
+    final List<dynamic> contents = section.contents;
 
-  return Container(
-    margin: EdgeInsets.all(paddingExt),
-    padding: EdgeInsets.all(paddingExt),
-    decoration: BoxDecoration(
-      color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.6),
-      borderRadius: BorderRadius.circular(rIn + paddingExt),
-    ),
-    child: Column(
-      children: [
-        Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(rIn),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+    return Container(
+      margin: EdgeInsets.all(paddingExt),
+      padding: EdgeInsets.all(paddingExt),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(rIn + paddingExt),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(rIn),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 200),
-          child: CarouselView.weighted(
-            flexWeights: const <int>[4, 3, 2],
-            shrinkExtent: 8.0,
-            elevation: 5,
+            ],
+          ),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 200),
+            child: CarouselView.weighted(
+              flexWeights: const <int>[4, 3, 2],
+              shrinkExtent: 8.0,
+              elevation: 5,
+              onTap: (value) => controller.openPage(contents[value]),
 
-            // consumeMaxWeight: false,
-            children: List.generate(contents.length, (i) {
-              final sectionContent = contents[i];
+              // consumeMaxWeight: false,
+              children: List.generate(contents.length, (i) {
+                final sectionContent = contents[i];
 
-              return Container(
-                //  margin: const EdgeInsets.all(8.0),
-                child: Column(
+                return Column(
                   children: [
                     Expanded(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: sectionContent.thumbnails.last.url != null
+
                             ? LoadImage.loadWidget(
                                 sectionContent.thumbnails.last.url!,
                                 fit: BoxFit.cover,
@@ -177,12 +163,12 @@ Widget buildSectionCarousel(HomeSection section, BuildContext context) {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }

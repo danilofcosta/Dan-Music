@@ -11,10 +11,7 @@ class PlaylistPage extends StatelessWidget {
 
   List<String> generateList() {
     return List<String>.generate(50, (index) => "Item ${index + 1}");
-
-
   }
-
 
   @override
   Widget build(BuildContext context) {

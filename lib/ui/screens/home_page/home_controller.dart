@@ -4,6 +4,9 @@ import 'package:dart_ytmusic_api/types.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../models/album.dart';
+import '../../../models/playlist_basic.dart';
+import '../../../navigator.dart';
 import '../../widgets/greeting.dart';
 
 class HomeController extends GetxController {
@@ -11,8 +14,9 @@ class HomeController extends GetxController {
   final Rx<MediaItem> videoIdSuggestion = MediaItem(
     id: 'HPTDgfhhJ3s',
     album: 'Album teste',
-    title: 'musica de teste',
-    artist: ' Artista teste',
+    title: 'controller.file._value[2].title',
+    artist:  "Unappreciated",
+    artUri: Uri.parse('https://i.ytimg.com/vi/HPTDgfhhJ3s/hqdefault.jpg'),
   ).obs;
 
   final RxList<HomeSection> homeSections = <HomeSection>[].obs;
@@ -65,5 +69,43 @@ class HomeController extends GetxController {
     List<HomeSection> homeSections = await YouTubeMusicService.homePage();
     this.homeSections.assignAll(homeSections);
     this.homeSections.refresh();
+  }
+
+  void openPage(Object sectionItem) {
+    String pg;
+    var id = '';
+    Object object;
+    switch (sectionItem.runtimeType) {
+      case PlaylistDetailed:
+        sectionItem as PlaylistDetailed;
+        pg = ScreenNavigationSetup.playlistScreen;
+        id = sectionItem.playlistId;
+        object = PlaylistBasic(
+          playlistId: sectionItem.playlistId,
+          title: sectionItem.name,
+          thumbnails: [sectionItem.thumbnails.first.url],
+          desciption: sectionItem.artist.name,
+        );
+        break;
+      case AlbumDetailed:
+        sectionItem as AlbumDetailed;
+        pg = ScreenNavigationSetup.albumScreen;
+        id = sectionItem.albumId;
+        object = Album(
+          albumId: sectionItem.albumId,
+          playlistId: sectionItem.playlistId,
+          name: sectionItem.name,
+          artist: sectionItem.artist.name,
+          thumbnails: [sectionItem.thumbnails.first.url],
+          year: sectionItem.year ?? null,
+        );
+        break;
+
+      default:
+        debugPrint('Tipo de seção desconhecido: ${sectionItem.runtimeType}');
+        return; // Sai da função se o tipo for desconhecido
+    }
+
+    Get.toNamed(pg, id: ScreenNavigationSetup.id, arguments: [object, id]);
   }
 }

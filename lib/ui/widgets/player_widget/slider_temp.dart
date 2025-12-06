@@ -18,48 +18,42 @@ class MusicProgressBar extends StatelessWidget {
 
     return Obx(() {
       final state = controller.progressBarStatus.value;
-      final double durationMs = state.total.inMilliseconds.toDouble().clamp(
-        1.0,
-        double.infinity,
-      );
-      final double positionMs = state.current.inMilliseconds.toDouble().clamp(
-        0.0,
-        durationMs,
-      );
-      final double bufferedMs = state.buffered.inMilliseconds.toDouble().clamp(
-        0.0,
-        durationMs,
-      );
-      //  debugPrint(positionMs.toString());
+
+      final durationMs =
+          state.total.inMilliseconds.clamp(1, double.infinity).toDouble();
+
+      /// Arredonda a posição para 200ms → evita tremidos
+      final positionMs =
+          ((state.current.inMilliseconds / 200).round() * 200)
+              .clamp(0, durationMs)
+              .toDouble();
+
+      final bufferedMs = state.buffered.inMilliseconds
+          .clamp(0, durationMs)
+          .toDouble();
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          /// Slider de progresso
           Slider(
             value: positionMs,
             min: 0,
             max: durationMs,
-            //  year2023: false,
 
-            /// Seek na música
-            onChanged: (value) {
-              debugPrint(value.toString());
-              // controller.audioHandler.seek(
-              //   Duration(milliseconds: value.toInt()),
-              // );
-            },
+            /// Quando arrastar
+            onChanged: (value) {},
+
+            /// Quando soltar
             onChangeEnd: (value) {
               controller.audioHandler.seek(
                 Duration(milliseconds: value.toInt()),
               );
             },
+
             secondaryTrackValue: bufferedMs,
-            //çp padding: EdgeInsets.all(8.0),
             focusNode: FocusNode(skipTraversal: true),
           ),
 
-          /// Tempo atual / total
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(

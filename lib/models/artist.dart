@@ -1,7 +1,7 @@
 
 import 'package:audio_service/audio_service.dart';
 import 'package:danmusic/models/album.dart';
-import 'package:danmusic/models/playlist.dart';
+import 'package:danmusic/models/playlist_basic.dart';
 
 class Artistdetail{
   final String artistName;
@@ -18,7 +18,7 @@ class FullArtist extends Artistdetail{
   final List<Album>? topAlbums;
   final List<Album>? topSingles;
   final List<MediaItem>? topVideos;
-  final List<Playlist>? featuredOn;
+  final List<PlaylistBasic>? featuredOn;
   final List<Artistdetail>? similarArtists;
 
   FullArtist({required super.artistName, required this.topSongs, required this.topAlbums, required this.topSingles, required this.topVideos, required this.featuredOn, required this.similarArtists, required super.artistId, required super.thumbnail});

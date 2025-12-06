@@ -2,7 +2,7 @@
 import 'package:audio_service/audio_service.dart';
 
 import 'package:danmusic/models/artist.dart' show Artistdetail;
-import 'package:danmusic/models/playlist.dart';
+import 'package:danmusic/models/playlist_basic.dart';
 
 import 'package:danmusic/models/album.dart';
 
@@ -24,7 +24,7 @@ class SongDetailedSearchResult implements SearchResult {
 class PlaylistDetailedSearchResult implements SearchResult {
   @override
   final String type = 'PLAYLIST';
-  final Playlist playlist;
+  final PlaylistBasic playlist;
 
   PlaylistDetailedSearchResult({
    required this.playlist,

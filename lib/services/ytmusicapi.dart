@@ -32,13 +32,15 @@ class YouTubeMusicService {
     // inicializa a segunda API (esta é síncrona)
     youTubeMusicServiceInstance._ytmusic2 = api2.YTMusic();
     youTubeMusicServiceInstance._ytmusic2.initialize();
-     await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 3));
 
     return true;
   }
 
   /// Getter seguro da API principal
-  static api1.YTMusic get ytmusic {final api = youTubeMusicServiceInstance._ytmusic;if (api == null) {
+  static api1.YTMusic get ytmusic {
+    final api = youTubeMusicServiceInstance._ytmusic;
+    if (api == null) {
       throw Exception(
         'YouTubeMusicService NÃO FOI inicializado. '
         'Chame YouTubeMusicService.init() primeiro.',
@@ -49,10 +51,11 @@ class YouTubeMusicService {
 
   /// Homepage
   static Future<List<api2_types.HomeSection>> homePage() async {
-    final List<api2_types.HomeSection> service = await youTubeMusicServiceInstance._ytmusic2.getHomeSections();
+    final List<api2_types.HomeSection> service =
+        await youTubeMusicServiceInstance._ytmusic2.getHomeSections();
     return service;
-    
-  //  return service.map(Parser.parseHomeSection).toList();
+
+    //  return service.map(Parser.parseHomeSection).toList();
   }
 
   /// Playlist completa
@@ -102,28 +105,23 @@ class YouTubeMusicService {
     );
   }
 
-  static Future<List<SearchResult>> search(String textInputAction) async {
-    List<dynamic> s = await youTubeMusicServiceInstance._ytmusic2.search(
-      textInputAction,
-    );
-
-    return ParserResultSearch.parseResultSearchdartYtmusicapi(s);
+  static Future<List<String>> getSearchSuggestions(
+    String textInputAction,
+  ) async {
+    List<String> s = await youTubeMusicServiceInstance._ytmusic2
+        .getSearchSuggestions(textInputAction);
+    return s;
   }
 
+  //return ParserResultSearch.parseResultSearchdartYtmusicapi(s);
 
+  static Future<Album> getAlbum(String albumId) async {
+    api2_types.AlbumFull resultAlbum = await youTubeMusicServiceInstance
+        ._ytmusic2
+        .getAlbum(albumId);
 
-
-
-
-  static Future<Album> getAlbum( String albumId) async {
-       api2_types.AlbumFull resultAlbum = await youTubeMusicServiceInstance._ytmusic2.getAlbum(albumId);
-
-    return  AlbumParser.parseAlbum(resultAlbum);
-
-
-
+    return AlbumParser.parseAlbum(resultAlbum);
   }
-
 
   /// Fecha API1
   void close() {

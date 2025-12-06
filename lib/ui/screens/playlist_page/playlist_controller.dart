@@ -2,14 +2,14 @@ import 'package:audio_service/audio_service.dart';
 import 'package:danmusic/ui/screens/player_page/player_controller.dart';
 import 'package:danmusic/services/to_media_item.dart';
 import 'package:get/get.dart';
-import '../../../models/playlist.dart';
+import '../../../models/playlist_basic.dart';
 import '../../../models/playlist_full.dart';
 import '../../../services/ytmusicapi.dart';
 
 
 class PlaylistController extends GetxController {
   final audiohander = Get.find<PlayerController>();
-  final playlist = Playlist(
+  final playlist = PlaylistBasic(
     title: "Titulo",
     playlistId: "pleylistId",
     thumbnails: [
@@ -32,14 +32,14 @@ class PlaylistController extends GetxController {
     super.onInit();
 
     final args = Get.arguments as List;
-    final Playlist? playlist = args[0];
+    final PlaylistBasic? playlist = args[0];
     final playlistId = args[1];
 
     fetchPlaylistDetails(playlist, playlistId);
   }
 
   // @override
-  void fetchPlaylistDetails(Playlist? playlist_, String playlistId) async {
+  void fetchPlaylistDetails(PlaylistBasic? playlist_, String playlistId) async {
     if (playlist_ != null) {
       playlist.value = playlist_;
 
@@ -56,6 +56,7 @@ class PlaylistController extends GetxController {
         }).toList(),
       );
       audiohander.updateQueuenew(quere);
+
     }
   }
 }

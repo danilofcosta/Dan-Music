@@ -5,14 +5,11 @@ import 'package:flutter/material.dart';
 import '../../../models/durationstate.dart';
 
 class PlayerController extends GetxController with BasicComanos {
-  //String? playNowId;
-  // MediaItem? songNow;
-
   RxString playNowId = ''.obs;
   @override
-  AudioHandler  audioHandler = Get.find<AudioHandler>();
-  Rx<MediaItem?> songNow = Rx<MediaItem?>(null);
+  AudioHandler audioHandler = Get.find<AudioHandler>();
 
+  Rx<MediaItem?> songNow = Rx<MediaItem?>(null);
   Rx<PlayButtonState> buttonState = PlayButtonState.paused.obs;
 
   final progressBarStatus = ProgressBarState(
@@ -20,6 +17,8 @@ class PlayerController extends GetxController with BasicComanos {
     current: Duration.zero,
     total: Duration.zero,
   ).obs;
+
+  DateTime _lastUpdate = DateTime.now();
 
   @override
   void onInit() {
@@ -29,7 +28,7 @@ class PlayerController extends GetxController with BasicComanos {
 
   void updateQueuenew(List<MediaItem> queue) async {
     await audioHandler.updateQueue(queue);
-    //  audioHandler.customAction( 'playByIndex',  {'index': 0});
+    audioHandler.customAction('playByIndex', {'index': 0});
   }
 
   void playByVideoId(String videoId) async {
@@ -38,24 +37,27 @@ class PlayerController extends GetxController with BasicComanos {
 
   void listenMediaItem() {
     audioHandler.mediaItem.listen((item) {
-      debugPrint('Tocando música ${item?.id}');
-
       if (item?.duration != null) {
         progressBarStatus.update((val) {
           val!.total = item!.duration!;
         });
       }
 
-      songNow.value = item; // <-- AQUI AGORA ATUALIZA DE VERDADE
+      songNow.value = item;
       playNowId.value = item?.id ?? '';
-      // <--- reconstrói widgets GetBuilder, se usar.
     });
   }
 
   void listenProgressBarStatus() {
-    /// playbackState
     audioHandler.playbackState.listen((state) {
+      final now = DateTime.now();
+
+      /// throttle – atualiza apenas a cada 150ms
+      if (now.difference(_lastUpdate).inMilliseconds < 150) return;
+      _lastUpdate = now;
+
       final old = progressBarStatus.value;
+
       progressBarStatus.update((val) {
         val!.buffered = state.bufferedPosition;
         val.current = state.position;
@@ -70,13 +72,11 @@ class PlayerController extends GetxController with BasicComanos {
     _listenForChangesInPlayerState();
   }
 
-  /// Listen for changes in the player state and update the button state accordingly.
-  /// This method is currently not being used.
   void _listenForChangesInPlayerState() {
-  
     audioHandler.playbackState.listen((playerState) {
       final isPlaying = playerState.playing;
       final processingState = playerState.processingState;
+
       if (processingState == AudioProcessingState.loading ||
           processingState == AudioProcessingState.buffering) {
         buttonState.value = PlayButtonState.loading;
@@ -97,11 +97,6 @@ enum PlayButtonState { paused, playing, loading }
 mixin BasicComanos {
   AudioHandler get audioHandler => Get.find<AudioHandler>();
 
-  void play() async {
-    await audioHandler.play();
-  }
-
-  void pause() async {
-    await audioHandler.pause();
-  }
+  void play() => audioHandler.play();
+  void pause() => audioHandler.pause();
 }

@@ -1,9 +1,9 @@
-class Playlist {
+class PlaylistBasic {
   String playlistId;
   String title;
   List<String> thumbnails;
   String desciption;
-  Playlist({
+  PlaylistBasic({
     required this.playlistId,
     required this.title,
     required this.thumbnails,

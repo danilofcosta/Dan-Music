@@ -23,6 +23,13 @@ class SearchPageController extends GetxController {
   void clearSearch() {
     searchController.clear();
     searchText.value = '';
+    resuts.value = [];
+  }
+
+  void setSearchText(String text) {
+    searchText.value = text;
+    searchController.text = text;
+    search(text);
   }
 
   void doSearch() {
@@ -32,16 +39,15 @@ class SearchPageController extends GetxController {
     }
   }
 
+  void search(String text) async {
+    printInfoDebug("Pesquisando texto digitado por: $text");
+    // coloque sua lógica de busca aqui
 
-void search( String text) async {
-  printInfoDebug("Pesquisando texto digitado por: $text");
-  // coloque sua lógica de busca aqui
+    final List<String> searchResults =
+        await YouTubeMusicService.getSearchSuggestions(text);
+    resuts.value = searchResults; // SearchResults
+  }
 
-  final List<SearchResult> searchResults = await YouTubeMusicService.search(text);
-  resuts.value = searchResults; // SearchResults
-
-
-}
   @override
   void onClose() {
     searchController.dispose();

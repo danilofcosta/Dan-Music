@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../models/playlist.dart';
+import '../../../models/playlist_basic.dart';
 import '../../../navigator.dart';
 import '../../../services/uteis/load_image.dart';
 
 class PlaylistCard extends StatelessWidget {
-  final Playlist playlist;
+  final PlaylistBasic playlist;
   const PlaylistCard({super.key, required this.playlist});
 
   @override

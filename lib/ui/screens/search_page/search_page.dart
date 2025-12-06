@@ -28,20 +28,22 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     return controller.resuts.map((result) {
-      switch (result.type) {
-        case 'SONG':
-          return SongUi(mediaItem: result.songMedia);
-
-        case 'ARTIST':
-          return ArtistCard(artist: result.artist);
-        case 'ALBUM':
-          return AlbumCard(album: result.album);
-        case 'PLAYLIST':
-          return PlaylistCard(playlist: result.playlist);
-
-        default:
-          return ListTile(title: Text(result.type.toString()));
+      // Supondo que result tenha um campo 'type' para diferenciar os tipos
+      if (result is String) {
+        return ListTile(
+          title: Text(result),
+          leading: Icon(Icons.search),
+          trailing: IconButton(
+            icon: Icon(Icons.arrow_upward_sharp),
+            onPressed: () {
+              // Lógicant("Clicou no resultado de sugestão: $result");
+              controller.setSearchText(result);
+            },
+          ),
+        );
       }
+      // Adicione mais condições conforme os tipos de SearchResult que você tem
+      return SizedBox.shrink(); // Retorna um widget vazio se o tipo não for reconhecido
     }).toList();
   }
 

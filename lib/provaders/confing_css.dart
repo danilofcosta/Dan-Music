@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class ConfigCss extends GetxController {
   /// Imagem de fundo reativa
   final RxString bgImage =
-      'https://i.pinimg.com/736x/c8/1c/3b/c81c3b97eb314761ef9a983f2233cc5a.jpg'
+      'https://i.pinimg.com/736x/f9/12/9b/f9129baee7a2cd7262eedfada3d9f557.jpg'
           .obs;
 
   /// Tema reativo

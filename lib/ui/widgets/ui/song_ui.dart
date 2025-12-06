@@ -10,9 +10,10 @@ import '../../../services/uteis/load_image.dart';
 class SongUi extends StatelessWidget {
   final Song? song;
   final MediaItem? mediaItem;
+  final int? index;
   final Function()? onTap;
 
-  SongUi({super.key, this.song, this.mediaItem, this.onTap})
+  SongUi({super.key, this.song, this.mediaItem, this.onTap, this.index})
     : assert(
         song != null || mediaItem != null,
         "SongUi precisa de song ou mediaItem!",
@@ -69,15 +70,32 @@ class SongUi extends StatelessWidget {
 
           leading: Stack(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LoadImage.loadWidget(
-                  thumbnail,
-                  width: 50,
-                  height: 50,
-                  errorBuildericon: Icons.music_note,
-                ),
-              ),
+              index == null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LoadImage.loadWidget(
+                        thumbnail,
+                        width: 50,
+                        height: 50,
+                        errorBuildericon: Icons.music_note,
+                      ),
+                    )
+                  : SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: Center(
+                        child: TextUi(
+                          index.toString(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: player.songNow.value?.id == id
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                          ),
+                        ),
+                      ),
+                    ),
 
               if (player.songNow.value?.id == id)
                 Container(

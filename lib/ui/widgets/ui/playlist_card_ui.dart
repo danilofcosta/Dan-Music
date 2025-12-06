@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
+import '../../../models/playlist_basic.dart';
  
-import '/models/Playlist.dart';
+
 
 class PlaylistUi extends StatefulWidget {
-  final Playlist playlist;
+  final PlaylistBasic playlist;
   const PlaylistUi({super.key, required this.playlist});
 
   @override

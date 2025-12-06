@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_new_pipe_extractor/flutter_new_pipe_extractor.dart';
 import 'package:get/get.dart';
 
 import '/app.dart';
@@ -16,12 +17,13 @@ import 'ui/screens/artist_page/artist_controller.dart';
 import 'ui/screens/playlist_page/playlist_controller.dart';
 
 Future<void> main() async {
-  // runApp(init);
+  runApp(MyWidget());
   WidgetsFlutterBinding.ensureInitialized();
-  // runApp(init);
+  // //runApp(init);
 
   Get.put<AudioHandler>(await initAudioService(), permanent: true);
   await YouTubeMusicService.init();
+  await NewPipeExtractor.init();
   await startApplicationServices();
   runApp(MyApp());
 }
@@ -38,18 +40,62 @@ Future<void> startApplicationServices() async {
   Get.lazyPut(() => ConfigCss(), fenix: true);
 }
 
-Widget init = Scaffold(
-  body: Container(
-    // duration: Duration(seconds: 2),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(8.0),
-      image: DecorationImage(
-        image: NetworkImage(
-          'https://i.pinimg.com/736x/c3/ac/e0/c3ace0cb123506f8bea38a07ac4e5180.jpg',
+class MyWidget extends StatefulWidget {
+  const MyWidget({super.key});
+
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat(); // animação infinita
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.rotate(
+          angle:0,
+          child: child,
+        );
+      },
+      child: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(
+              'https://i.pinimg.com/1200x/15/62/5a/15625aec290c33d31b935c10c42ff0b1.jpg',
+            ),
+            fit: BoxFit.cover,
+          ),
+          gradient: LinearGradient(
+            colors: [Colors.purple, Colors.blue],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-        fit: BoxFit.fill,
+        child: Image.network(
+          'https://i.pinimg.com/1200x/15/62/5a/15625aec290c33d31b935c10c42ff0b1.jpg',
+          fit: BoxFit.cover,
+        ),
       ),
-    ),
-    child: Text('Carregando...'),
-  ),
-);
+    );
+  }
+}

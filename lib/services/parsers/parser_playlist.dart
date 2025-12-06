@@ -1,12 +1,12 @@
-import '../../../models/playlist.dart';
+import '../../models/playlist_basic.dart';
 import '/models/playlist_full.dart';
 import '/models/song.dart';
 import '/services/parsers/parser_song.dart';
 import 'package:flutter/material.dart';
 
 class ParserPlaylist {
-  static Playlist parsePlaylist(Map<String, dynamic> itemMap) {
-    return Playlist(
+  static PlaylistBasic parsePlaylist(Map<String, dynamic> itemMap) {
+    return PlaylistBasic(
       playlistId: itemMap['playlistId'] as String,
       title: itemMap['title'] ?? 'Sem Título',
       thumbnails: (itemMap['thumbnails'] as List<dynamic>?)!

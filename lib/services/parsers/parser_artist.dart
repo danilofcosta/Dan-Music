@@ -3,7 +3,7 @@ import 'package:danmusic/services/to_media_item.dart';
 import 'package:dart_ytmusic_api/types.dart';
 
 import '../../models/artist.dart';
-import '../../models/playlist.dart';
+import '../../models/playlist_basic.dart';
 
 class ParserArtist {
   static FullArtist artistFull(ArtistFull artist) {
@@ -41,7 +41,7 @@ class ParserArtist {
 
     final featuredOn = artist.featuredOn
         .map(
-          (e) => Playlist(
+          (e) => PlaylistBasic(
             playlistId: e.playlistId,
             title: e.name,
             desciption: e.artist.name,

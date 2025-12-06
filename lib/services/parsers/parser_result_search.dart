@@ -4,7 +4,7 @@ import 'package:danmusic/models/search_result.dart' as models;
 import 'package:dart_ytmusic_api/types.dart';
 
 import '../../models/album.dart';
-import '../../models/playlist.dart';
+import '../../models/playlist_basic.dart';
 
 class ParserResultSearch {
   static List<models.SearchResult> parseResultSearchdartYtmusicapi(
@@ -64,7 +64,7 @@ class ParserResultSearch {
           final playlist = item as PlaylistDetailed;
           searchResults.add(
             models.PlaylistDetailedSearchResult(
-              playlist: Playlist(
+              playlist: PlaylistBasic(
                 playlistId: playlist.playlistId,
                 title: playlist.name,
                 thumbnails: [playlist.thumbnails.first.url],

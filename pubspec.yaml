@@ -13,9 +13,9 @@ dependencies:
 
   ytmusicapi_dart: ^2.3.0
   audio_service: ^0.18.18
-  # just_audio: ^0.10.5
-  just_audio: 
-    path: ../just_audio/just_audio
+  just_audio: ^0.10.5
+  # just_audio: 
+  #   path: ../just_audio/just_audio
 
 
 

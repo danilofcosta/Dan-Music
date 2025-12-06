@@ -1,7 +1,9 @@
-import '/models/Playlist.dart';
+
+import 'package:danmusic/models/playlist_basic.dart' show PlaylistBasic;
+
 import '/models/song.dart';
 
-class PlaylistFull extends Playlist {
+class PlaylistFull extends PlaylistBasic {
   final String? duration;
   final int? secondsduration;
   final int? trackCount;
@@ -23,4 +25,5 @@ class PlaylistFull extends Playlist {
     this.tracks,
     this.videoId,
   });
+  
 }
