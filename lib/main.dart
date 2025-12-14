@@ -15,6 +15,7 @@ import 'ui/screens/search_page/search_page_controler.dart';
 import '/ui/screens/home_page/home_controller.dart';
 import 'ui/screens/artist_page/artist_controller.dart';
 import 'ui/screens/playlist_page/playlist_controller.dart';
+import 'ui/screens/search_page/search_result_controller.dart';
 
 Future<void> main() async {
   runApp(MyWidget());
@@ -38,6 +39,7 @@ Future<void> startApplicationServices() async {
   Get.lazyPut(() => FilaController(), fenix: true);
   Get.lazyPut(() => HomeController(), fenix: true);
   Get.lazyPut(() => ConfigCss(), fenix: true);
+  Get.lazyPut(() => SearchResultController(), fenix: true);
 }
 
 class MyWidget extends StatefulWidget {
@@ -72,10 +74,7 @@ class _MyWidgetState extends State<MyWidget>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        return Transform.rotate(
-          angle:0,
-          child: child,
-        );
+        return Transform.rotate(angle: 0, child: child);
       },
       child: Container(
         decoration: const BoxDecoration(

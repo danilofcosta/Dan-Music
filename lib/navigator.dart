@@ -8,6 +8,7 @@ import 'ui/screens/artist_page/artist_page.dart';
 import 'ui/screens/fila_player/file_player.dart';
 import 'ui/screens/player_page/player_page.dart';
 import 'ui/screens/search_page/search_page.dart';
+import 'ui/screens/search_page/search_result.dart' show SearchResult;
 
 class ScreenNavigationSetup {
   ScreenNavigationSetup._();
@@ -15,6 +16,7 @@ class ScreenNavigationSetup {
   static const id = 1;
   static const homeScreen = '/homeScreen';
   static const searchScreen = '/searchScreen';
+  static const searchResultScreen = '/searchResultScreen';
   static const playerScreen = '/playerScreen';
   static const albumScreen = '/albumScreen';
   static const filaScreen = '/filaScreen';
@@ -96,7 +98,14 @@ class NavigationRotes extends StatelessWidget {
                 page: () => ArtistPage(key: Key(id)),
                 settings: settings,
               );
+            case ScreenNavigationSetup.searchResultScreen:
+              final text = (settings.arguments as List)[0] as String;
+              return GetPageRoute(
+                page: () => SearchResult(key: Key(text)),
+                settings: settings,
+              );
             default:
+              debugPrint(settings.name);
               return null;
           }
         },

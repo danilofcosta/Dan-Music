@@ -6,16 +6,13 @@ import '../../../models/playlist_basic.dart';
 import '../../../models/playlist_full.dart';
 import '../../../services/ytmusicapi.dart';
 
-
 class PlaylistController extends GetxController {
   final audiohander = Get.find<PlayerController>();
   final playlist = PlaylistBasic(
     title: "Titulo",
     playlistId: "pleylistId",
-    thumbnails: [
-      'https://i.pinimg.com/736x/03/0a/7e/030a7eaf812f0aa200f48b64ba667f51.jpg',
-    ],
-    desciption: "Descrição",
+    thumbnails: [''],
+    desciption: "",
   ).obs;
 
   late final playlistfull = PlaylistFull(
@@ -56,7 +53,6 @@ class PlaylistController extends GetxController {
         }).toList(),
       );
       audiohander.updateQueuenew(quere);
-
     }
   }
 }

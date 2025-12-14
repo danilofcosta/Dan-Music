@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:danmusic/services/uteis/helper.dart';
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 
 import '../../../models/durationstate.dart';
 
@@ -12,13 +12,15 @@ class PlayerController extends GetxController with BasicComanos {
   Rx<MediaItem?> songNow = Rx<MediaItem?>(null);
   Rx<PlayButtonState> buttonState = PlayButtonState.paused.obs;
 
+  
+
   final progressBarStatus = ProgressBarState(
     buffered: Duration.zero,
     current: Duration.zero,
     total: Duration.zero,
   ).obs;
 
-  DateTime _lastUpdate = DateTime.now();
+ // DateTime _lastUpdate = DateTime.now();
 
   @override
   void onInit() {
@@ -42,19 +44,22 @@ class PlayerController extends GetxController with BasicComanos {
           val!.total = item!.duration!;
         });
       }
-
       songNow.value = item;
       playNowId.value = item?.id ?? '';
     });
   }
 
   void listenProgressBarStatus() {
-    audioHandler.playbackState.listen((state) {
-      final now = DateTime.now();
 
-      /// throttle – atualiza apenas a cada 150ms
-      if (now.difference(_lastUpdate).inMilliseconds < 150) return;
-      _lastUpdate = now;
+
+    
+    audioHandler.playbackState.listen((state) {
+     // final now = DateTime.now();
+
+      // /// throttle – atualiza apenas a cada 150ms
+      // if (now.difference(_lastUpdate).inMilliseconds < 150) return;
+      // _lastUpdate = now;
+      printErrorDebug(state.position.toString());
 
       final old = progressBarStatus.value;
 

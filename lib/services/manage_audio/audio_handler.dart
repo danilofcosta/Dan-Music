@@ -47,18 +47,18 @@ class MyAudioHandler extends BaseAudioHandler
 
   MyAudioHandler() {
     _player = AudioPlayer(
-      audioLoadConfiguration: const AudioLoadConfiguration(
-        androidLoadControl: AndroidLoadControl(
-          minBufferDuration: Duration(seconds: 60), // Aumenta buffer mínimo
-          maxBufferDuration: Duration(minutes: 3), // Aumenta buffer máximo
-          bufferForPlaybackDuration: Duration(
-            seconds: 1,
-          ), // Reduz tempo para iniciar reprodução
-          bufferForPlaybackAfterRebufferDuration: Duration(
-            seconds: 10,
-          ), // Reduz tempo após rebuffering
-        ),
-      ),
+      // audioLoadConfiguration: const AudioLoadConfiguration(
+      //   androidLoadControl: AndroidLoadControl(
+      //     minBufferDuration: Duration(seconds: 60), // Aumenta buffer mínimo
+      //     maxBufferDuration: Duration(minutes: 3), // Aumenta buffer máximo
+      //     bufferForPlaybackDuration: Duration(
+      //       seconds: 1,
+      //     ), // Reduz tempo para iniciar reprodução
+      //     bufferForPlaybackAfterRebufferDuration: Duration(
+      //       seconds: 10,
+      //     ), // Reduz tempo após rebuffering
+      //   ),
+      // ),
     );
 
     _player.errorStream.listen((PlayerException e) {
@@ -71,15 +71,14 @@ class MyAudioHandler extends BaseAudioHandler
     _listenToPlaybackForNextSong();
     _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
   }
-  void _listenToPlaybackForNextSong() {
-    _player.currentIndexStream.listen((value) async {
-      if (currentIndex != value) {
-        printInfoDebug('AudioPlayer index: $value | ');
-        currentIndex = value;
-        MediaItem song = queue.value[currentIndex!];
-        song = await YouTubeMusicService.getSong(song.id);
-        mediaItem.add(song);
-        //  mediaItem.add(song);
+void _listenToPlaybackForNextSong() {
+    final playerDurationOffset = 0;
+    _player.positionStream.listen((value) async {
+      if (_player.duration != null && _player.duration?.inSeconds != 0) {
+        if (value.inMilliseconds >=
+            (_player.duration!.inMilliseconds - playerDurationOffset)) {
+          await _triggerNext();
+        }
       }
     });
   }
@@ -114,7 +113,7 @@ class MyAudioHandler extends BaseAudioHandler
     if (fileExists(File(audioUrl))) {
       return AudioSource.file(audioUrl, tag: mediaItem);
     }
-    audioUrl = await ManageAudioURL.getAudioUrlIsolate(mediaItem.id);
+    audioUrl = await ManageAudioURL.getAudioUrlNewpipe(mediaItem.id);
 
     return AudioSource.uri(Uri.parse(audioUrl), tag: mediaItem);
   }
@@ -223,24 +222,10 @@ class MyAudioHandler extends BaseAudioHandler
   }
 
   Future<void> _triggerPrev() async {
-    // _player.pause();
     currentIndex = (currentIndex - 1 + queue.value.length) % queue.value.length;
     MediaItem songMediaItem = queue.value[currentIndex!];
     songMediaItem = await YouTubeMusicService.getSong(songMediaItem.id);
     mediaItem.add(songMediaItem);
-    // var s =_player.sequenceState!.currentSource;
-    List<AudioSource> sources = _player.sequence;
-
-    // for (AudioSource source in sources) {
-    //   MediaItem tag = source.sequence.first.tag as MediaItem;
-
-    //   if (tag.id == songMediaItem.id) {
-    //     printInfoDebug('Found source for previous song');
-    //     _player.seek(Duration.zero, index: sources.indexOf(source));
-    //     _player.play();
-    //     return;
-    //   }
-    // }
 
     _player.setAudioSource(await _createAudioSource(songMediaItem));
     _player.play();
@@ -249,7 +234,6 @@ class MyAudioHandler extends BaseAudioHandler
 
   Future<void> _triggerNext({int? index}) async {
     if (queue.value.isEmpty) return;
-    // _player.pause();
     currentIndex = index ?? (currentIndex + 1) % queue.value.length;
     MediaItem song = queue.value[currentIndex!];
 
@@ -287,7 +271,7 @@ class MyAudioHandler extends BaseAudioHandler
       updatePosition: _player.position,
       bufferedPosition: _player.bufferedPosition,
       speed: _player.speed,
-      queueIndex: event.currentIndex,
+      queueIndex:  currentIndex,
     );
   }
 }

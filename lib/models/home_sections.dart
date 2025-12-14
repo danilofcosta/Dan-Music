@@ -21,7 +21,7 @@ class ParserHomeSection {
       'No Title';
       final List<dynamic> contents = section.contents.map((item) {
         switch (item.runtimeType) {
-          case AlbumDetailed:
+          case AlbumDetailed _:
             item as AlbumDetailed;
             return Album(
               albumId: item.albumId,

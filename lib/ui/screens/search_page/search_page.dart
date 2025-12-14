@@ -17,10 +17,6 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final controller = Get.put(SearchPageController());
 
-  void _onSearch(String text) {
-    // Aqui você faz a lógica de busca
-    debugPrint('Pesquisando: $text');
-  }
 
   List<Widget> buildSearchResults() {
     if (controller.resuts.isEmpty) {
@@ -32,6 +28,8 @@ class _SearchPageState extends State<SearchPage> {
       if (result is String) {
         return ListTile(
           title: Text(result),
+          onTap: () => controller.openPageResultSearch(result),
+
           leading: Icon(Icons.search),
           trailing: IconButton(
             icon: Icon(Icons.arrow_upward_sharp),
@@ -58,7 +56,7 @@ class _SearchPageState extends State<SearchPage> {
             children: [
               TextField(
                 controller: controller.searchController,
-                onSubmitted: _onSearch,
+                onSubmitted: controller.openPageResultSearch,
                 autocorrect: true,
                 enableSuggestions: true,
                 autofocus: true,
@@ -92,7 +90,9 @@ class _SearchPageState extends State<SearchPage> {
                 onChanged: (_) async {
                   if (controller.searchController.text.isEmpty) return;
                   debugPrint(controller.searchController.text);
-                  controller.search(controller.searchController.text);
+                  controller.getSearchSuggestions(
+                    controller.searchController.text,
+                  );
                 },
               ),
 

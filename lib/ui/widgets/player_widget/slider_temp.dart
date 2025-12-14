@@ -19,14 +19,14 @@ class MusicProgressBar extends StatelessWidget {
     return Obx(() {
       final state = controller.progressBarStatus.value;
 
-      final durationMs =
-          state.total.inMilliseconds.clamp(1, double.infinity).toDouble();
+      final durationMs = state.total.inMilliseconds
+          .clamp(1, double.infinity)
+          .toDouble();
 
       /// Arredonda a posição para 200ms → evita tremidos
-      final positionMs =
-          ((state.current.inMilliseconds / 200).round() * 200)
-              .clamp(0, durationMs)
-              .toDouble();
+      final positionMs = ((state.current.inMilliseconds / 200).round() * 200)
+          .clamp(0, durationMs)
+          .toDouble();
 
       final bufferedMs = state.buffered.inMilliseconds
           .clamp(0, durationMs)
@@ -37,8 +37,10 @@ class MusicProgressBar extends StatelessWidget {
         children: [
           Slider(
             value: positionMs,
+          //  year2023: false,
             min: 0,
             max: durationMs,
+            padding: EdgeInsetsGeometry.all(10),
 
             /// Quando arrastar
             onChanged: (value) {},
@@ -52,6 +54,8 @@ class MusicProgressBar extends StatelessWidget {
 
             secondaryTrackValue: bufferedMs,
             focusNode: FocusNode(skipTraversal: true),
+            label: 'slider ',
+            allowedInteraction: SliderInteraction.tapOnly,
           ),
 
           Padding(
@@ -59,8 +63,11 @@ class MusicProgressBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(_format(state.current)),
-                Text(_format(state.total)),
+                Text(
+                  _format(state.current),
+                  style: TextStyle(fontWeight: .bold),
+                ),
+                Text(_format(state.total), style: TextStyle(fontWeight: .bold)),
               ],
             ),
           ),

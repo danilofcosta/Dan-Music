@@ -1,4 +1,3 @@
-import 'package:danmusic/models/home_sections.dart';
 import 'package:danmusic/services/ytmusicapi.dart';
 import 'package:flutter/rendering.dart';
 

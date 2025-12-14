@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:danmusic/services/uteis/helper.dart';
 import 'package:danmusic/ui/screens/player_page/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,8 +16,32 @@ class FilaController extends GetxController {
   void onInit() {
     super.onInit();
     _listenQueue();
+    getIndex();
   }
 
+
+  @override
+  void onClose(){
+    
+
+
+
+
+  }
+
+
+
+
+  
+Future<void> getIndex() async{
+audioHandler.playbackState.listen((state) {
+  index.value = state.queueIndex ?? 0;
+ printInfoDebug(state);
+});
+
+  
+ 
+}
   void playIndex(int index) {
     var currentIndex = file.indexWhere(
       (e) => e.id == playerController.songNow.value?.id,

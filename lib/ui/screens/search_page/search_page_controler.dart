@@ -1,8 +1,8 @@
+import 'package:danmusic/navigator.dart';
 import 'package:danmusic/services/uteis/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../models/search_result.dart';
 import '../../../services/ytmusicapi.dart';
 
 class SearchPageController extends GetxController {
@@ -29,7 +29,7 @@ class SearchPageController extends GetxController {
   void setSearchText(String text) {
     searchText.value = text;
     searchController.text = text;
-    search(text);
+    getSearchSuggestions(text);
   }
 
   void doSearch() {
@@ -39,7 +39,16 @@ class SearchPageController extends GetxController {
     }
   }
 
-  void search(String text) async {
+  void openPageResultSearch(String? text) {
+    text ??= searchController.text;
+    Get.toNamed(
+      ScreenNavigationSetup.searchResultScreen,
+      arguments: [text],
+      id: ScreenNavigationSetup.id,
+    );
+  }
+
+  void getSearchSuggestions(String text) async {
     printInfoDebug("Pesquisando texto digitado por: $text");
     // coloque sua lógica de busca aqui
 

@@ -15,6 +15,9 @@ class _FilePlayerState extends State<FilePlayer> {
   ScrollController scrollController = ScrollController();
   AudioHandler audioHandler = Get.find<AudioHandler>();
 
+
+ 
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<FilaController>();
@@ -23,7 +26,7 @@ class _FilePlayerState extends State<FilePlayer> {
       () => Scaffold(
         appBar: AppBar(
           title: Text(
-            "Tocando  Agora ${controller.index.value} | ${controller.file.length} Musicas",
+           "Tocando  Agora ${  controller.index} | ${controller.file.length} Musicas",
           ),
         ),
         body: controller.file.isEmpty

@@ -76,7 +76,7 @@ class HomeController extends GetxController {
     var id = '';
     Object object;
     switch (sectionItem.runtimeType) {
-      case PlaylistDetailed:
+      case PlaylistDetailed :
         sectionItem as PlaylistDetailed;
         pg = ScreenNavigationSetup.playlistScreen;
         id = sectionItem.playlistId;
@@ -87,7 +87,7 @@ class HomeController extends GetxController {
           desciption: sectionItem.artist.name,
         );
         break;
-      case AlbumDetailed:
+      case AlbumDetailed :
         sectionItem as AlbumDetailed;
         pg = ScreenNavigationSetup.albumScreen;
         id = sectionItem.albumId;
@@ -97,7 +97,7 @@ class HomeController extends GetxController {
           name: sectionItem.name,
           artist: sectionItem.artist.name,
           thumbnails: [sectionItem.thumbnails.first.url],
-          year: sectionItem.year ?? null,
+          year: sectionItem.year ,
         );
         break;
 

@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:typed_data';
-import 'package:danmusic/services/uteis/helper.dart';
-import 'package:flutter/material.dart';
+
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:danmusic/services/manage_audio/manage_audio_url.dart';

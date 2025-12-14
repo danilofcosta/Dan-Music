@@ -1,159 +1,191 @@
-import 'package:danmusic/ui/screens/playlist_page/playlist_controller.dart';
-import 'package:danmusic/services/uteis/load_image.dart';
-import 'package:danmusic/ui/widgets/build_backgrand.dart';
-import 'package:danmusic/ui/widgets/ui/song_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:palette_generator/palette_generator.dart';
 
-class PlaylistPage extends StatelessWidget {
+import 'package:danmusic/ui/screens/playlist_page/playlist_controller.dart';
+import 'package:danmusic/services/uteis/load_image.dart';
+import 'package:danmusic/ui/widgets/ui/song_ui.dart';
+
+class PlaylistPage extends StatefulWidget {
   const PlaylistPage({super.key});
   static const routeName = '/playlist';
 
-  List<String> generateList() {
-    return List<String>.generate(50, (index) => "Item ${index + 1}");
+  @override
+  State<PlaylistPage> createState() => _PlaylistPageState();
+}
+
+class _PlaylistPageState extends State<PlaylistPage> {
+  // ==============================
+  // STATE
+  // ==============================
+  Color _dominantColor = Colors.black;
+  ImageProvider? _lastProvider;
+
+  // ==============================
+  // HELPERS
+  // ==============================
+  Future<void> _updatePalette(String imagePath) async {
+    final provider = LoadImage.loadProvider(imagePath);
+    if (provider == null || provider == _lastProvider) return;
+
+    _lastProvider = provider;
+
+    final palette = await PaletteGenerator.fromImageProvider(provider);
+
+    if (!mounted) return;
+
+    setState(() {
+      _dominantColor =
+          palette.dominantColor?.color.withValues(alpha: 9.1) ?? Colors.black;
+    });
   }
 
+  // List<String> _generateFallback() => List.generate(20, (i) => 'Item ${i + 1}');
+
+  // ==============================
+  // BUILD
+  // ==============================
   @override
   Widget build(BuildContext context) {
-    final tag = key.hashCode.toString();
+    final tag = widget.key.hashCode.toString();
 
-    final playlistController = (Get.isRegistered<PlaylistController>(tag: tag))
+    final controller = (Get.isRegistered<PlaylistController>(tag: tag))
         ? Get.find<PlaylistController>(tag: tag)
         : Get.put(PlaylistController(), tag: tag);
 
-    final size = MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: _dominantColor.withValues(alpha: 0.7),
+      // appBar: AppBar(title: const Text('Playlist')),
+      body: Obx(() {
+        final thumb = controller.playlistfull.value.thumbnails.isEmpty
+            ? controller.playlist.value.thumbnails.first
+            : controller.playlistfull.value.thumbnails.last;
 
-    return BuildBackgrand(
-      child: Scaffold(
-        appBar: AppBar(title: Text(playlistController.playlist.value.title)),
-        body: Column(
-          children: [
-            // ==============================
-            // 📌 IMAGEM DA PLAYLIST
-            // ==============================
+        return CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              stretch: true,
+              expandedHeight: 300,
+              backgroundColor: _dominantColor,
+              title: Text(
+                controller.playlist.value.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              flexibleSpace: FlexibleSpaceBar(
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Builder(
+                      builder: (_) {
+                        _updatePalette(thumb);
+                        return LoadImage.loadWidget(thumb, fit: BoxFit.cover);
+                      },
+                    ),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 400),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            _dominantColor.withValues(alpha: 0.7),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // =================================
+            // HEADER INFO
+            // =================================
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      controller.playlist.value.title,
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      controller.playlistfull.value.desciption,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        FilledButton.icon(
+                          onPressed: controller.playplaylist,
+                          icon: const Icon(Icons.play_arrow),
+                          label: const Text('Tocar Playlist'),
+                        ),
+                        const SizedBox(width: 12),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.favorite_border),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // =================================
+            // TRACK LIST (ANIMATED)
+            // =================================
             Obx(() {
-              final thumb =
-                  playlistController.playlistfull.value.thumbnails.isEmpty
-                  ? playlistController.playlist.value.thumbnails.first
-                  : playlistController.playlistfull.value.thumbnails.last;
-              return LoadImage.loadWidget(
-                thumb,
-                height: 300,
-                fit: BoxFit.cover,
-                width: size.width,
-              );
-            }),
+              final tracks = controller.playlistfull.value.tracks ?? [];
 
-            // ==============================
-            // BOTÕES
-            // ==============================
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 8,
-                children: [
-                  FilledButton.icon(
-                    onPressed: () => playlistController.playplaylist(),
-                    label: const Icon(Icons.play_arrow),
-                  ),
+              if (tracks.isEmpty) {
+                //  final fallback = _generateFallback();
+                // return SliverList(
+                //   delegate: SliverChildBuilderDelegate(
+                //     (context, index) => ListTile(
+                //       leading: const Icon(Icons.music_note),
+                //       title: Text(fallback[index]),
+                //     ),
+                //     childCount: fallback.length,
+                //   ),
+                // );
+                return SliverToBoxAdapter(child: SizedBox.shrink());
+              }
 
-                  FilledButton.icon(
-                    onPressed: () {},
-                    label: const Icon(Icons.favorite_border),
-                  ),
-                ],
-              ),
-            ),
+              return SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final track = tracks[index];
 
-            // ==============================
-            // 📌 TÍTULO
-            // ==============================
-            Obx(
-              () => Text(
-                playlistController.playlist.value.title,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            // ==============================
-            // 📌 DESCRIÇÃO (playlistfull)
-            // ==============================
-            Obx(
-              () => Text(
-                playlistController.playlistfull.value.desciption,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-
-            const Divider(color: Colors.white),
-            Obx(() {
-              final String? duration =
-                  playlistController.playlistfull.value.duration;
-              final String trackCount = playlistController
-                  .playlistfull
-                  .value
-                  .trackCount
-                  .toString();
-              final String year = playlistController.playlistfull.value.year
-                  .toString();
-
-              return Text(
-                '$duration - $trackCount - $year',
-
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              );
-            }),
-            const Divider(color: Colors.white),
-
-            // ==============================
-            // 📌 LISTA DE MÚSICAS
-            // Atualiza automaticamente
-            // ==============================
-            Expanded(
-              child: Obx(() {
-                final tracks =
-                    playlistController.playlistfull.value.tracks ?? [];
-
-                if (tracks.isEmpty) {
-                  // Lista placeholder até carregar
-                  final fallback = generateList();
-                  return ListView.builder(
-                    itemCount: fallback.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: const Icon(Icons.play_arrow),
-                        title: Text(fallback[index]),
-                        subtitle: Text(fallback[index]),
-                        trailing: const Icon(Icons.more_vert),
+                  return TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: 1),
+                    duration: Duration(milliseconds: 250 + index * 35),
+                    builder: (context, value, child) {
+                      return Opacity(
+                        opacity: value,
+                        child: Transform.translate(
+                          offset: Offset(0, 16 * (1 - value)),
+                          child: child,
+                        ),
                       );
                     },
+                    child: SongUi(song: track),
                   );
-                }
-
-                // Lista real carregada
-                return ListView.builder(
-                  itemCount: tracks.length,
-                  itemBuilder: (context, index) {
-                    final track = tracks[index];
-
-                    return SongUi(song: track);
-                  },
-                );
-              }),
-            ),
+                }, childCount: tracks.length),
+              );
+            }),
           ],
-        ),
-      ),
+        );
+      }),
     );
   }
 }

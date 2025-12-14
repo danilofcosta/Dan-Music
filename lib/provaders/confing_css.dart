@@ -16,8 +16,4 @@ class ConfigCss extends GetxController {
     themeMode.value = mode;
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
 }
