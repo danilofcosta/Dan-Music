@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 import '/models/song.dart';
@@ -19,10 +21,6 @@ class SongUi extends StatelessWidget {
         "SongUi precisa de song ou mediaItem!",
       );
 
-  final audio = Get.find<AudioHandler>();
-  final player = Get.find<PlayerController>();
-
-  // GETTERS unificam o uso
   String get id => song?.videoid ?? mediaItem?.id ?? "";
   String get title => song?.title ?? mediaItem?.title ?? "";
   String get artist => song?.artist ?? mediaItem?.artist ?? "";
@@ -56,6 +54,8 @@ class SongUi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final player = Get.find<PlayerController>();
+
       return InkWell(
         onTap: () {
           if (onTap != null) {
@@ -63,7 +63,7 @@ class SongUi extends StatelessWidget {
             return;
           }
 
-          Get.find<PlayerController>().playByVideoId(id);
+          player.playByVideoId(id);
         },
         child: ListTile(
           selected: player.songNow.value?.id == id,
@@ -97,31 +97,36 @@ class SongUi extends StatelessWidget {
                       ),
                     ),
 
-              if (player.songNow.value?.id == id)
-                Container(
-                  width: 50,
-                  height: 50,
-                  color: Colors.black54,
+              // if (player.songNow.value?.id == id)
+              //   Container(
+              //     width: 50,
+              //     height: 50,
+              //     color: Colors.black54,
 
-                  child: Icon(
-                    Icons.play_circle_outline_rounded,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 50,
-                  ),
-                ),
+              //     child: SpotifyFireEqualizer(),
+              //   ),
             ],
           ),
 
-          title: TextUi(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: player.songNow.value?.id == id
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          title: Row(
+            spacing: 2,
+            children: [
+              Expanded(
+                child: TextUi(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: player.songNow.value?.id == id
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+
+              if (player.songNow.value?.id == id) SpotifyFireEqualizer(),
+            ],
           ),
 
           subtitle: Row(
@@ -134,5 +139,79 @@ class SongUi extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+class SpotifyFireEqualizer extends StatefulWidget {
+  final Color color;
+  final double height;
+  final double width;
+  final Duration speed;
+
+  const SpotifyFireEqualizer({
+    super.key,
+    this.color = Colors.blue,
+    this.height = 24,
+    this.width = 4,
+    this.speed = const Duration(milliseconds: 900),
+  });
+
+  @override
+  State<SpotifyFireEqualizer> createState() => _SpotifyFireEqualizerState();
+}
+
+class _SpotifyFireEqualizerState extends State<SpotifyFireEqualizer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  final List<double> _phases = [0, pi / 3, pi * 2 / 3];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(vsync: this, duration: widget.speed)
+      ..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  double _barHeight(double phase) {
+    // curva senoidal suave (0.3 → 1.0)
+    final value = (sin(_controller.value * 2 * pi + phase) + 1) / 2;
+    return 0.3 + value * 0.7;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.height,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (_, __) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: List.generate(3, (index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3),
+                child: Container(
+                  width: widget.width,
+                  height: widget.height * _barHeight(_phases[index]),
+                  decoration: BoxDecoration(
+                    color: widget.color,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              );
+            }),
+          );
+        },
+      ),
+    );
   }
 }

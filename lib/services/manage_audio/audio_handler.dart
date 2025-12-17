@@ -11,7 +11,7 @@ import 'package:path_provider/path_provider.dart';
 // ignore: depend_on_referenced_packages, implementation_imports
 import 'package:rxdart/src/subjects/behavior_subject.dart';
 
-Future<AudioHandler> initAudioService() async {
+Future<MyAudioHandler> initAudioService() async {
   final session = await AudioSession.instance;
   await session.configure(AudioSessionConfiguration.speech());
   return await AudioService.init(
@@ -40,10 +40,10 @@ class MyAudioHandler extends BaseAudioHandler
   // AudioPlayer get player => _player;
   String get cacheDir => _cacheDir;
 
-  // Stream<Duration> get positionStream => _player.positionStream;
-  // Stream<Duration> get positionBuffered => _player.bufferedPositionStream;
-  // Stream<Duration?> get durationStream => _player.durationStream;
-  // Stream<bool> get isPlayingStream => _player.playingStream;
+  Stream<Duration> get positionStream => _player.positionStream;
+  Stream<Duration> get positionBuffered => _player.bufferedPositionStream;
+  Stream<Duration?> get durationStream => _player.durationStream;
+  Stream<bool> get isPlayingStream => _player.playingStream;
 
   MyAudioHandler() {
     _player = AudioPlayer(
@@ -71,16 +71,20 @@ class MyAudioHandler extends BaseAudioHandler
     _listenToPlaybackForNextSong();
     _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
   }
-void _listenToPlaybackForNextSong() {
+  void _listenToPlaybackForNextSong() {
     final playerDurationOffset = 0;
-    _player.positionStream.listen((value) async {
-      if (_player.duration != null && _player.duration?.inSeconds != 0) {
-        if (value.inMilliseconds >=
-            (_player.duration!.inMilliseconds - playerDurationOffset)) {
-          await _triggerNext();
+    try {
+      _player.positionStream.listen((value) async {
+        if (_player.duration != null && _player.duration?.inSeconds != 0) {
+          if (value.inMilliseconds >=
+              (_player.duration!.inMilliseconds - playerDurationOffset)) {
+            await _triggerNext();
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      printErrorDebug(e);
+    }
   }
 
   Future<void> _createCacheDir() async {
@@ -120,9 +124,7 @@ void _listenToPlaybackForNextSong() {
 
   @override
   Future<void> updateQueue(List<MediaItem> queue) async {
-    final newQueue = this.queue.value
-      ..replaceRange(0, this.queue.value.length, queue);
-    this.queue.add(newQueue);
+    this.queue.add(queue);
   }
 
   @override
@@ -165,7 +167,7 @@ void _listenToPlaybackForNextSong() {
   @override
   Future<void> skipToNext() async {
     await _triggerNext();
-    //  return super.skipToNext();
+    // return super.skipToNext();
   }
 
   @override
@@ -181,8 +183,13 @@ void _listenToPlaybackForNextSong() {
     switch (name) {
       case 'playByVideoId':
         final String videoId = extras!['VideoId'];
+        if (queue.value.isNotEmpty && queue.value.first.id == videoId) {
+          return;
+        }
+
         MediaItem songMediaItem = await YouTubeMusicService.getSong(videoId);
-        queue.value = [songMediaItem];
+        queue.add([songMediaItem]);
+
         currentIndex = 0;
         songNow.add(songMediaItem);
         // _player.setAudioSource(
@@ -192,8 +199,9 @@ void _listenToPlaybackForNextSong() {
         //   ),
         // );
         // await _player.stop();
+        final c = await _createAudioSource(songMediaItem);
 
-        _player.setAudioSource(await _createAudioSource(songMediaItem));
+        await _player.setAudioSource(c);
         _player.play();
         // return;
 
@@ -227,7 +235,7 @@ void _listenToPlaybackForNextSong() {
     songMediaItem = await YouTubeMusicService.getSong(songMediaItem.id);
     mediaItem.add(songMediaItem);
 
-    _player.setAudioSource(await _createAudioSource(songMediaItem));
+    await _player.setAudioSource(await _createAudioSource(songMediaItem));
     _player.play();
     return;
   }
@@ -237,12 +245,13 @@ void _listenToPlaybackForNextSong() {
     currentIndex = index ?? (currentIndex + 1) % queue.value.length;
     MediaItem song = queue.value[currentIndex!];
 
-    _player.setAudioSource(await _createAudioSource(song));
     song = await YouTubeMusicService.getSong(song.id);
     mediaItem.add(song);
+    var t = await _createAudioSource(song);
+    await _player.setAudioSource(t);
+
     _player.play();
   }
-
 
   PlaybackState _transformEvent(PlaybackEvent event) {
     return PlaybackState(
@@ -271,7 +280,7 @@ void _listenToPlaybackForNextSong() {
       updatePosition: _player.position,
       bufferedPosition: _player.bufferedPosition,
       speed: _player.speed,
-      queueIndex:  currentIndex,
+      queueIndex: currentIndex,
     );
   }
 }

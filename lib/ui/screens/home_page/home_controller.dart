@@ -12,10 +12,10 @@ import '../../widgets/greeting.dart';
 class HomeController extends GetxController {
   final RxInt counter = 0.obs;
   final Rx<MediaItem> videoIdSuggestion = MediaItem(
-    id: 'HPTDgfhhJ3s',
+    id: 'OgOqKxeGtig',
     album: 'Album teste',
     title: 'controller.file._value[2].title',
-    artist:  "Unappreciated",
+    artist: "Unappreciated",
     artUri: Uri.parse('https://i.ytimg.com/vi/HPTDgfhhJ3s/hqdefault.jpg'),
   ).obs;
 
@@ -24,26 +24,25 @@ class HomeController extends GetxController {
   final RxString welcomeMessage = 'Home Page - GetX Example'.obs;
   final RxList<MediaItem> songsSuggestions = <MediaItem>[].obs;
   final RxBool isLoading = false.obs;
+  final erroapi = true.obs;
 
   @override
   void onInit() async {
     super.onInit();
     welcomeMessage.value = greeting();
-
-    // songsSuggestions.add(videoIdSuggestion.value);
-    await loadApiData();
-
-    loadSongsSuggestions();
-
-    // Inicialização do controlador
-  }
-
-  Future<void> loadApiData() async {
     isLoading.value = true;
 
-    //  await Future.delayed(Duration(seconds: 2));
-    await YouTubeMusicService.init();
-    isLoading.value = false;
+  }
+
+  @override
+  void onReady() async {
+    super.onReady();
+    if (await YouTubeMusicService.init() == false) {
+      erroapi.value = false;
+    }
+
+    loadSongsSuggestions();
+  // loadHomeData();
   }
 
   void loadSongsSuggestions() async {
@@ -58,8 +57,11 @@ class HomeController extends GetxController {
         ...tempsongsSuggestions,
       ]);
       songsSuggestions.refresh();
-      loadHomeData();
-      counter.value = 90;
+      isLoading.value = false;
+
+      //
+
+      //counter.value = 90;
     } catch (e) {
       debugPrint('Erro ao carregar sugestões de músicas: $e');
     }
@@ -76,7 +78,7 @@ class HomeController extends GetxController {
     var id = '';
     Object object;
     switch (sectionItem.runtimeType) {
-      case PlaylistDetailed :
+      case PlaylistDetailed:
         sectionItem as PlaylistDetailed;
         pg = ScreenNavigationSetup.playlistScreen;
         id = sectionItem.playlistId;
@@ -87,7 +89,7 @@ class HomeController extends GetxController {
           desciption: sectionItem.artist.name,
         );
         break;
-      case AlbumDetailed :
+      case AlbumDetailed:
         sectionItem as AlbumDetailed;
         pg = ScreenNavigationSetup.albumScreen;
         id = sectionItem.albumId;
@@ -97,7 +99,7 @@ class HomeController extends GetxController {
           name: sectionItem.name,
           artist: sectionItem.artist.name,
           thumbnails: [sectionItem.thumbnails.first.url],
-          year: sectionItem.year ,
+          year: sectionItem.year,
         );
         break;
 

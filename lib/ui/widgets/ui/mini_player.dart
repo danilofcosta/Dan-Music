@@ -3,6 +3,7 @@ import 'package:danmusic/navigator.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
+import '../../../services/manage_audio/audio_handler.dart' show MyAudioHandler;
 import '../../screens/player_page/player_controller.dart';
 import '/services/uteis/load_image.dart';
 import 'text_conf_ui.dart';
@@ -13,7 +14,7 @@ class MiniPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PlayerController>();
-    final audioHandler = Get.find<AudioHandler>();
+    final audioHandler = Get.find<MyAudioHandler>();
 
     return Obx(() {
       MediaItem? mediaItemNow = controller.songNow.value;

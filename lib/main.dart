@@ -5,7 +5,7 @@ import 'package:flutter_new_pipe_extractor/flutter_new_pipe_extractor.dart';
 import 'package:get/get.dart';
 
 import '/app.dart';
-import '/provaders/confing_css.dart';
+import 'theme/confing_css.dart';
 import 'ui/screens/player_page/player_controller.dart';
 import '/services/manage_audio/audio_handler.dart';
 import '/services/ytmusicapi.dart';
@@ -18,12 +18,11 @@ import 'ui/screens/playlist_page/playlist_controller.dart';
 import 'ui/screens/search_page/search_result_controller.dart';
 
 Future<void> main() async {
-  runApp(MyWidget());
+  //runApp(MyWidget());
   WidgetsFlutterBinding.ensureInitialized();
   // //runApp(init);
 
-  Get.put<AudioHandler>(await initAudioService(), permanent: true);
-  await YouTubeMusicService.init();
+  Get.put<MyAudioHandler>(await initAudioService(), permanent: true);
   await NewPipeExtractor.init();
   await startApplicationServices();
   runApp(MyApp());
@@ -40,7 +39,7 @@ Future<void> startApplicationServices() async {
   Get.lazyPut(() => HomeController(), fenix: true);
   Get.lazyPut(() => ConfigCss(), fenix: true);
   Get.lazyPut(() => SearchResultController(), fenix: true);
-}
+  }
 
 class MyWidget extends StatefulWidget {
   const MyWidget({super.key});

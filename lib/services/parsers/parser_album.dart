@@ -19,4 +19,17 @@ class AlbumParser {
       songs: songs,
     );
   }
+   static Album parseAlbumDetailed(AlbumDetailed albumFull) {
+  
+
+    return Album(
+      albumId: albumFull.albumId,
+      playlistId: albumFull.playlistId,
+      name: albumFull.name,
+      artist: albumFull.artist.name,
+      year: albumFull.year,
+      thumbnails: albumFull.thumbnails.map((e) => e.url).toList(),
+      songs: [],
+    );
+  }
 }

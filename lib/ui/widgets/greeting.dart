@@ -1,5 +1,8 @@
+import 'package:danmusic/services/uteis/helper.dart';
+
 String greeting() {
   final hora = DateTime.now().hour;
+  printInfoDebug('hora atual do sistema: $hora');
 
   if (hora >= 5 && hora < 12) {
     return "Bom dia!";

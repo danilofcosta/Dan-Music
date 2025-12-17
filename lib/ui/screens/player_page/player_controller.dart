@@ -3,16 +3,15 @@ import 'package:danmusic/services/uteis/helper.dart';
 import 'package:get/get.dart';
 
 import '../../../models/durationstate.dart';
+import '../../../services/manage_audio/audio_handler.dart';
 
 class PlayerController extends GetxController with BasicComanos {
   RxString playNowId = ''.obs;
   @override
-  AudioHandler audioHandler = Get.find<AudioHandler>();
+  AudioHandler audioHandler = Get.find<MyAudioHandler>();
 
   Rx<MediaItem?> songNow = Rx<MediaItem?>(null);
   Rx<PlayButtonState> buttonState = PlayButtonState.paused.obs;
-
-  
 
   final progressBarStatus = ProgressBarState(
     buffered: Duration.zero,
@@ -20,7 +19,7 @@ class PlayerController extends GetxController with BasicComanos {
     total: Duration.zero,
   ).obs;
 
- // DateTime _lastUpdate = DateTime.now();
+  // DateTime _lastUpdate = DateTime.now();
 
   @override
   void onInit() {
@@ -50,11 +49,8 @@ class PlayerController extends GetxController with BasicComanos {
   }
 
   void listenProgressBarStatus() {
-
-
-    
     audioHandler.playbackState.listen((state) {
-     // final now = DateTime.now();
+      // final now = DateTime.now();
 
       // /// throttle – atualiza apenas a cada 150ms
       // if (now.difference(_lastUpdate).inMilliseconds < 150) return;
@@ -73,7 +69,7 @@ class PlayerController extends GetxController with BasicComanos {
 
   void listenAudioHandler() {
     listenMediaItem();
-    listenProgressBarStatus();
+    // listenProgressBarStatus();
     _listenForChangesInPlayerState();
   }
 
@@ -100,7 +96,7 @@ class PlayerController extends GetxController with BasicComanos {
 enum PlayButtonState { paused, playing, loading }
 
 mixin BasicComanos {
-  AudioHandler get audioHandler => Get.find<AudioHandler>();
+  AudioHandler get audioHandler => Get.find<MyAudioHandler>();
 
   void play() => audioHandler.play();
   void pause() => audioHandler.pause();

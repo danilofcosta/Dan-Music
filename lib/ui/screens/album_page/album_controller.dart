@@ -13,9 +13,7 @@ class AlbumController extends GetxController {
     name: 'name',
     artist: 'artist',
     year: 2000,
-    thumbnails: [
-      'https://i.pinimg.com/736x/29/c8/87/29c8873b70959a8ce07d0034f85d2af8.jpg',
-    ],
+    thumbnails: [''],
   ).obs;
 
   final albumId = 'albumId'.obs;
@@ -43,7 +41,10 @@ class AlbumController extends GetxController {
         name: s.title,
         artist: s.desciption,
         year: 2,
-        thumbnails: s.thumbnails.isNotEmpty ? s.thumbnails : [],
+
+        thumbnails: s.thumbnails.isNotEmpty
+            ? s.thumbnails
+            : [album.value.thumbnails[0]],
         songs: s.tracks!.map((e) => ToMediaItem.song(e)).toList(),
       );
 

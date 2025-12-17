@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-import '/provaders/confing_css.dart';
+import 'theme/confing_css.dart';
 import 'home.dart';
 
 class MyApp extends StatelessWidget {
@@ -9,20 +9,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'DanMusic',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(useMaterial3: true).copyWith(
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
-      ),
+    final configCss = Get.find<ConfigCss>();
 
-      darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
-        scaffoldBackgroundColor: Colors.black,
-        appBarTheme: const AppBarTheme(backgroundColor: Colors.black),
-      ),
-      themeMode: Get.find<ConfigCss>().themeMode.value,
-      home: Home(),
-    );
+    return Obx(() {
+      return GetMaterialApp(
+        title: 'DanMusic',
+        debugShowCheckedModeBanner: false,
+        enableLog: true,
+
+        theme: ThemeData.light(useMaterial3: true).copyWith(
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
+        ),
+
+        darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
+          scaffoldBackgroundColor: Colors.black,
+          appBarTheme: const AppBarTheme(backgroundColor: Colors.black),
+        ),
+
+        themeMode: configCss.themeMode.value,
+        home: Home(),
+      );
+    });
   }
 }

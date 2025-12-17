@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 
+import '../../../services/manage_audio/audio_handler.dart';
 import '../../screens/player_page/player_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,7 @@ class BuilButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AudioHandler audioHandler = Get.find<AudioHandler>();
+    AudioHandler audioHandler = Get.find<MyAudioHandler>();
 
     return Container(
       margin: const EdgeInsets.all(12.0),
@@ -44,8 +45,6 @@ class BuilButtons extends StatelessWidget {
           FilledButton.icon(
             onPressed: () => audioHandler.skipToNext(),
             label: Icon(Icons.skip_next),
-            
-            
           ),
           // FilledButton(
           //   onPressed: () => audioHandler.shuffle(),

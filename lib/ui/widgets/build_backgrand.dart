@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
-import '/provaders/confing_css.dart';
+import '../../theme/confing_css.dart';
 import 'package:flutter/material.dart';
 
 class BuildBackgrand extends StatelessWidget {

@@ -22,80 +22,85 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Obx(() {
       return BuildBackgrand(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                backgroundColor: Theme.of(
-                  context,
-                ).scaffoldBackgroundColor.withAlpha(153),
-                centerTitle: true,
-                title: Text(
-                  controller.welcomeMessage.value,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                floating: true,
-                snap: true,
-              ),
-
-              if (controller.isLoading.value)
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.secondary,
+        child: controller.erroapi.value == false
+            ? AlertDialog(
+              icon: Text('ddddddddddd'),
+            )
+            : Scaffold(
+                backgroundColor: Colors.transparent,
+                body: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      backgroundColor: Theme.of(
+                        context,
+                      ).scaffoldBackgroundColor.withAlpha(153),
+                      centerTitle: true,
+                      title: Text(
+                        controller.welcomeMessage.value,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      floating: true,
+                      snap: true,
                     ),
-                  ),
-                )
-              else if (controller.songsSuggestions.isNotEmpty)
-                SliverToBoxAdapter(
-                  child: BuildListHorizontal(
-                    title: 'Sugestoes',
-                    items: controller.songsSuggestions,
-                  ),
-                ),
-              if (controller.homeSections.isNotEmpty)
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final section = controller.homeSections[index];
-                    if (section.contents.isEmpty) {
-                      return const SizedBox.shrink();
-                    }
-                    return buildSectionCarousel(section, context);
-                  }, childCount: controller.homeSections.length),
-                ),
 
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Container(height: 150),
+                    if (controller.isLoading.value)
+                      SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      )
+                    else if (controller.songsSuggestions.isNotEmpty)
+                      SliverToBoxAdapter(
+                        child: BuidListHorizotal(
+                          title: 'Sugestoes',
+                          mediaItems: controller.songsSuggestions,
+                        ),
+                      ),
+                    if (controller.homeSections.isNotEmpty)
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final section = controller.homeSections[index];
+                          if (section.contents.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
+                          return buildSectionCarousel(section, context);
+                        }, childCount: controller.homeSections.length),
+                      ),
+
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Container(height: 150),
+                    ),
+                  ],
+                ),
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.centerFloat,
+
+                floatingActionButton: Container(
+                  margin: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    spacing: 8,
+                    children: [
+                      FloatingActionButton(
+                        onPressed: () {
+                          Get.toNamed(
+                            ScreenNavigationSetup.searchScreen,
+                            id: ScreenNavigationSetup.id,
+                          );
+                        },
+                        child: const Icon(Icons.search),
+                      ),
+                      //
+                      MiniPlayer(),
+                    ],
+                  ),
+                ),
               ),
-            ],
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-
-          floatingActionButton: Container(
-            margin: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              spacing: 8,
-              children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    Get.toNamed(
-                      ScreenNavigationSetup.searchScreen,
-                      id: ScreenNavigationSetup.id,
-                    );
-                  },
-                  child: const Icon(Icons.search),
-                ),
-                MiniPlayer(),
-              ],
-            ),
-          ),
-        ),
       );
     });
   }
@@ -147,7 +152,6 @@ class _HomePageState extends State<HomePage> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: sectionContent.thumbnails.last.url != null
-
                             ? LoadImage.loadWidget(
                                 sectionContent.thumbnails.last.url!,
                                 fit: BoxFit.cover,

@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:danmusic/ui/screens/fila_player/fila_controller.dart';
 import 'package:get/get.dart';
+import '../../../services/manage_audio/audio_handler.dart' show MyAudioHandler;
 import '../../widgets/ui/song_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -13,10 +14,7 @@ class FilePlayer extends StatefulWidget {
 
 class _FilePlayerState extends State<FilePlayer> {
   ScrollController scrollController = ScrollController();
-  AudioHandler audioHandler = Get.find<AudioHandler>();
-
-
- 
+  AudioHandler audioHandler = Get.find<MyAudioHandler>();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +24,7 @@ class _FilePlayerState extends State<FilePlayer> {
       () => Scaffold(
         appBar: AppBar(
           title: Text(
-           "Tocando  Agora ${  controller.index} | ${controller.file.length} Musicas",
+            "Tocando  Agora ${controller.index} | ${controller.file.length} Musicas",
           ),
         ),
         body: controller.file.isEmpty

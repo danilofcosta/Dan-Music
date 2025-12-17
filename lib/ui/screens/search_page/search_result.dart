@@ -10,23 +10,23 @@ class SearchResult extends StatefulWidget {
 }
 
 class _SearchResultState extends State<SearchResult> {
-  int _selectedIndex = 0;
   final controller = Get.put(SearchResultController());
-  final List<String> _filters = [
-    Filtros.all,
-    Filtros.songs,
-    Filtros.albums,
-    Filtros.playlists,
-    Filtros.artists,
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(controller.searchText.value),
-        backgroundColor: Colors.grey.shade900,
-        elevation: 0,
+        title: Text(
+          controller.searchText.value,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodyLarge!.color!,
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        elevation: 5,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,29 +40,41 @@ class _SearchResultState extends State<SearchResult> {
   }
 
   Widget _buildFilters() {
+    final filters = Filtros.values.toList();
+
     return SizedBox(
       height: 48,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         scrollDirection: Axis.horizontal,
-        itemCount: _filters.length,
+        itemCount: filters.length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           return Obx(() {
-            final filter = _filters[index];
+            final filter = filters[index];
             final isSelected = controller.selectedFilter.value == filter;
 
-            return ChoiceChip(
-              label: Text(filter),
-              selected: isSelected,
-              selectedColor: Colors.grey.shade400,
-              backgroundColor: Colors.grey.shade200,
-              side: BorderSide(color: Colors.grey.shade400),
-              labelStyle: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.black : Colors.grey.shade700,
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              child: ChoiceChip(
+                label: Text(filter),
+                selected: isSelected,
+                autofocus: isSelected,
+                elevation: 5,
+                padding: EdgeInsetsDirectional.all(8),
+                pressElevation: 8,
+                // avatar: Text('data'),
+                // selectedColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                side: BorderSide(color: Colors.grey.shade400),
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isSelected
+                      ? Theme.of(context).textTheme.bodyLarge!.color!
+                      : Colors.grey.shade700,
+                ),
+                onSelected: (_) => controller.changeFilter(filter),
               ),
-              onSelected: (_) => controller.changeFilter(filter),
             );
           });
         },
@@ -83,35 +95,11 @@ class _SearchResultState extends State<SearchResult> {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           itemCount: results.length,
           itemBuilder: (context, index) {
-            return _ResultItem(
-              title: results[index],
-              subtitle: controller.selectedFilter.value,
-            );
+            Widget result = results[index];
+            return result;
           },
         );
       }),
-    );
-  }
-}
-
-/// 🔹 ITEM DE RESULTADO (REUTILIZÁVEL)
-class _ResultItem extends StatelessWidget {
-  final String title;
-  final String subtitle;
-
-  const _ResultItem({required this.title, required this.subtitle});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      leading: CircleAvatar(
-        backgroundColor: Colors.grey.shade300,
-        child: const Icon(Icons.music_note, color: Colors.black87),
-      ),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(subtitle),
-      trailing: const Icon(Icons.more_vert),
     );
   }
 }

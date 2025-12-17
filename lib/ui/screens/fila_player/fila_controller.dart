@@ -1,47 +1,35 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:danmusic/services/uteis/helper.dart';
 import 'package:danmusic/ui/screens/player_page/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../services/manage_audio/audio_handler.dart' show MyAudioHandler;
+
 class FilaController extends GetxController {
   ScrollController scrollController = ScrollController();
-  AudioHandler audioHandler = Get.find<AudioHandler>();
+  AudioHandler audioHandler = Get.find<MyAudioHandler>();
   PlayerController playerController = Get.find<PlayerController>();
 
   final file = <MediaItem>[].obs;
   final index = 0.obs;
 
   @override
-  void onInit() {
-    super.onInit();
+  void onReady() {
+    super.onReady();
     _listenQueue();
-    getIndex();
+    _listenIndex();
   }
-
 
   @override
-  void onClose(){
-    
+  void onClose() {}
 
-
-
-
+  Future<void> _listenIndex() async {
+    audioHandler.playbackState.listen((state) {
+      index.value = state.queueIndex ?? 0;
+      //printInfoDebug(state);
+    });
   }
 
-
-
-
-  
-Future<void> getIndex() async{
-audioHandler.playbackState.listen((state) {
-  index.value = state.queueIndex ?? 0;
- printInfoDebug(state);
-});
-
-  
- 
-}
   void playIndex(int index) {
     var currentIndex = file.indexWhere(
       (e) => e.id == playerController.songNow.value?.id,
