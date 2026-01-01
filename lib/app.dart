@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       ),
       //themeMode: Get.find<ConfigCss>().themeMode.value,
       themeMode: ThemeMode.dark,
-      initialRoute: AppRoutes.home,
+      initialRoute: RouteName.home,
       onGenerateRoute: AppRoutes.generateRoute,
       enableLog: true,
       //  builder: (context, child) => Home(),

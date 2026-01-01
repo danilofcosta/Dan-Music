@@ -49,6 +49,7 @@ class _BuidListHorizotalState extends State<BuidListHorizotal> {
               children: [
                 Text(
                   widget.title,
+                  maxLines: 1,
                   style: const TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
@@ -89,7 +90,3 @@ class _BuidListHorizotalState extends State<BuidListHorizotal> {
     );
   }
 }
-
-
-
-

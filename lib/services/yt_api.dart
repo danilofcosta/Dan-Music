@@ -9,7 +9,7 @@ class YouTubeMusicService {
 
   Future<void> init() async {
     try {
-      ytmusic = await YTMusic.create(language: 'en');
+      ytmusic = await YTMusic.create(language: 'pt');
       printInfoDebug('YTMusic initialized');
     } catch (e, s) {
       printErrorDebug('Failed to initialize YTMusic: $e');

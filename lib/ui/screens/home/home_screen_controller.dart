@@ -5,8 +5,7 @@ import '../../../services/greeting.dart';
 import '../../../services/yt_api.dart';
 
 class HomeScreenController extends GetxController {
-  final YouTubeMusicService youTubeService =
-      Get.find<YouTubeMusicService>();
+  final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
 
   final RxString greeting = 'Welcome back'.obs;
   final RxList<HomeSection> homeSection = <HomeSection>[].obs;
@@ -16,18 +15,15 @@ class HomeScreenController extends GetxController {
     super.onInit();
     greeting.value = getGreeting();
     initYouTubeMusicService();
-    
   }
 
   Future<void> initYouTubeMusicService() async {
     await youTubeService.init();
     getHomeSections();
-   
   }
 
   Future<void> getHomeSections() async {
     final temp = await youTubeService.getHome();
     homeSection.addAll(temp);
-    printInfo(info: 'nm,.;');
   }
 }

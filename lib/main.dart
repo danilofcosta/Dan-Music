@@ -1,4 +1,5 @@
 import 'package:danmusic/services/yt_api.dart';
+import 'package:danmusic/ui/screens/player/player_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -17,5 +18,6 @@ void main() async {
 
 Future<void> startApplicationServices() async {
   Get.lazyPut(() => HomeScreenController(), fenix: true);
+  Get.lazyPut(() => PlayerController(), fenix: true);
   
 }
