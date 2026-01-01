@@ -1,24 +1,33 @@
 import 'package:get/get.dart';
 
+import '../../../models/home_section.dart';
 import '../../../services/greeting.dart';
 import '../../../services/yt_api.dart';
 
 class HomeScreenController extends GetxController {
-  final controller = Get.find<YouTubeMusicService>();
+  final YouTubeMusicService youTubeService =
+      Get.find<YouTubeMusicService>();
 
-  final greeting = 'welcome to back'.obs;
+  final RxString greeting = 'Welcome back'.obs;
+  final RxList<HomeSection> homeSection = <HomeSection>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     greeting.value = getGreeting();
     initYouTubeMusicService();
-
+    
   }
 
-  void initYouTubeMusicService() async {
-    await controller.init();
-    controller.getHome();
+  Future<void> initYouTubeMusicService() async {
+    await youTubeService.init();
+    getHomeSections();
+   
+  }
 
+  Future<void> getHomeSections() async {
+    final temp = await youTubeService.getHome();
+    homeSection.addAll(temp);
+    printInfo(info: 'nm,.;');
   }
 }

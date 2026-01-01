@@ -2,10 +2,10 @@ class Thumbnail {
 
 
   final String url;
-  final double width;
-  final double height ;
+  final int width;
+  final int height ;
 
-  Thumbnail(this.url, this.width, this.height);
+  Thumbnail({ required this.url,required this.width, required this.height});
 
 
 }

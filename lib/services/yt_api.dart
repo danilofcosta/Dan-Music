@@ -1,8 +1,8 @@
 import 'package:ytmusicapi_dart/ytmusicapi_dart.dart';
 
+import '../models/home_section.dart';
 import 'parses/parse_home_section.dart' show ParseHomeSessions;
 import 'uteis/helper.dart';
-
 
 class YouTubeMusicService {
   YTMusic? ytmusic;
@@ -17,14 +17,13 @@ class YouTubeMusicService {
     }
   }
 
-  Future<void> getHome() async {
+  Future<List<HomeSection>> getHome() async {
     if (ytmusic == null) {
       throw Exception('YTMusic not initialized');
     }
     final res = await ytmusic!.getHome();
 
-    printErrorDebug(res);
-    ParseHomeSessions.parseHomeSections(res);
+    return ParseHomeSessions.parseHomeSections(res);
   }
 
   void close() {
