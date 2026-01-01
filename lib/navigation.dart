@@ -14,7 +14,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
 
       case RouteName.player:
-        return MaterialPageRoute(builder: (_) => const Player());
+        return MaterialPageRoute(builder: (_) => 
+         Player());
 
       default:
         return MaterialPageRoute(

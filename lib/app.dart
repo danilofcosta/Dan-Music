@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
         scaffoldBackgroundColor: Colors.black,
         appBarTheme: const AppBarTheme(backgroundColor: Colors.black),
-        colorScheme: const ColorScheme.dark(
-          primary: Color.fromARGB(255, 210, 126, 31), // roxo principal
-        ),
+        // colorScheme: const ColorScheme.dark(
+        //   primary: Color.fromARGB(255, 210, 126, 31), // roxo principal
+        // ),
       ),
       //themeMode: Get.find<ConfigCss>().themeMode.value,
       themeMode: ThemeMode.dark,

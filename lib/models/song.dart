@@ -15,4 +15,20 @@ class Song extends MediaItem {
     super.album,
     super.artUri, this.artists
   });
+   factory Song.fromMediaItem(
+    MediaItem item, {
+    String? albumId,
+    List<ArtistBasic>? artists,
+  }) {
+    return Song(
+      id: item.id,
+      title: item.title,
+      artist: item.artist,
+      album: item.album,
+      duration: item.duration,
+      artUri: item.artUri,
+      albumId: albumId,
+      artists: artists,
+    );
+  }
 }

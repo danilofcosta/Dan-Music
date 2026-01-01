@@ -1,4 +1,3 @@
-
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
@@ -18,7 +17,6 @@ Future<MyAudioHandler> initAudioService() async {
   );
 }
 
-
 class MediaState {
   final MediaItem? mediaItem;
   final Duration position;
@@ -27,30 +25,41 @@ class MediaState {
 }
 
 class MyAudioHandler extends BaseAudioHandler with SeekHandler {
- static final _item = Song(
+  static final _item = Song(
     id: 'https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3',
     album: "Science Friday",
     title: "A Salute To Head-Scratching Science",
     artist: "Science Friday and WNYC Studios",
     duration: const Duration(milliseconds: 5739820),
     artUri: Uri.parse(
-        'https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg'),
+      'https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg',
+    ),
   );
 
-  final _player = AudioPlayer();
+  final AudioPlayer _player = AudioPlayer();
+  Stream<Duration> get positionStream => _player.positionStream;
+  Stream<Duration> get positionBuffered => _player.bufferedPositionStream;
+  Stream<Duration?> get durationStream => _player.durationStream;
+  Stream<bool> get isPlayingStream => _player.playingStream;
 
-  /// Initialise our audio handler.
-  MyAudioHandler() { 
-    _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
-   mediaItem.add(_item);
-
-    
-  // _player.setAudioSource(AudioSource.uri(Uri.parse(_item.id)));
-  // _player.play();
+  AudioPlayer get player => _player;
+  MyAudioHandler() {
+    _init();
   }
 
-  
+  Future<void> _init() async {
+    // Carrega o áudio
+    await _player.setAudioSource(AudioSource.uri(Uri.parse(_item.id)));
 
+    // Atualiza MediaItem com duração real
+    mediaItem.add(_item);
+    _player.play();
+
+    // Atualiza PlaybackState continuamente
+    _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
+  }
+
+  // CONTROLES
   @override
   Future<void> play() => _player.play();
 
@@ -63,12 +72,12 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> stop() => _player.stop();
 
- 
+  // TRANSFORMA EVENTOS
   PlaybackState _transformEvent(PlaybackEvent event) {
     return PlaybackState(
       controls: [
         MediaControl.rewind,
-        if (_player.playing) MediaControl.pause else MediaControl.play,
+        _player.playing ? MediaControl.pause : MediaControl.play,
         MediaControl.stop,
         MediaControl.fastForward,
       ],
@@ -89,7 +98,6 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       updatePosition: _player.position,
       bufferedPosition: _player.bufferedPosition,
       speed: _player.speed,
-      queueIndex: event.currentIndex,
     );
   }
 }
