@@ -10,28 +10,32 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  ytmusicapi_dart: ^2.3.0
+  #manager audio
   audio_service: ^0.18.18
   just_audio: ^0.10.5
-  # just_audio: 
-  #   path: ../just_audio/just_audio
+  audio_session: ^0.2.2
 
 
-
-  
-  cached_network_image: ^3.4.1
+  #maneger get audio
   flutter_new_pipe_extractor:
     git:
      url: https://github.com/danilofcosta/flutter_new_pipe_extractor.git
-  provider: ^6.1.5+1
-  dart_ytmusic_api: ^1.3.6
-  audio_session: ^0.2.2
+  youtube_explode_dart: ^3.0.5
+  
+ # api youtube
+  ytmusicapi_dart: ^2.3.0
+  
+  #ui
+  palette_generator: ^0.3.3+7
+  cached_network_image: ^3.4.1
+  
+  #manage state  
   get: ^4.7.3
   path_provider: ^2.1.5
-  youtube_explode_dart: ^3.0.5
-  palette_generator: ^0.3.3+7
   rxdart: ^0.28.0
+  # extras
+
+
 
 
 
@@ -40,25 +44,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
+
   flutter_lints: ^6.0.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
   #   - images/a_dot_burr.jpeg

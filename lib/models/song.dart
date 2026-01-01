@@ -1,28 +1,15 @@
-import '/models/album_info.dart';
-import '/models/artist.dart';
+import 'package:audio_service/audio_service.dart';
 
-class Song {
-  final String videoid;
-  final String title;
-  final AlbumInfo? albumInfo;
-  final String? views;
-  final String? artist;
-  final List<Artistdetail>? artistdetail;
-  final List<String>? thumbnails;
-  final bool isExplicit;
-  final String? duration;
-  final int? secondsduration;
+class Song extends MediaItem {
+  final String? albumId;
 
   Song({
-    required this.videoid,
-    required this.title,
-    this.albumInfo,
-    this.views,
-    required this.artist,
-    this.thumbnails, // Opcional (não required)
-    this.artistdetail, // Opcional (não required)
-    this.isExplicit = false,
-    this.duration,
-    this.secondsduration, // Opcional com valor padrão
+    required super.id,
+    required super.title,
+    this.albumId,
+    super.artist,
+    super.duration,
+    super.album,
+    super.artUri
   });
 }
