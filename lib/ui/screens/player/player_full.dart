@@ -26,7 +26,6 @@ class _PlayerFullState extends State<PlayerFull> {
       child: Container(
         width: width,
         height: height,
-        color: Colors.red,
 
         child: Column(
           spacing: 5,
@@ -68,7 +67,7 @@ class _PlayerFullState extends State<PlayerFull> {
               ),
             ),
 
-            Spacer(),
+            //Spacer(),
           ],
         ),
       ),

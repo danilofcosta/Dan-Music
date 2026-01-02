@@ -15,7 +15,6 @@ class Player extends StatefulWidget {
 }
 
 class _PlayerState extends State<Player> {
-  
   final controller = Get.find<PlayerController>();
 
   @override
@@ -42,18 +41,18 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
       backgroundColor: Colors.transparent,
       body: DraggableScrollableSheet(
-        controller:  controller.draggableController,
+        controller: controller.draggableController,
         initialChildSize: 0.10,
         minChildSize: 0.10,
-        //maxChildSize: 0.75,
+        maxChildSize: 1,
+        
         builder: (context, scrollController) {
           return Container(
             // margin: EdgeInsetsDirectional.only(bottom: 30),
             decoration: BoxDecoration(
-              //color: Colors.cyan,
+              color: Colors.cyan,
 
               // color: Theme.of(context).scaffoldBackgroundColor,
               border: Border.all(color: Colors.white12),

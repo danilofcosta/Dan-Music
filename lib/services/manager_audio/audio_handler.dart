@@ -25,7 +25,7 @@ class MediaState {
 }
 
 class MyAudioHandler extends BaseAudioHandler with SeekHandler {
-  static final _item = Song(
+  static final item = Song(
     id: 'https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3',
     album: "Science Friday",
     title: "A Salute To Head-Scratching Science",
@@ -49,11 +49,11 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   Future<void> _init() async {
     // Carrega o áudio
-    await _player.setAudioSource(AudioSource.uri(Uri.parse(_item.id)));
+   // await _player.setAudioSource(AudioSource.uri(Uri.parse(_item.id)));
 
-    // Atualiza MediaItem com duração real
-    mediaItem.add(_item);
-    _player.play();
+    // // Atualiza MediaItem com duração real
+    // mediaItem.add(_item);
+    // _player.play();
 
     // Atualiza PlaybackState continuamente
     _player.playbackEventStream.map(_transformEvent).pipe(playbackState);

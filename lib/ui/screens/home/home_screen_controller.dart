@@ -1,3 +1,4 @@
+import 'package:danmusic/services/uteis/helper.dart';
 import 'package:get/get.dart';
 
 import '../../../models/home_section.dart';
@@ -23,7 +24,10 @@ class HomeScreenController extends GetxController {
   }
 
   Future<void> getHomeSections() async {
+    try{
     final temp = await youTubeService.getHome();
-    homeSection.addAll(temp);
+    homeSection.addAll(temp);}catch(error){
+printErrorDebug('erro ao acessar a api');
+    }
   }
 }
