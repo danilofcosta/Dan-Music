@@ -39,9 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     FloatingActionButton(
                       onPressed: () {
-                        AppRoutes.generateRoute(
-                          RouteSettings(name: RouteName.search),
-                        );
+                        Get.toNamed(RouteName.search);
                       },
                       child: const Icon(Icons.search),
                     ),

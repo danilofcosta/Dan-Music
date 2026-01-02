@@ -29,20 +29,6 @@ class MyApp extends StatelessWidget {
       initialRoute: RouteName.home,
       onGenerateRoute: AppRoutes.generateRoute,
       enableLog: true,
-      //  builder: (context, child) => Home(),
-    );
-  }
-}
-
-class Home extends StatelessWidget {
-  const Home({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 5,
-      height: 50,
-      child: const Icon(Icons.ac_unit_rounded),
     );
   }
 }

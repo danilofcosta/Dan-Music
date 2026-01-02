@@ -5,9 +5,7 @@ import '../../models/song.dart';
 import '../../models/thumbnail.dart';
 import 'parse_thumbnail.dart';
 class ParseSong {
-  static String artistsToString(List<ArtistBasic> artists) {
-    return artists.map((a) => a.name).join(', ');
-  }
+  
 
   static Song song(Map<String, dynamic> jsonData) {
     final List<ArtistBasic> artists =
@@ -17,7 +15,7 @@ class ParseSong {
             })
             .toList();
 
-    final String rawArtist = artistsToString(artists);
+    final String rawArtist =  ParseArtist.artistsToString(artists);
 
     final String id = jsonData['videoId'] ?? '';
     final String title = jsonData['title'] ?? '';

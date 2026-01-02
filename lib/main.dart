@@ -10,7 +10,9 @@ import 'ui/screens/home/home_screen_controller.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Get.put<MyAudioHandler>(await initAudioService(), permanent: true);
-  Get.put<YouTubeMusicService>(YouTubeMusicService(), permanent: true);
+  final youTubeMusicService = YouTubeMusicService();
+  await youTubeMusicService.init();
+  Get.put<YouTubeMusicService>(youTubeMusicService, permanent: true);
   await startApplicationServices();
 
   runApp(MyApp());
@@ -19,5 +21,4 @@ void main() async {
 Future<void> startApplicationServices() async {
   Get.lazyPut(() => HomeScreenController(), fenix: true);
   Get.lazyPut(() => PlayerController(), fenix: true);
-  
 }

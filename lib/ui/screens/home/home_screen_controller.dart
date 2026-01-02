@@ -24,10 +24,12 @@ class HomeScreenController extends GetxController {
   }
 
   Future<void> getHomeSections() async {
-    try{
-    final temp = await youTubeService.getHome();
-    homeSection.addAll(temp);}catch(error){
-printErrorDebug('erro ao acessar a api');
+    try {
+      final temp = await youTubeService.getHome();
+      homeSection.addAll(temp);
+    } catch (error, stackTrace) {
+      printErrorDebug('Erro ao acessar a API: $error');
+      printErrorDebug(stackTrace);
     }
   }
 }
