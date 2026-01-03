@@ -1,4 +1,4 @@
-import 'package:danmusic/ui/widgets/song_card.dart';
+import 'package:danmusic/ui/widgets/cards/song_card.dart';
 
 import '/models/song.dart';
 import 'package:flutter/material.dart';

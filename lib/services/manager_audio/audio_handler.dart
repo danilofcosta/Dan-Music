@@ -3,6 +3,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../models/song.dart';
+import '../../models/search/search_song.dart';
 
 Future<MyAudioHandler> initAudioService() async {
   final session = await AudioSession.instance;
@@ -49,7 +50,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   Future<void> _init() async {
     // Carrega o áudio
-   // await _player.setAudioSource(AudioSource.uri(Uri.parse(_item.id)));
+    // await _player.setAudioSource(AudioSource.uri(Uri.parse(_item.id)));
 
     // // Atualiza MediaItem com duração real
     // mediaItem.add(_item);
@@ -71,6 +72,12 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> stop() => _player.stop();
+
+  /// Adiciona um `SearchSong` como `MediaItem` ao handler.
+  Future<void> addSearchSongAsMediaItem(SearchSong s) async {
+    final media = Song.fromSearchSong(s);
+    mediaItem.add(media);
+  }
 
   // TRANSFORMA EVENTOS
   PlaybackState _transformEvent(PlaybackEvent event) {

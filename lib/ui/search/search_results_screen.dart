@@ -1,16 +1,28 @@
-import 'package:danmusic/models/search_result.dart';
+import 'package:danmusic/models/search/search_result.dart';
 import 'package:danmusic/services/parses/parse_search_result.dart';
 import 'package:danmusic/services/uteis/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../models/song.dart';
 import '../../services/yt_api.dart';
-import '../widgets/artist_card.dart';
+import '../widgets/cards/artist_card.dart';
+import '../widgets/cards/song_card.dart';
+import '../widgets/cards/album_card.dart';
+import '../widgets/cards/playlist_card.dart';
+import '../widgets/cards/video_card.dart';
+import '../widgets/cards/profile_card.dart';
+import 'package:danmusic/models/artist.dart';
+import 'package:danmusic/models/search/search_song.dart';
+import 'package:danmusic/models/search/search_album.dart';
+import 'package:danmusic/models/search/search_playlist.dart';
+import 'package:danmusic/models/search/search_video.dart';
+import 'package:danmusic/models/search/search_profile.dart';
 import 'search_controller.dart' show Filtros;
 
 class SearchResultsController extends GetxController {
   final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
-  final RxString query = ''.obs; //TODO: '
+  final RxString query = ''.obs; 
   final RxString searchQuery = ''.obs;
   final RxString searchText = ''.obs;
   final RxList<String> suggestions = <String>[].obs;
@@ -73,10 +85,10 @@ class SearchResultsController extends GetxController {
     }
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  // }
 
   void featdataResults() {
     switch (selectedFilter.value) {
@@ -95,14 +107,40 @@ class SearchResultsController extends GetxController {
   }
 
   void getResultsAll() async {
-    final widgets = searchResults.map((res) {
+    Widget widgetFromResult(SearchResult res) {
+      final content = res.content;
+
+      if (content is ArtistDetail) return ArtistCard(artist: content);
+      //
+       if (content is SearchSong) return SongCard(song:content as Song);
+      if (content is SearchAlbum) return AlbumCard(album: content);
+      if (content is SearchPlaylist) return PlaylistCard(playlist: content);
+      if (content is SearchVideo) return VideoCard(video: content);
+      if (content is SearchProfile) return ProfileCard(profile: content);
+
+      // Fallback by declared type
       switch (res.type) {
         case 'artist':
-          return ArtistCard(artist: res.content);
+          return ArtistCard(artist: content as ArtistDetail);
+        case 'song':
+          return SongCard(song: content);
+        case 'album':
+          return AlbumCard(album: content as SearchAlbum);
+        case 'playlist':
+          return PlaylistCard(playlist: content as SearchPlaylist);
+        case 'video':
+          return VideoCard(video: content as SearchVideo);
+        case 'profile':
+          return ProfileCard(profile: content as SearchProfile);
         default:
-          return Icon(Icons.error, color: Colors.redAccent);
+          return ListTile(
+            leading: const Icon(Icons.error, color: Colors.redAccent),
+            title: Text('Unknown result: ${res.type}'),
+          );
       }
-    }).toList();
+    }
+
+    final widgets = searchResults.map(widgetFromResult).toList();
 
     all.assignAll(widgets);
     selectedItems.assignAll(widgets);

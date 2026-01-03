@@ -23,7 +23,7 @@ class _PlayerFullState extends State<PlayerFull> {
     final height = MediaQuery.of(context).size.height;
 
     return SafeArea(
-      child: Container(
+      child: SizedBox(
         width: width,
         height: height,
 

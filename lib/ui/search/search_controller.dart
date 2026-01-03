@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:danmusic/models/search_result.dart';
+import 'package:danmusic/models/search/search_result.dart';
 import 'package:danmusic/services/parses/parse_search_result.dart';
 import 'package:danmusic/services/uteis/helper.dart';
 

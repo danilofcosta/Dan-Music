@@ -1,10 +1,12 @@
 import 'package:audio_service/audio_service.dart';
-
-import 'artist.dart';
+import 'package:danmusic/models/search/search_song.dart';
 
 class Song extends MediaItem {
   final String? albumId;
-  final  List<ArtistBasic>? artists;
+  final List<dynamic>? artists;
+  final String? views;
+  final String? durationText;
+  final bool? isExplicit;
 
   Song({
     required super.id,
@@ -13,12 +15,14 @@ class Song extends MediaItem {
     super.artist,
     super.duration,
     super.album,
-    super.artUri, this.artists
+    super.artUri,
+    this.artists, this.views, this.isExplicit, this.durationText,
   });
-   factory Song.fromMediaItem(
+
+  factory Song.fromMediaItem(
     MediaItem item, {
     String? albumId,
-    List<ArtistBasic>? artists,
+    List<dynamic>? artists,
   }) {
     return Song(
       id: item.id,
@@ -29,6 +33,24 @@ class Song extends MediaItem {
       artUri: item.artUri,
       albumId: albumId,
       artists: artists,
+    );
+  }
+
+  
+  factory Song.fromSearchSong(SearchSong s) {
+    final artistText = s.artists.isNotEmpty
+        ? s.artists.map((a) => a.name).join(', ')
+        : null;
+    return Song(
+      id: s.videoId,
+      title: s.title,
+      artist: artistText,
+      album: s.albumName,
+      duration: s.durationSeconds != null
+          ? Duration(seconds: s.durationSeconds!)
+          : null,
+      albumId: s.albumId,
+      artists: s.artists,
     );
   }
 }

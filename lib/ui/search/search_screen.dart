@@ -114,6 +114,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         await Clipboard.setData(
                           ClipboardData(text: suggestion),
                         );
+                        if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('$suggestion copied')),
                         );
