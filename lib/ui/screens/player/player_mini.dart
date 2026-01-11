@@ -1,4 +1,4 @@
-import 'package:danmusic/ui/screens/player/widgets_player/player_controller.dart';
+import 'package:danmusic/ui/screens/player/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +14,7 @@ class PlayerMini extends StatelessWidget {
       return Container(
         margin: EdgeInsets.only(left: 12, right: 12),
         decoration: BoxDecoration(
-          color: Colors.amber,
+          //   color: Colors.amber,
           borderRadius: BorderRadius.circular(8),
 
           border: BoxBorder.all(color: Colors.white, width: 2),

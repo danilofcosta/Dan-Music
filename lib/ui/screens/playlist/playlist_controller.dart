@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../models/playlist.dart';
 import '../../../services/yt_api.dart';
-import '../player/widgets_player/player_controller.dart';
+import '../player/player_controller.dart';
 
 class PlaylistController extends GetxController {
   final audiohander = Get.find<PlayerController>();

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../models/song.dart';
 import '../../../services/uteis/format_duration.dart';
 import '../../../services/uteis/load_image.dart';
+import '../../screens/player/player_controller.dart';
 
 class SongCard extends StatefulWidget {
   final Song song;
@@ -16,6 +18,10 @@ class _SongCardState extends State<SongCard> {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        onTap: () {
+          final controller = Get.find<PlayerController>();
+          controller.playById(widget.song);
+        },
         leading: SizedBox(
           width: 80,
           child: ClipRRect(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import '../../services/uteis/load_image.dart';
+import '../../services/uteis/update_papilite.dart';
 
 class BaseScreen extends StatefulWidget {
   final String thumb;
@@ -28,26 +29,18 @@ class _BaseScreenState extends State<BaseScreen> {
   ImageProvider? _lastProvider;
 
   Future<void> _updatePalette(String imagePath) async {
-    final provider = LoadImage.loadProvider(imagePath);
-    if (provider == null || provider == _lastProvider) return;
-
-    _lastProvider = provider;
-
-    final palette = await PaletteGenerator.fromImageProvider(provider);
     if (!mounted) return;
-
+    final dominantColor = await updatePalette(imagePath);
     setState(() {
-      _dominantColor =
-          palette.dominantColor?.color.withValues(alpha: 0.9) ?? Colors.black;
+      _dominantColor = dominantColor;
     });
   }
+
   @override
-void didChangeDependencies() {
-  super.didChangeDependencies();
-  _updatePalette(widget.thumb);
-}
-
-
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updatePalette(widget.thumb);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +177,7 @@ void didChangeDependencies() {
                   },
                   child: SongCard(song: track),
                 );
-              }, childCount: widget.tracks.length ),
+              }, childCount: widget.tracks.length),
             ),
         ],
       ),

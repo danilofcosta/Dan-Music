@@ -4,6 +4,7 @@ import 'package:just_audio/just_audio.dart';
 
 import '../../models/song.dart';
 import '../../models/search/search_song.dart';
+import 'manage_audio_url.dart';
 
 Future<MyAudioHandler> initAudioService() async {
   final session = await AudioSession.instance;
@@ -79,7 +80,14 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     mediaItem.add(media);
   }
 
-  // TRANSFORMA EVENTOS
+  Future<void> playById(Song song) async {
+    final url = await ManageAudioURL.getAudioUrlNewpipe(song.id);
+
+    await _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
+    mediaItem.add(song);
+    _player.play();
+  }
+
   PlaybackState _transformEvent(PlaybackEvent event) {
     return PlaybackState(
       controls: [

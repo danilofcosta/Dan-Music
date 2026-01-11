@@ -2,7 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-import 'player_controller.dart' show PlayerController;
+import '../player_controller.dart' show PlayerController;
 
 class BulidText extends StatelessWidget {
   const BulidText({super.key});

@@ -15,3 +15,6 @@ class ArtistDetail extends ArtistBasic {
       required super.id,
       required this.subscribers,
       required this.thumbnails});}
+
+
+class ArtistFull {}

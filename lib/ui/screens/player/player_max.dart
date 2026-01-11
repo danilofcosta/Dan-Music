@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import 'widgets_player/buil_buttons.dart';
 import 'widgets_player/build_cover.dart';
-import 'widgets_player/player_controller.dart' show PlayerController;
+import 'player_controller.dart' show PlayerController;
 import 'widgets_player/slider_temp.dart';
 import 'widgets_player/text.dart';
 
@@ -30,24 +30,26 @@ class _PlayerMaxState extends State<PlayerMax> {
         child: Column(
           spacing: 5,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    controller.setminplayer();
-                  },
-                  icon: Icon(Icons.keyboard_arrow_down),
-                ),
-                Text('Tocando a playlisy ...'),
-                IconButton(
-                  onPressed: () {
-                    controller.setminplayer();
-                  },
-                  icon: Icon(Icons.more_vert),
-                ),
-              ],
+            Flexible(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      controller.setminplayer();
+                    },
+                    icon: Icon(Icons.keyboard_arrow_down),
+                  ),
+                  Text('Tocando a playlisy ...'),
+                  IconButton(
+                    onPressed: () {
+                      controller.setminplayer();
+                    },
+                    icon: Icon(Icons.more_vert),
+                  ),
+                ],
+              ),
             ),
             //  Spacer(flex: 2),
             BuildCover(),

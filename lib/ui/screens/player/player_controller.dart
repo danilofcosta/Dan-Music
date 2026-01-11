@@ -2,13 +2,14 @@ import 'package:danmusic/models/song.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../services/manager_audio/audio_handler.dart';
+import '../../../services/manager_audio/audio_handler.dart';
 
 class PlayerController extends GetxController {
   final DraggableScrollableController draggableController =
       DraggableScrollableController();
   final MyAudioHandler audioHandler = Get.find<MyAudioHandler>();
-  final  songNow = Song(id: '', title: '').obs;
+  final songNow = Song(id: '', title: '').obs;
+
   /// true = PlayerFull | false = PlayerMini
   final RxBool playerOpen = false.obs;
 
@@ -32,14 +33,20 @@ class PlayerController extends GetxController {
   }
 
   void setminplayer() {
+    print('setMinPlayer');
+    playerOpen.value = !playerOpen.value;
+    return;
     draggableController.animateTo(
       0.10, // size (0.0 a 1.0)
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
   }
-  
+
   void setMaxplayer() {
+    playerOpen.value = !playerOpen.value;
+    return;
+
     draggableController.animateTo(
       1, // size (0.0 a 1.0)
       duration: const Duration(milliseconds: 300),
@@ -47,17 +54,17 @@ class PlayerController extends GetxController {
     );
   }
 
-
   void listenMediaItem() {
     audioHandler.mediaItem.listen((item) {
       if (item != null) {
-        songNow.value = Song.fromMediaItem(
-          item
-        );
+        songNow.value = Song.fromMediaItem(item);
       }
     });
   }
 
+  void playById(Song song) async {
+    await audioHandler.playById(song);
+  }
 
   @override
   void onClose() {

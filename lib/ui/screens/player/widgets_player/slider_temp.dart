@@ -3,7 +3,7 @@ import 'package:danmusic/services/manager_audio/audio_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'player_controller.dart';
+import '../player_controller.dart';
 
 class MusicProgressBar extends StatefulWidget {
   const MusicProgressBar({super.key});

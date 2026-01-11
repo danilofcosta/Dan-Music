@@ -91,7 +91,18 @@ class YouTubeMusicService {
     }
   }
 
-  void close() {
-    ytmusic?.close();
+  Future<void> getartistFull(String artistId) async {
+    if (ytmusic == null) {
+      throw Exception('YTMusic not initialized');
+    }
+    try {
+
+
+      await ytmusic!.getArtist(artistId);
+
+      return;
+    } catch (e, s) {printErrorDebug(e);printErrorDebug(s);}
+
+
   }
 }

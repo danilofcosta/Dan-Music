@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import '/services/uteis/load_image.dart';
-import 'player_controller.dart' show PlayerController;
+import '../player_controller.dart' show PlayerController;
 
 class BuildCover extends StatelessWidget {
   const BuildCover({super.key});

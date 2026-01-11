@@ -1,10 +1,11 @@
 import 'package:danmusic/models/song.dart';
+import 'package:danmusic/ui/screens/player/player.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../navigation.dart';
 import '../../widgets/buid_list_horizotal.dart';
-import '../player/widgets_player/player_controller.dart';
+import '../player/player_controller.dart';
 import 'home_screen_controller.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,25 +32,42 @@ class _HomeScreenState extends State<HomeScreen> {
           //     style: TextStyle(fontWeight: FontWeight.bold),
           //   ),
           // ),
-          floatingActionButton: controllerPlayerController.playerOpen.value
-              ? null
-              : FloatingActionButton(
-                  onPressed: () {
-                    Get.toNamed(RouteName.search);
-                  },
-                  child: const Icon(Icons.search),
-                ),
+          //bottomSheet: Player(),
+          // floatingActionButton: controllerPlayerController.playerOpen.value
+          //     ? null
+          //     : FloatingActionButton(
+          //         onPressed: () {
+          //           Get.toNamed(RouteName.search);
+          //         },
+          //         child: const Icon(Icons.search),
+          //       ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Get.toNamed(RouteName.search);
+            },
+            child: const Icon(Icons.search),
+          ),
+
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          persistentFooterButtons: [Player()],
+          persistentFooterDecoration: BoxDecoration(color: Colors.transparent),
+
           body: controller.homeSection.isEmpty
               ? ProgressIndicator()
-              : CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: BuidListHorizotal(
-                        title: controller.homeSection.first.title,
-                        songs: controller.homeSection.first.contents
-                            .cast<Song>(),
-                      ),
+              : Stack(
+                  children: [
+                    CustomScrollView(
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: BuidListHorizotal(
+                            title: controller.homeSection.first.title,
+                            songs: controller.homeSection.first.contents
+                                .cast<Song>(),
+                          ),
+                        ),
+                      ],
                     ),
+                    //    Player(),
                   ],
                 ),
         );
