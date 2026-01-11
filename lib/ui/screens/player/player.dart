@@ -2,7 +2,7 @@ import 'package:danmusic/ui/screens/player/widgets_player/player_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'player_full.dart';
+import 'player_max.dart';
 import 'player_mini.dart';
 
 class Player extends StatefulWidget {
@@ -41,18 +41,19 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       backgroundColor: Colors.transparent,
       body: DraggableScrollableSheet(
         controller: controller.draggableController,
         initialChildSize: 0.10,
         minChildSize: 0.10,
         maxChildSize: 1,
-        
+
         builder: (context, scrollController) {
           return Container(
             // margin: EdgeInsetsDirectional.only(bottom: 30),
             decoration: BoxDecoration(
-              color: Colors.cyan,
+              //color: Colors.cyan,
 
               // color: Theme.of(context).scaffoldBackgroundColor,
               border: Border.all(color: Colors.white12),
@@ -63,7 +64,7 @@ class _PlayerState extends State<Player> {
                 controller: scrollController,
                 children: [
                   controller.playerOpen.value
-                      ? const PlayerFull()
+                      ? const PlayerMax()
                       : const PlayerMini(),
                 ],
               );

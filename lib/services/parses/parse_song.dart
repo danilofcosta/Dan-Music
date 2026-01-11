@@ -26,7 +26,7 @@ class ParseSong {
       id: id,
       title: title,
       artist: rawArtist,
-      artUri: Uri.parse(cover.first.url),
+      artUri: cover.isNotEmpty ? Uri.parse(cover.first.url) : null,
       artists: artists,
     );
   }

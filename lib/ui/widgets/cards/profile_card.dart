@@ -15,7 +15,7 @@ class ProfileCard extends StatelessWidget {
           ? CircleAvatar(backgroundImage: NetworkImage(thumb))
           : const Icon(Icons.person),
       title: Text(profile.title),
-      subtitle: Text(profile.name),
+      subtitle: Text('profile.name'),
     );
   }
 }

@@ -14,33 +14,37 @@ class SongCard extends StatefulWidget {
 class _SongCardState extends State<SongCard> {
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: LoadImage.loadWidget(
-        widget.song.artUri.toString(),
+    return Card(
+      child: ListTile(
+        leading: SizedBox(
+          width: 80,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
 
-        errorBuildericon: Icons.music_note,
-      ),
-      title: Text(
-        widget.song.title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: widget.song.artist == null
-          ? null
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  widget.song.artist!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(width: 5),
-                if (widget.song.duration != null)
-                  Text(formatDuration(widget.song.duration!)),
-              ],
+            child: LoadImage.loadWidget(
+              widget.song.artUri.toString(),
+              fit: BoxFit.contain,
+
+              errorBuildericon: Icons.music_note,
             ),
+          ),
+        ),
+        title: Text(
+          widget.song.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: widget.song.artist == null
+            ? null
+            : Text(
+                widget.song.artist!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+        trailing: widget.song.duration != null
+            ? Text(formatDuration(widget.song.duration!))
+            : null,
+      ),
     );
   }
 }

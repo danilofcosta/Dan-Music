@@ -11,25 +11,35 @@ class PlayerMini extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final controller = Get.find<PlayerController>();
-      return ListTile(
-        onTap: () => controller.setMaxplayer(),
-        leading: ClipRRect(
+      return Container(
+        margin: EdgeInsets.only(left: 12, right: 12),
+        decoration: BoxDecoration(
+          color: Colors.amber,
           borderRadius: BorderRadius.circular(8),
-          child: LoadImage.loadWidget(
-            controller.songNow.value.artUri.toString(),
 
-            errorBuildericon: Icons.music_note,
+          border: BoxBorder.all(color: Colors.white, width: 2),
+        ),
+
+        child: ListTile(
+          onTap: () => controller.setMaxplayer(),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LoadImage.loadWidget(
+              controller.songNow.value.artUri.toString(),
+
+              errorBuildericon: Icons.music_note,
+            ),
           ),
-        ),
-        title: Text(
-          controller.songNow.value.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          controller.songNow.value.artist ?? '',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+          title: Text(
+            controller.songNow.value.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            controller.songNow.value.artist ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       );
     });

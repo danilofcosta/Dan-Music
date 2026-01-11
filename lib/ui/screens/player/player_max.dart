@@ -7,14 +7,14 @@ import 'widgets_player/player_controller.dart' show PlayerController;
 import 'widgets_player/slider_temp.dart';
 import 'widgets_player/text.dart';
 
-class PlayerFull extends StatefulWidget {
-  const PlayerFull({super.key});
+class PlayerMax extends StatefulWidget {
+  const PlayerMax({super.key});
 
   @override
-  State<PlayerFull> createState() => _PlayerFullState();
+  State<PlayerMax> createState() => _PlayerMaxState();
 }
 
-class _PlayerFullState extends State<PlayerFull> {
+class _PlayerMaxState extends State<PlayerMax> {
   final controller = Get.find<PlayerController>();
 
   @override

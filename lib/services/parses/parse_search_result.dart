@@ -61,7 +61,7 @@ class ParseSearchResult {
         String? artist;
         int seconds = 0;
 
-        if (data.containsKey('artists')) {
+        if (data.containsKey('artists') && (data['artists'] as List).isNotEmpty) {
           artist = data['artists'][0]['name'];
         }
         if (data.containsKey('artist')) {
@@ -94,7 +94,7 @@ class ParseSearchResult {
 
             isExplicit: isExplicit, //
             duration: Duration(seconds: seconds),
-            artUri: Uri.parse(thumbs.first.url),
+            artUri: thumbs.isNotEmpty ? Uri.parse(thumbs.first.url) : null,
           ),
         );
 

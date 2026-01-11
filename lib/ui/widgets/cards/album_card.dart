@@ -1,6 +1,10 @@
+import 'package:danmusic/models/artist.dart';
 import 'package:flutter/material.dart';
 import 'package:danmusic/models/search/search_album.dart';
+import 'package:get/get.dart';
 
+import '../../../models/album.dart';
+import '../../../navigation.dart';
 import '../../../services/uteis/load_image.dart';
 
 class AlbumCard extends StatelessWidget {
@@ -13,6 +17,18 @@ class AlbumCard extends StatelessWidget {
         ? album.thumbnails!.first.url
         : null;
     return ListTile(
+      onTap: () {
+        final albumNew = Album(
+          albumId: album.browseId,
+          thumbnails: album.thumbnails,
+          title: album.title,
+          artist: ArtistBasic(name:' album.artist'
+          , id: 'album.browseId'),
+          year: album.year,
+        );
+
+        Get.toNamed(RouteName.album, arguments: [album.browseId, albumNew]);
+      },
       leading: thumb != null
           ? LoadImage.loadWidget(
               thumb,

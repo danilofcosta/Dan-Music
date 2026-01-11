@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       initialRoute: RouteName.home,
       onGenerateRoute: AppRoutes.generateRoute,
-      enableLog: true,
+    //  enableLog: true,
     );
   }
 }

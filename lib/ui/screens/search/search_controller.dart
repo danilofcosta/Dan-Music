@@ -3,7 +3,7 @@ import 'package:danmusic/models/search/search_result.dart';
 import 'package:danmusic/services/parses/parse_search_result.dart';
 import 'package:danmusic/services/uteis/helper.dart';
 
-import '../../services/yt_api.dart';
+import '../../../services/yt_api.dart';
 
 class SearchController extends GetxController {
   final YouTubeMusicService youTubeService = Get.find();

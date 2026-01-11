@@ -1,24 +1,25 @@
-import 'package:danmusic/models/search/search_result.dart';
-import 'package:danmusic/services/parses/parse_search_result.dart';
-import 'package:danmusic/services/uteis/helper.dart';
+
+import 'package:danmusic/services/parses/parse_search_result.dart' show ParseSearchResult;
+import 'package:danmusic/services/yt_api.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../models/song.dart';
-import '../../services/yt_api.dart';
-import '../widgets/cards/artist_card.dart';
-import '../widgets/cards/song_card.dart';
-import '../widgets/cards/album_card.dart';
-import '../widgets/cards/playlist_card.dart';
-import '../widgets/cards/video_card.dart';
-import '../widgets/cards/profile_card.dart';
-import 'package:danmusic/models/artist.dart';
-import 'package:danmusic/models/search/search_song.dart';
-import 'package:danmusic/models/search/search_album.dart';
-import 'package:danmusic/models/search/search_playlist.dart';
-import 'package:danmusic/models/search/search_video.dart';
-import 'package:danmusic/models/search/search_profile.dart';
-import 'search_controller.dart' show Filtros;
+import '../../../models/artist.dart';
+import '../../../models/search/search_album.dart';
+import '../../../models/search/search_playlist.dart' show SearchPlaylist;
+import '../../../models/search/search_profile.dart';
+import '../../../models/search/search_result.dart' show SearchResult;
+import '../../../models/search/search_song.dart' show SearchSong;
+import '../../../models/search/search_video.dart';
+import '../../../models/song.dart';
+import '../../../services/uteis/helper.dart';
+import '../../widgets/cards/album_card.dart';
+import '../../widgets/cards/artist_card.dart';
+import '../../widgets/cards/playlist_card.dart';
+import '../../widgets/cards/profile_card.dart';
+import '../../widgets/cards/song_card.dart';
+import '../../widgets/cards/video_card.dart';
+import 'search_controller.dart';
 
 class SearchResultsController extends GetxController {
   final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
@@ -156,44 +157,5 @@ class SearchResultsController extends GetxController {
   void changeFilter(String filter) {
     selectedFilter.value = filter;
     featdataResults();
-  }
-}
-
-// NOTE: `Filtros` is defined in `search_controller.dart`; avoid duplicate symbol here.
-
-class SearchResultsScreen extends StatefulWidget {
-  final String query;
-  const SearchResultsScreen({super.key, required this.query});
-
-  @override
-  State<SearchResultsScreen> createState() => _SearchResultsScreenState();
-}
-
-class _SearchResultsScreenState extends State<SearchResultsScreen> {
-  late final SearchResultsController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = Get.put(SearchResultsController());
-    controller.search(widget.query);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Results for "${widget.query}"')),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (controller.selectedItems.isEmpty) {
-          return const Center(child: Text('No results'));
-        }
-
-        return ListView(children: controller.selectedItems);
-      }),
-    );
   }
 }

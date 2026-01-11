@@ -19,7 +19,16 @@ class VideoCard extends StatelessWidget {
         : null;
     return ListTile(
       leading: thumb != null
-          ? LoadImage.loadWidget(thumb, errorBuildericon: Icons.videocam)
+          ? SizedBox(
+              width: 50,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LoadImage.loadWidget(
+                  thumb,
+                  errorBuildericon: Icons.videocam,
+                ),
+              ),
+            )
           : const Icon(Icons.videocam),
       title: Text(video.title, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: _artistsText().isEmpty

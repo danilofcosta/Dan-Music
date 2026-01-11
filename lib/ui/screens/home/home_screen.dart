@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../navigation.dart';
-import '../player/player.dart';
 import '../../widgets/buid_list_horizotal.dart';
 import '../player/widgets_player/player_controller.dart';
 import 'home_screen_controller.dart';
@@ -34,37 +33,25 @@ class _HomeScreenState extends State<HomeScreen> {
           // ),
           floatingActionButton: controllerPlayerController.playerOpen.value
               ? null
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    FloatingActionButton(
-                      onPressed: () {
-                        Get.toNamed(RouteName.search);
-                      },
-                      child: const Icon(Icons.search),
+              : FloatingActionButton(
+                  onPressed: () {
+                    Get.toNamed(RouteName.search);
+                  },
+                  child: const Icon(Icons.search),
+                ),
+          body: controller.homeSection.isEmpty
+              ? ProgressIndicator()
+              : CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: BuidListHorizotal(
+                        title: controller.homeSection.first.title,
+                        songs: controller.homeSection.first.contents
+                            .cast<Song>(),
+                      ),
                     ),
-                    SizedBox(height: 70),
                   ],
                 ),
-          body: Stack(
-            children: [
-              controller.homeSection.isEmpty
-                  ? ProgressIndicator()
-                  : CustomScrollView(
-                      slivers: [
-                        SliverToBoxAdapter(
-                          child: BuidListHorizotal(
-                            title: controller.homeSection.first.title,
-                            songs: controller.homeSection.first.contents
-                                .cast<Song>(),
-                          ),
-                        ),
-                      ],
-                    ),
-
-              Player(),
-            ],
-          ),
         );
       }),
     );

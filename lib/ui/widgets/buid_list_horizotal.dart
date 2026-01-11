@@ -31,7 +31,7 @@ class _BuidListHorizotalState extends State<BuidListHorizotal> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 300,
+      height: 320,
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.6),

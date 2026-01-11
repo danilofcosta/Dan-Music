@@ -1,7 +1,11 @@
+import 'package:danmusic/models/playlist.dart';
 import 'package:ytmusicapi_dart/ytmusicapi_dart.dart';
 
+import '../models/album.dart';
 import '../models/home_section.dart';
+import 'parses/parse_album.dart';
 import 'parses/parse_home_section.dart' show ParseHomeSessions;
+import 'parses/parse_playlist.dart';
 import 'uteis/helper.dart';
 
 class YouTubeMusicService {
@@ -37,7 +41,7 @@ class YouTubeMusicService {
           .where((item) => item != null)
           .cast<String>()
           .toList();
-        
+
       return filteredSuggestions;
     } catch (e) {
       printErrorDebug('Error fetching suggestions: $e');
@@ -55,6 +59,35 @@ class YouTubeMusicService {
     } catch (e) {
       printErrorDebug('Error searching: $e');
       return [];
+    }
+  }
+
+  Future<PlaylistFull?> getPlaylist(String playlistId) async {
+    if (ytmusic == null) {
+      throw Exception('YTMusic not initialized');
+    }
+    try {
+      final playlist = await ytmusic!.getPlaylist(playlistId);
+      return ParsePlaylist.parsePlaylistFull(playlist);
+    } catch (e, stack) {
+      printErrorDebug('Error getting playlist: $e');
+      printErrorDebug('StackTrace:\n$stack');
+      return null;
+    }
+  }
+
+  Future<AlbumFull?> getAlbumFull(String albumId) async {
+    if (ytmusic == null) {
+      throw Exception('YTMusic not initialized');
+    }
+
+    try {
+      final album = await ytmusic!.getAlbum(albumId);
+      return ParseAlbum.albumFull(album);
+    } catch (e, s) {
+      printErrorDebug('Error getting album full: $e');
+      printErrorDebug(s);
+      return null;
     }
   }
 
