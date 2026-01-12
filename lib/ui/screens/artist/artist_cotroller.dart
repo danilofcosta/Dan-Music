@@ -17,7 +17,7 @@ class ArtistCotroller extends GetxController {
   }
 
   void featdata(ArtistDetail artistDetail, String artistid) async {
-    var data = await youTubeService.getartistFull(artistid);
+    var data = await youTubeService.getArtistFull(artistid);
     print("featdata");
   }
 }

@@ -1,7 +1,9 @@
 import 'package:danmusic/models/playlist.dart';
+import 'package:danmusic/services/parses/parse_artist.dart';
 import 'package:ytmusicapi_dart/ytmusicapi_dart.dart';
 
 import '../models/album.dart';
+import '../models/artist.dart';
 import '../models/home_section.dart';
 import 'parses/parse_album.dart';
 import 'parses/parse_home_section.dart' show ParseHomeSessions;
@@ -91,18 +93,18 @@ class YouTubeMusicService {
     }
   }
 
-  Future<void> getartistFull(String artistId) async {
+  Future<ArtistFull? >  getArtistFull(String artistId) async {
     if (ytmusic == null) {
       throw Exception('YTMusic not initialized');
     }
     try {
+      final data = await ytmusic!.getArtist(artistId);
 
-
-      await ytmusic!.getArtist(artistId);
-
-      return;
-    } catch (e, s) {printErrorDebug(e);printErrorDebug(s);}
-
-
+      return ParseArtist.artistFull(data);
+    } catch (e, s) {
+      
+      printErrorDebug(e);
+      printErrorDebug(s);
+    }
   }
 }

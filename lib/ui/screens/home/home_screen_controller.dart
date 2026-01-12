@@ -2,7 +2,7 @@ import 'package:danmusic/services/uteis/helper.dart';
 import 'package:get/get.dart';
 
 import '../../../models/home_section.dart';
-import '../../../services/greeting.dart';
+import '../../../services/uteis/greeting.dart';
 import '../../../services/yt_api.dart';
 
 class HomeScreenController extends GetxController {

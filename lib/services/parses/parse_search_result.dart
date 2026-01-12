@@ -14,44 +14,28 @@ class ParseSearchResult {
     final type = data['resultType'] as String? ?? '';
     switch (type) {
       case 'artist':
-        String id = '';
-        String name = '';
+        final thumbnails = ParseThumbnail.thumbnail(data['thumbnails']);
 
-        var artists = data['artists'] ?? data['artist'];
-        List<ArtistBasic> parsedArtists = [];
+        final rawArtists = data['artists'] ?? data['artist'];
 
-        if (artists is List) {
-          parsedArtists = artists
-              .whereType<Map<String, dynamic>>()
-              .map<ArtistBasic>((artist) => ParseArtist.artistBasic(artist))
-              .toList();
+        final List<ArtistBasic> artists = rawArtists == null
+            ? <ArtistBasic>[]
+            : rawArtists is List
+            ? rawArtists.map((e) => ParseArtist.artistBasic(e)).toList()
+            : <ArtistBasic>[ParseArtist.artistBasic(rawArtists)];
 
-          name = ParseArtist.artistsToString(parsedArtists);
-          if (parsedArtists.isNotEmpty) id = parsedArtists.first.id;
-        } else if (artists is String) {
-          name = artists;
+        if (artists.isEmpty) {
+          throw Exception('Nenhum artista encontrado');
         }
 
-        final subscribers = (data['subscribers'] ?? '').toString();
-
-        final thumbnails =
-            (data['thumbnails'] as List?)
-                ?.whereType<Map<String, dynamic>>()
-                .map(
-                  (e) => Thumbnail(
-                    url: e['url'] ?? '',
-                    width: e['width'] ?? 0,
-                    height: e['height'] ?? 0,
-                  ),
-                )
-                .toList() ??
-            <Thumbnail>[];
+        final artistRaw = ParseArtist.artistsToString(artists);
+        final subscribers = data['subscribers']?.toString() ?? '0';
 
         return SearchResult(
           type: type,
           content: ArtistDetail(
-            name: name,
-            id: id,
+            name: artistRaw,
+            id: artists.first.id,
             subscribers: subscribers,
             thumbnails: thumbnails,
           ),
@@ -61,7 +45,8 @@ class ParseSearchResult {
         String? artist;
         int seconds = 0;
 
-        if (data.containsKey('artists') && (data['artists'] as List).isNotEmpty) {
+        if (data.containsKey('artists') &&
+            (data['artists'] as List).isNotEmpty) {
           artist = data['artists'][0]['name'];
         }
         if (data.containsKey('artist')) {
