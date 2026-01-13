@@ -1,8 +1,7 @@
 import 'package:danmusic/models/song.dart';
+import 'package:danmusic/ui/widgets/card_medio.dart';
 import 'package:danmusic/ui/widgets/cards/song_card.dart';
 import 'package:flutter/material.dart';
-import 'package:palette_generator/palette_generator.dart';
-
 import '../../services/uteis/load_image.dart';
 import '../../services/uteis/update_papilite.dart';
 
@@ -11,6 +10,7 @@ class BaseScreen extends StatefulWidget {
   final String title;
   final String? description;
   final List<Song> tracks;
+  final List? relatedRecommendations;
 
   const BaseScreen({
     super.key,
@@ -18,6 +18,7 @@ class BaseScreen extends StatefulWidget {
     required this.title,
     required this.description,
     required this.tracks,
+    this.relatedRecommendations,
   });
 
   @override
@@ -26,7 +27,6 @@ class BaseScreen extends StatefulWidget {
 
 class _BaseScreenState extends State<BaseScreen> {
   Color _dominantColor = const Color.fromARGB(255, 7, 7, 7);
-  ImageProvider? _lastProvider;
 
   Future<void> _updatePalette(String imagePath) async {
     if (!mounted) return;
@@ -41,6 +41,10 @@ class _BaseScreenState extends State<BaseScreen> {
     super.didChangeDependencies();
     _updatePalette(widget.thumb);
   }
+
+  bool get hasRecommendations =>
+      widget.relatedRecommendations != null &&
+      widget.relatedRecommendations!.isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -67,22 +71,6 @@ class _BaseScreenState extends State<BaseScreen> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 16,
-                      left: 16,
-                      right: 16,
-                      top: 80,
-                    ),
-                    child: Builder(
-                      builder: (_) {
-                        return LoadImage.loadWidget(
-                          widget.thumb,
-                          fit: BoxFit.contain,
-                        );
-                      },
-                    ),
-                  ),
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 400),
                     decoration: BoxDecoration(
@@ -94,6 +82,18 @@ class _BaseScreenState extends State<BaseScreen> {
                           _dominantColor.withValues(alpha: 0.7),
                         ],
                       ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
+                      top: 80,
+                    ),
+                    child: LoadImage.loadWidget(
+                      widget.thumb,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ],
@@ -175,10 +175,50 @@ class _BaseScreenState extends State<BaseScreen> {
                       ),
                     );
                   },
-                  child: SongCard(song: track),
+                  child: SongCard(song: track, index: index + 1),
                 );
               }, childCount: widget.tracks.length),
             ),
+
+          // ===========================
+          // RECOMENDADOS (REFATORADO)
+          // ===========================
+          if (hasRecommendations) ...[
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Text(
+                  'Recomendados',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 200,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: widget.relatedRecommendations!.length,
+                  itemBuilder: (context, index) {
+                    final related = widget.relatedRecommendations![index];
+
+                    return CardMedio(
+                      image: related.thumbnails.last.url,
+                      title: related.title,
+                      subtitle: related.artist?.name ?? '',
+                      object: related,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

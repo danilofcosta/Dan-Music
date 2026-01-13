@@ -5,6 +5,20 @@ import 'package:danmusic/services/parses/parse_song.dart';
 import 'package:danmusic/services/parses/parse_thumbnail.dart';
 
 class ParseAlbum {
+  static Album album(Map<String, dynamic> data) {
+    return Album(
+      albumId: data['browseId'] ?? '',
+      browseId: data['browseId'],
+      playlistId: data['playlistId'],
+      title: data['title'] ?? '',
+      type: data['type'],
+      artist: data['artist'] != null ? ParseArtist.artistBasic(data['artist']) : null,
+      year: data['year']?.toString(),
+      isExplicit: data['isExplicit'],
+      thumbnails: ParseThumbnail.thumbnail(data['thumbnails']),
+    );
+  }
+
   static AlbumFull albumFull(Map<String, dynamic> data) {
     final title = data['title'];
     final thumbnails = ParseThumbnail.thumbnail(data['thumbnails']);

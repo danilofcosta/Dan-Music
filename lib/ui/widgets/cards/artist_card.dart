@@ -20,7 +20,7 @@ class _ArtistCardState extends State<ArtistCard> {
       onTap: () {
         Get.toNamed(
           RouteName.artist,
-          arguments: [widget.artist.id, widget.artist],
+          arguments: [widget.artist.browseId, widget.artist],
         );
       },
       leading: CircleAvatar(
@@ -33,10 +33,10 @@ class _ArtistCardState extends State<ArtistCard> {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: widget.artist.subscribers.isEmpty
+      subtitle: widget.artist.subscribers == null
           ? null
           : Text(
-              widget.artist.subscribers,
+              widget.artist.subscribers!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

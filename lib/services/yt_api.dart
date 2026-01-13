@@ -93,7 +93,7 @@ class YouTubeMusicService {
     }
   }
 
-  Future<ArtistFull? >  getArtistFull(String artistId) async {
+  Future<ArtistFull?> getArtistFull(String artistId) async {
     if (ytmusic == null) {
       throw Exception('YTMusic not initialized');
     }
@@ -102,9 +102,9 @@ class YouTubeMusicService {
 
       return ParseArtist.artistFull(data);
     } catch (e, s) {
-      
       printErrorDebug(e);
       printErrorDebug(s);
     }
+    return null;
   }
 }

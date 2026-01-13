@@ -30,4 +30,7 @@ class ParseSong {
       artists: artists,
     );
   }
+
+  static List<Song> songs(List<Map<String, dynamic>> jsonData) =>
+      jsonData.map((songData) => song(songData)).toList();
 }

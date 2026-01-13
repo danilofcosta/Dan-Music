@@ -15,7 +15,9 @@ class ParseSearchResult {
     switch (type) {
       case 'artist':
         final thumbnails = ParseThumbnail.thumbnail(data['thumbnails']);
-
+        final shuffleId = data['shuffleId']?.toString();
+        final radioId = data['radioId']?.toString();
+        final browseId = data['browseId']?.toString();
         final rawArtists = data['artists'] ?? data['artist'];
 
         final List<ArtistBasic> artists = rawArtists == null
@@ -29,15 +31,18 @@ class ParseSearchResult {
         }
 
         final artistRaw = ParseArtist.artistsToString(artists);
-        final subscribers = data['subscribers']?.toString() ?? '0';
+        final subscribers = data['subscribers']?.toString() ?? null;
 
         return SearchResult(
           type: type,
           content: ArtistDetail(
             name: artistRaw,
-            id: artists.first.id,
+
             subscribers: subscribers,
             thumbnails: thumbnails,
+            browseId: browseId ?? artists.first.id,
+            shuffleId: shuffleId,
+            radioId: radioId,
           ),
         );
 
@@ -155,11 +160,9 @@ class ParseSearchResult {
         final videoId = (data['videoId'] ?? '').toString();
         final title = (data['title'] ?? '').toString();
         final views = data['views']?.toString();
-        final duration = data['duration']?.toString();
         final durationSeconds = data['duration_seconds'] is int
             ? data['duration_seconds'] as int
-            : int.tryParse(data['duration_seconds']?.toString() ?? '');
-        final videoType = data['videoType']?.toString();
+            : int.tryParse(data['duration_seconds']?.toString() ?? '0');
 
         final artistsRaw = data['artists'];
         List<ArtistBasic> videoArtists = [];
@@ -170,30 +173,22 @@ class ParseSearchResult {
               .toList();
         }
 
-        final thumbnails =
-            (data['thumbnails'] as List?)
-                ?.whereType<Map<String, dynamic>>()
-                .map(
-                  (e) => Thumbnail(
-                    url: e['url'] ?? '',
-                    width: e['width'] ?? 0,
-                    height: e['height'] ?? 0,
-                  ),
-                )
-                .toList() ??
-            <Thumbnail>[];
+        final thumbnails = ParseThumbnail.thumbnail(data['thumbnails']);
+        final artistRaw = ParseArtist.artistsToString(videoArtists);
 
         return SearchResult(
           type: type,
-          content: SearchVideo(
-            videoId: videoId,
+          content: Song(
+            id: videoId,
             title: title,
-            artists: videoArtists,
+            artist: artistRaw,
             views: views,
-            duration: duration,
-            durationSeconds: durationSeconds,
-            videoType: videoType,
-            thumbnails: thumbnails,
+            duration: Duration(seconds: durationSeconds ?? 0),
+            durationText: data['duration'],
+            artUri: thumbnails.isNotEmpty
+                ? Uri.parse(thumbnails.first.url)
+                : null,
+            artists: videoArtists,
           ),
         );
 

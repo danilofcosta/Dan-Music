@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:danmusic/services/uteis/helper.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../models/song.dart';
@@ -81,6 +82,12 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> playById(Song song) async {
+    if (song.id.isEmpty) {
+      printErrorDebug("ID da música está vazio $song");
+      printErrorDebug("Erro ao tentar reproduzir música");
+      return;
+    }
+
     final url = await ManageAudioURL.getAudioUrlNewpipe(song.id);
 
     await _player.setAudioSource(AudioSource.uri(Uri.parse(url)));

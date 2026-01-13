@@ -18,18 +18,20 @@ class AlbumScreen extends StatelessWidget {
         : Get.put(AlbumController(), tag: tag);
 
     return Obx(() {
-      final album= controller.album.value  ;
-   
+      final album = controller.album.value;
+
       final thumb = album.thumbnails!.last.url;
       final title = album.title;
       final description = album.description;
       final List<Song>? tracks = album.tracks;
+      final List? relatedRecommendations = album.relatedRecommendations;
 
       return BaseScreen(
         thumb: thumb,
         title: title,
         description: description,
         tracks: tracks ?? [],
+        relatedRecommendations: relatedRecommendations ,
       );
     });
   }

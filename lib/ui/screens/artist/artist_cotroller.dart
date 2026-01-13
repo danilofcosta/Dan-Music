@@ -5,19 +5,27 @@ import '../../../services/yt_api.dart';
 
 class ArtistCotroller extends GetxController {
   final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
+  final Rxn<ArtistFull> artistFull = Rxn<ArtistFull>();
+  final RxBool isLoading = true.obs;
 
   @override
   void onInit() {
     super.onInit();
 
     final args = Get.arguments as List;
-    final ArtistDetail? artistDetail = args[1];
-    final artistid = args[0];
-    featdata(artistDetail!, artistid);
+    final String artistId = args[0];
+    featdata(artistId);
   }
 
-  void featdata(ArtistDetail artistDetail, String artistid) async {
-    var data = await youTubeService.getArtistFull(artistid);
-    print("featdata");
+  Future<void> featdata(String artistId) async {
+    try {
+      isLoading.value = true;
+      final data = await youTubeService.getArtistFull(artistId);
+      artistFull.value = data;
+    } catch (e) {
+      print("Error fetching artist data: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

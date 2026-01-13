@@ -41,7 +41,7 @@ class _PlayerMaxState extends State<PlayerMax> {
                     },
                     icon: Icon(Icons.keyboard_arrow_down),
                   ),
-                  Text('Tocando a playlisy ...'),
+                  Text('Tocando a playlisy ... ${controller.songNow.value.id}'),
                   IconButton(
                     onPressed: () {
                       controller.setminplayer();

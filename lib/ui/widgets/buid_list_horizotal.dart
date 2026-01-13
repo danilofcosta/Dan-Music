@@ -35,10 +35,10 @@ class _BuidListHorizotalState extends State<BuidListHorizotal> {
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.6),
-        border: Border.all(
-          color: Theme.of(context).textTheme.bodyLarge!.color!,
-          width: 2,
-        ),
+        // border: Border.all(
+        //   color: Theme.of(context).textTheme.bodyLarge!.color!,
+        //   width: 2,
+        // ),
         borderRadius: const BorderRadius.all(Radius.circular(20)),
       ),
       child: Column(

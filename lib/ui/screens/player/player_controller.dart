@@ -8,7 +8,7 @@ class PlayerController extends GetxController {
   final DraggableScrollableController draggableController =
       DraggableScrollableController();
   final MyAudioHandler audioHandler = Get.find<MyAudioHandler>();
-  final songNow = Song(id: '', title: '').obs;
+  final Rx<Song> songNow = Song(id: '', title: '').obs;
 
   /// true = PlayerFull | false = PlayerMini
   final RxBool playerOpen = false.obs;
