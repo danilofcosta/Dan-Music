@@ -25,21 +25,21 @@ class CardMedio extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        printErrorDebug(object);
+        printErrorDebug('$object  ${object.runtimeType}');
         if (object == null) return;
 
         switch (object) {
-          case ArtistDetail():
+          case ArtistDetail _:
             final artist = object as ArtistDetail;
             Get.toNamed(RouteName.artist, arguments: [artist.browseId, artist]);
             break;
 
-          case Album():
+          case Album _:
             final album = object as Album;
             Get.toNamed(RouteName.album, arguments: [album.albumId, album]);
             break;
           default:
-            print(object);
+            print('CardMedio não implementado');
             break;
         }
       },

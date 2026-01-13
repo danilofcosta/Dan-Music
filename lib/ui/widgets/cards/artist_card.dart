@@ -25,7 +25,7 @@ class _ArtistCardState extends State<ArtistCard> {
       },
       leading: CircleAvatar(
         backgroundImage: LoadImage.loadProvider(
-          widget.artist.thumbnails[0].url,
+          widget.artist.thumbnails.last.url,
         ),
       ),
       title: Text(
