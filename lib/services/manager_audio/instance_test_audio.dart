@@ -28,7 +28,7 @@ class ApiAudioSource extends StreamAudioSource {
     final headers = <String, String>{};
     if (start != null || end != null) {
       final range =
-          'bytes=${start ?? 0}-${end != null ? end : ''}';
+          'bytes=${start ?? 0}-${end ?? ''}';
       headers[HttpHeaders.rangeHeader] = range;
     }
 

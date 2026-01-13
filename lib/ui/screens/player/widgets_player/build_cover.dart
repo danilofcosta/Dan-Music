@@ -33,7 +33,7 @@ class BuildCover extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
               image: DecorationImage(
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.contain,
                 image:
                     LoadImage.loadProvider(mediaItemNow.artUri.toString())
                         as ImageProvider,

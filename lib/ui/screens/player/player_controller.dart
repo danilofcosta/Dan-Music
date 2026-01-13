@@ -2,6 +2,7 @@ import 'package:danmusic/models/song.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../navigation.dart';
 import '../../../services/manager_audio/audio_handler.dart';
 
 class PlayerController extends GetxController {
@@ -39,25 +40,29 @@ class PlayerController extends GetxController {
   }
 
   void setminplayer() {
-    print('setMinPlayer');
-    playerOpen.value = !playerOpen.value;
+    Get.back();
+
+    // playerOpen.value = !playerOpen.value;
     return;
-    draggableController.animateTo(
-      0.10, // size (0.0 a 1.0)
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
+    // draggableController.animateTo(
+    //   0.10, // size (0.0 a 1.0)
+    //   duration: const Duration(milliseconds: 300),
+    //   curve: Curves.easeOut,
+    // );
   }
 
   void setMaxplayer() {
-    playerOpen.value = !playerOpen.value;
+    Get.toNamed(RouteName.playeMax);
     return;
 
-    draggableController.animateTo(
-      1, // size (0.0 a 1.0)
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
+    // playerOpen.value = !playerOpen.value;
+    // return;
+
+    // draggableController.animateTo(
+    //   1, // size (0.0 a 1.0)
+    //   duration: const Duration(milliseconds: 300),
+    //   curve: Curves.easeOut,
+    // );
   }
 
   void listenMediaItem() {

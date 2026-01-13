@@ -1,4 +1,3 @@
-import 'dart:collection';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
@@ -7,6 +6,7 @@ import 'package:danmusic/services/uteis/helper.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../models/recommendations.dart';
 import '../../models/song.dart';
 import '../yt_api.dart';
 import 'manage_audio_url.dart';
@@ -33,6 +33,7 @@ class MediaState {
 
 class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   int? currentIndex;
+  bool loging = false;
   final AudioPlayer _player = AudioPlayer();
   Stream<Duration> get positionStream => _player.positionStream;
   Stream<Duration> get positionBuffered => _player.bufferedPositionStream;
@@ -82,38 +83,52 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         final songn = song.copyWith(artUri: Uri.parse(data['cover']));
         mediaItem.add(songn);
         currentIndex = event.currentIndex;
-
-        if (event.currentIndex == queue.value.length ||
-            event.currentIndex == queue.value.length) {
-          nextsogs(song);
-        }
+      }
+      if (event.currentIndex == queue.value.length ||
+          event.currentIndex == queue.value.length - 1 && loging == false) {
+        loging = true;
+        nextsogs(song);
+        play();
       }
     });
   }
 
-  Future<void> uploadQuere(List<Song> songs) async {
-    queue.value = songs;
-    // currentIndex = 0;
-    final list = songs.map((e) => e.id).toList();
-    final f = songs.map((e) => ApiAudioSource(e.id)).toList();
-    _player.setAudioSources(songs.map((e) => ApiAudioSource(e.id)).toList());
-    play();
+  Future<void> uploadQuere(
+    List<Song> songs, {
+    bool clearQueue = false,
+    playquere = true,
+  }) async {
+    if (clearQueue) {
+      queue.value.clear();
+    }
+    if (playquere) {
+      queue.value = songs;
+
+      _player.setAudioSources(songs.map((e) => ApiAudioSource(e.id)).toList());
+      play();
+      return;
+    } else {
+      _player.addAudioSources(songs.map((e) => ApiAudioSource(e.id)).toList());
+      queue.value = [...queue.value, ...songs];
+      return;
+    }
   }
 
   Future<void> playById(Song song) async {
-    return;
+    // return;
     if (song.id.isEmpty) {
       printErrorDebug("ID da música está vazio $song");
       printErrorDebug("Erro ao tentar reproduzir música");
       return;
     }
 
-    final Map<String, dynamic> data = await ManageAudioURL.getdata(song.id);
-    final url = data['url'];
-    final cover = data['cover'];
+    final url = await ManageAudioURL.getAudioUrlNewpipe(song.id);
+    // final url = data['url'];
+    // final cover = data['cover'];
 
-    final songn = song.copyWith(id: url, artUri: Uri.parse(cover));
-    mediaItem.add(songn);
+    // final songn = song.copyWith(id: url, artUri: Uri.parse(cover));
+    // mediaItem.add(songn);
+    queue.value = [song];
 
     await _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
 
@@ -153,6 +168,13 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
 
   Future<void> nextsogs(MediaItem song) async {
     final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
-    final newQuere = await youTubeService.getNextSongs(song.id);
+    final Recommendations newQuere = await youTubeService.getNextSongs(
+      videoId: song.id,
+    );
+    List tackes = newQuere.tracks;
+    tackes.removeAt(0);
+
+    await uploadQuere(newQuere.tracks, playquere: false);
+    loging = false;
   }
 }

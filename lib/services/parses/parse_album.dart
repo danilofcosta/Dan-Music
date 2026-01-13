@@ -59,7 +59,7 @@ class ParseAlbum {
       thumbnails: thumbnails,
       isExplicit: isExplicit,
       description: description,
-      year: int.tryParse(year.toString()) ?? null,
+      year: int.tryParse(year.toString()) ,
       artists: artists,
       trackCount: trackCount,
       duration: duration,

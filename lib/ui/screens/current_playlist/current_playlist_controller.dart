@@ -10,7 +10,10 @@ class CurrentPlaylistController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    listen();
+  }
 
+  void listen() {
     // Sincroniza com a fila atual do player
     final queue = player.audioHandler.queue.value;
     if (queue.isNotEmpty) {
@@ -18,7 +21,7 @@ class CurrentPlaylistController extends GetxController {
     }
 
     // Se quiser manter sempre sincronizado:
-    player.audioHandler.queue.listen((List<MediaItem> newQueue) {
+    player.audioHandler.queue.listen((newQueue) {
       playlist.assignAll(newQueue);
     });
   }

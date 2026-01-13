@@ -87,9 +87,9 @@ class ParseArtist {
                 final artist = e as Map<String, dynamic>;
                 return ArtistDetail(
                   name: artist['title'] ?? '',
-                  browseId: artist['browseId'] ?? null,
-                  shuffleId: artist['shuffleId'] ?? null,
-                  radioId: artist['radioId'] ?? null,
+                  browseId: artist['browseId'] ,
+                  shuffleId: artist['shuffleId'] ,
+                  radioId: artist['radioId'] ,
                   subscribers: artist['subscribers'] ?? '',
                   thumbnails: ParseThumbnail.thumbnail(artist['thumbnails']),
                 );

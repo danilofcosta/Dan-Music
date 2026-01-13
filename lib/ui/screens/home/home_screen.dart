@@ -1,5 +1,5 @@
 import 'package:danmusic/models/song.dart';
-import 'package:danmusic/ui/screens/player/player.dart';
+import 'package:danmusic/ui/screens/player/player_mini.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Icon(Icons.search),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          persistentFooterButtons: [Player()],
+          persistentFooterButtons: [ PlayerMini()],
           persistentFooterDecoration: const BoxDecoration(
             color: Colors.transparent,
           ),
@@ -77,6 +77,7 @@ class ProgressIndicator extends StatelessWidget {
     return Center(
       child: CircularProgressIndicator.adaptive(
         strokeWidth: 5,
+        // ignore: deprecated_member_use
         year2023: false,
       ),
     );

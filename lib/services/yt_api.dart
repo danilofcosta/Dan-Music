@@ -1,12 +1,14 @@
 import 'package:danmusic/models/playlist.dart';
 import 'package:danmusic/models/song.dart';
 import 'package:danmusic/services/parses/parse_artist.dart';
+import 'package:danmusic/services/parses/parse_related_recommendations.dart';
 import 'package:danmusic/services/parses/parse_song.dart';
 import 'package:ytmusicapi_dart/ytmusicapi_dart.dart';
 
 import '../models/album.dart';
 import '../models/artist.dart';
 import '../models/home_section.dart';
+import '../models/recommendations.dart';
 import 'parses/parse_album.dart';
 import 'parses/parse_playlist.dart';
 import 'uteis/helper.dart';
@@ -117,11 +119,26 @@ class YouTubeMusicService {
     return ParseSong.song(jsonData);
   }
 
-  Future<void> getNextSongs(String songId) async {
+  Future<Recommendations> getNextSongs({
+    String? videoId,
+    String? playlistId,
+    int limit = 25,
+    bool radio = false,
+    bool shuffle = false,
+  }) async {
     if (ytmusic == null) {
       throw Exception('YTMusic not initialized');
     }
-    final jsonData = await ytmusic!.getSongRelated(songId);
-    //return ParseSong.song(jsonData);
+
+    final jsonData = await ytmusic!.getWatchPlaylist(
+      videoId: videoId,
+      playlistId: playlistId,
+      limit: limit,
+      radio: radio,
+      shuffle: shuffle,
+    );
+    return ParseRelatedRecommendations.getWatchPlaylist(
+      jsonData,
+    ); //return ParseSong.song(jsonData);
   }
 }

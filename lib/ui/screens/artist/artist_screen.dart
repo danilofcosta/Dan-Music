@@ -134,7 +134,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
 
   // ============================= UI SECTIONS ============================= //
 
-  Widget _buildAppBar(artist) {
+  Widget _buildAppBar(dynamic artist) {
     return SliverAppBar(
       stretch: true,
       expandedHeight: 300,
@@ -180,7 +180,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
     );
   }
 
-  Widget _buildHeaderInfo(artist) {
+  Widget _buildHeaderInfo(dynamic artist) {
     return SliverToBoxAdapter(
       child: Container(
         padding: const EdgeInsets.all(16),

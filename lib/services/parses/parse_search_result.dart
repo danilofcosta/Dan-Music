@@ -6,7 +6,6 @@ import '../../models/artist.dart';
 import '../../models/thumbnail.dart';
 import '../../models/search/search_album.dart';
 import '../../models/search/search_playlist.dart';
-import '../../models/search/search_video.dart';
 import '../../models/search/search_profile.dart';
 
 class ParseSearchResult {
@@ -31,7 +30,7 @@ class ParseSearchResult {
         }
 
         final artistRaw = ParseArtist.artistsToString(artists);
-        final subscribers = data['subscribers']?.toString() ?? null;
+        final subscribers = data['subscribers']?.toString() ;
 
         return SearchResult(
           type: type,

@@ -25,15 +25,26 @@ class CurrentPlaylist extends GetView<CurrentPlaylistController> {
           return const Center(child: Text('No songs in the playlist'));
         }
 
-        return ListView.builder(
-          itemCount: playlist.length,
-          itemBuilder: (context, index) {
-            final item = playlist[index];
-            return SongCard(
-              song: Song.fromMediaItem(item),
-              onTap: () => controller.ontap(index),
-            );
-          },
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text('tocando agora N de ${playlist.length} músicas}'),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: playlist.length,
+                itemBuilder: (context, index) {
+                  final item = playlist[index];
+                  return SongCard(
+                    song: Song.fromMediaItem(item),
+                    onTap: () => controller.ontap(index),
+                  );
+                },
+              ),
+            ),
+          ],
         );
       }),
     );

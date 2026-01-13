@@ -87,7 +87,7 @@ class CardMedio extends StatelessWidget {
             break;
 
           default:
-            print(
+            printErrorDebug(
               'CardMedio não implementado para o tipo: ${object.runtimeType}',
             );
             break;

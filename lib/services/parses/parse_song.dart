@@ -22,7 +22,7 @@ class ParseSong {
     final String title = jsonData['title'] ?? '';
 
     final List<Thumbnail> cover = ParseThumbnail.thumbnail(
-      jsonData['thumbnails'],
+      jsonData['thumbnails'] ?? jsonData['thumbnail'],
     );
     if (jsonData.containsKey('album') && jsonData['album'] != null) {
       if (jsonData['album'].runtimeType == String) {
@@ -44,6 +44,6 @@ class ParseSong {
     );
   }
 
-  static List<Song> songs(List<Map<String, dynamic>> jsonData) =>
+  static List<Song> songs(List<dynamic> jsonData) =>
       jsonData.map((songData) => song(songData)).toList();
 }

@@ -1,9 +1,9 @@
+
 import 'package:danmusic/models/album.dart';
 import 'package:danmusic/models/artist.dart';
 import 'package:danmusic/models/playlist.dart';
-import 'package:danmusic/models/song.dart';
-import 'package:danmusic/models/thumbnail.dart';
 import 'package:danmusic/services/parses/parse_song.dart';
+import 'package:danmusic/services/parses/parse_thumbnail.dart';
 
 abstract class HomeContent {}
 
@@ -48,13 +48,13 @@ class ParseHomeSessions {
         title: item['title'] as String? ?? '',
         author: _extractAuthorName(item['author']),
         itemCount: item['count'] as String?,
-        thumbnails: _parseThumbnails(item['thumbnails']),
+        thumbnails: ParseThumbnail.thumbnail(item['thumbnails']),
       );
     } else if (item.containsKey('videoId')) {
       // Pode ser uma música ou vídeo
       if (item.containsKey('album')) {
         // É uma música (tem album)
-        final album = item['album'] as Map<String, dynamic>?;
+       // final album = item['album'] as Map<String, dynamic>?;
         return ParseSong.song(item);
       } else {
         // É um vídeo
@@ -68,7 +68,7 @@ class ParseHomeSessions {
           name: item['title'] as String? ?? '',
           browseId: item['browseId'] as String? ?? '',
           subscribers: item['subscribers'] as String?,
-          thumbnails: _parseThumbnails(item['thumbnails']) ?? [],
+          thumbnails: ParseThumbnail.thumbnail(item['thumbnails']) ,
           shuffleId: null,
           radioId: null,
         );
@@ -79,7 +79,7 @@ class ParseHomeSessions {
           browseId: item['browseId'] as String?,
           title: item['title'] as String? ?? '',
           year: item['year'] as String?,
-          thumbnails: _parseThumbnails(item['thumbnails']),
+          thumbnails: ParseThumbnail.thumbnail(item['thumbnails']),
         );
       }
     }
@@ -91,57 +91,6 @@ class ParseHomeSessions {
       final firstAuthor = authorData.first;
       if (firstAuthor is Map<String, dynamic>) {
         return firstAuthor['name'] as String?;
-      }
-    }
-    return null;
-  }
-
-  static List<ArtistBasic>? _parseArtists(dynamic artistsData) {
-    if (artistsData is! List<dynamic>) return null;
-
-    return artistsData
-        .map((artist) {
-          if (artist is Map<String, dynamic>) {
-            return ArtistBasic(
-              name: artist['name'] as String? ?? '',
-              id: artist['id'] as String? ?? '',
-            );
-          }
-          return null;
-        })
-        .whereType<ArtistBasic>()
-        .toList();
-  }
-
-  static List<Thumbnail>? _parseThumbnails(dynamic thumbnailsData) {
-    if (thumbnailsData is! List<dynamic>) return null;
-
-    return thumbnailsData
-        .map((thumb) {
-          if (thumb is Map<String, dynamic>) {
-            final url = thumb['url'] as String? ?? '';
-            final width = (thumb['width'] as num?)?.toInt() ?? 0;
-            final height = (thumb['height'] as num?)?.toInt() ?? 0;
-            return Thumbnail(url: url, width: width, height: height);
-          }
-          return null;
-        })
-        .whereType<Thumbnail>()
-        .toList();
-  }
-
-  static Uri? _getFirstThumbnailUri(dynamic thumbnailsData) {
-    if (thumbnailsData is List<dynamic> && thumbnailsData.isNotEmpty) {
-      final firstThumb = thumbnailsData.first;
-      if (firstThumb is Map<String, dynamic>) {
-        final url = firstThumb['url'] as String?;
-        if (url != null) {
-          try {
-            return Uri.parse(url);
-          } catch (e) {
-            return null;
-          }
-        }
       }
     }
     return null;

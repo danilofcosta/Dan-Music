@@ -1,3 +1,4 @@
+import 'package:danmusic/services/uteis/helper.dart';
 import 'package:get/get.dart';
 
 import '../../../models/artist.dart';
@@ -23,7 +24,7 @@ class ArtistCotroller extends GetxController {
       final data = await youTubeService.getArtistFull(artistId);
       artistFull.value = data;
     } catch (e) {
-      print("Error fetching artist data: $e");
+      printErrorDebug("Error fetching artist data: $e");
     } finally {
       isLoading.value = false;
     }

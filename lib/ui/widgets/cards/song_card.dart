@@ -36,10 +36,10 @@ class _SongCardState extends State<SongCard> {
         selected: playingNow,
         selectedTileColor: Theme.of(
           context,
-        ).colorScheme.primary.withOpacity(.1),
+        ).colorScheme.primary.withValues(alpha: .1),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-        contentPadding: EdgeInsets.zero,
 
+        // contentPadding: EdgeInsets.zero,
         leading: widget.index != null && widget.song.artUri == null
             ? SizedBox(
                 width: 80,

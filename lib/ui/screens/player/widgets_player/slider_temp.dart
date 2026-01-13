@@ -75,6 +75,7 @@ class _MusicProgressBarState extends State<MusicProgressBar> {
     return Column(
       children: [
         Slider(
+          // ignore: deprecated_member_use
           year2023: false,
           value: positionMs.clamp(0, durationMs).toDouble(),
           min: 0,
