@@ -19,7 +19,7 @@ class HomeScreenController extends GetxController {
   }
 
   Future<void> initYouTubeMusicService() async {
-    await youTubeService.init();
+//    await youTubeService.init();
     getHomeSections();
   }
 

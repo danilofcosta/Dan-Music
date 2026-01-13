@@ -1,10 +1,14 @@
+import 'dart:collection';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:danmusic/services/manager_audio/instance_test_audio.dart';
 import 'package:danmusic/services/uteis/helper.dart';
+import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../models/song.dart';
-import '../../models/search/search_song.dart';
+import '../yt_api.dart';
 import 'manage_audio_url.dart';
 
 Future<MyAudioHandler> initAudioService() async {
@@ -28,17 +32,7 @@ class MediaState {
 }
 
 class MyAudioHandler extends BaseAudioHandler with SeekHandler {
-  static final item = Song(
-    id: 'https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3',
-    album: "Science Friday",
-    title: "A Salute To Head-Scratching Science",
-    artist: "Science Friday and WNYC Studios",
-    duration: const Duration(milliseconds: 5739820),
-    artUri: Uri.parse(
-      'https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg',
-    ),
-  );
-
+  int? currentIndex;
   final AudioPlayer _player = AudioPlayer();
   Stream<Duration> get positionStream => _player.positionStream;
   Stream<Duration> get positionBuffered => _player.bufferedPositionStream;
@@ -51,15 +45,13 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> _init() async {
-    // Carrega o áudio
-    // await _player.setAudioSource(AudioSource.uri(Uri.parse(_item.id)));
-
-    // // Atualiza MediaItem com duração real
-    // mediaItem.add(_item);
-    // _player.play();
-
-    // Atualiza PlaybackState continuamente
+    sequenceStateStreamListen();
     _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
+  }
+
+  Future<void> playByIndex(int index) async {
+    if (index == currentIndex) return;
+    await _player.seek(Duration.zero, index: index);
   }
 
   // CONTROLES
@@ -75,23 +67,57 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> stop() => _player.stop();
 
-  /// Adiciona um `SearchSong` como `MediaItem` ao handler.
-  Future<void> addSearchSongAsMediaItem(SearchSong s) async {
-    final media = Song.fromSearchSong(s);
-    mediaItem.add(media);
+  @override
+  Future<void> skipToNext() => _player.seekToNext();
+  @override
+  Future<void> skipToPrevious() => _player.seekToPrevious();
+
+  void sequenceStateStreamListen() async {
+    player.sequenceStateStream.listen((event) async {
+      printInfoDebug(event.currentIndex);
+      if (queue.value.isEmpty) return;
+      final song = queue.value[event.currentIndex ?? 0];
+      if (currentIndex != event.currentIndex && event.currentIndex != null) {
+        final Map<String, dynamic> data = await ManageAudioURL.getdata(song.id);
+        final songn = song.copyWith(artUri: Uri.parse(data['cover']));
+        mediaItem.add(songn);
+        currentIndex = event.currentIndex;
+
+        if (event.currentIndex == queue.value.length ||
+            event.currentIndex == queue.value.length) {
+          nextsogs(song);
+        }
+      }
+    });
+  }
+
+  Future<void> uploadQuere(List<Song> songs) async {
+    queue.value = songs;
+    // currentIndex = 0;
+    final list = songs.map((e) => e.id).toList();
+    final f = songs.map((e) => ApiAudioSource(e.id)).toList();
+    _player.setAudioSources(songs.map((e) => ApiAudioSource(e.id)).toList());
+    play();
   }
 
   Future<void> playById(Song song) async {
+    return;
     if (song.id.isEmpty) {
       printErrorDebug("ID da música está vazio $song");
       printErrorDebug("Erro ao tentar reproduzir música");
       return;
     }
 
-    final url = await ManageAudioURL.getAudioUrlNewpipe(song.id);
+    final Map<String, dynamic> data = await ManageAudioURL.getdata(song.id);
+    final url = data['url'];
+    final cover = data['cover'];
+
+    final songn = song.copyWith(id: url, artUri: Uri.parse(cover));
+    mediaItem.add(songn);
 
     await _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
-    mediaItem.add(song);
+
+    //  mediaItem.add(songn);
     _player.play();
   }
 
@@ -107,6 +133,8 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         MediaAction.seek,
         MediaAction.seekForward,
         MediaAction.seekBackward,
+        MediaAction.skipToPrevious,
+        MediaAction.skipToNext,
       },
       androidCompactActionIndices: const [0, 1, 3],
       processingState: const {
@@ -121,5 +149,10 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       bufferedPosition: _player.bufferedPosition,
       speed: _player.speed,
     );
+  }
+
+  Future<void> nextsogs(MediaItem song) async {
+    final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
+    final newQuere = await youTubeService.getNextSongs(song.id);
   }
 }

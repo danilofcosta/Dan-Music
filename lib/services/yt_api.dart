@@ -1,12 +1,13 @@
 import 'package:danmusic/models/playlist.dart';
+import 'package:danmusic/models/song.dart';
 import 'package:danmusic/services/parses/parse_artist.dart';
+import 'package:danmusic/services/parses/parse_song.dart';
 import 'package:ytmusicapi_dart/ytmusicapi_dart.dart';
 
 import '../models/album.dart';
 import '../models/artist.dart';
 import '../models/home_section.dart';
 import 'parses/parse_album.dart';
-import 'parses/parse_home_section.dart' show ParseHomeSessions;
 import 'parses/parse_playlist.dart';
 import 'uteis/helper.dart';
 
@@ -106,5 +107,21 @@ class YouTubeMusicService {
       printErrorDebug(s);
     }
     return null;
+  }
+
+  Future<Song> getSong(String songId) async {
+    if (ytmusic == null) {
+      throw Exception('YTMusic not initialized');
+    }
+    final jsonData = await ytmusic!.getSong(songId);
+    return ParseSong.song(jsonData);
+  }
+
+  Future<void> getNextSongs(String songId) async {
+    if (ytmusic == null) {
+      throw Exception('YTMusic not initialized');
+    }
+    final jsonData = await ytmusic!.getSongRelated(songId);
+    //return ParseSong.song(jsonData);
   }
 }

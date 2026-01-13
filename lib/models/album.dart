@@ -1,4 +1,5 @@
 import 'package:danmusic/models/artist.dart';
+import 'package:danmusic/models/home_section.dart';
 import 'package:danmusic/models/song.dart';
 import 'package:danmusic/models/thumbnail.dart';
 import 'package:danmusic/services/parses/parse_artist.dart' show ParseArtist;
@@ -8,7 +9,14 @@ import '../services/parses/parse_related_recommendations.dart'
 import '../services/parses/parse_song.dart';
 import '../services/parses/parse_thumbnail.dart';
 
-class Album {
+
+
+class AlbumBasic implements HomeContent {
+  final String? albumId;
+  final String title;
+  AlbumBasic({this.albumId, required this.title});
+}
+class Album implements HomeContent {
   final String albumId;
   final String? browseId;
   final String? playlistId;

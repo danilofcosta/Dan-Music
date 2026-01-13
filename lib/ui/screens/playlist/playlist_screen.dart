@@ -23,12 +23,14 @@ class PlaylistScreen extends StatelessWidget {
       final title = playlist.title;
       final description = playlistFull.description;
       final tracks = playlistFull.tracks ?? [];
+      final relatedRecommendations = playlistFull.releted;
 
       return BaseScreen(
         thumb: thumb,
         title: title,
         description: description,
         tracks: tracks,
+        relatedRecommendations: relatedRecommendations,
       );
     });
   }

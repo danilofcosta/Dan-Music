@@ -1,5 +1,6 @@
 import 'package:danmusic/ui/screens/album/album_screen.dart';
 import 'package:danmusic/ui/screens/artist/artist_screen.dart';
+import 'package:danmusic/ui/screens/current_playlist/current_playlist.dart';
 
 import 'ui/screens/player/player.dart';
 import 'ui/screens/home/home_screen.dart';
@@ -15,6 +16,7 @@ class RouteName {
   static const String playlist = PlaylistScreen.routeName;
   static const String album = AlbumScreen.routeName;
   static const String artist = ArtistScreen.routeName;
+  static const String currentPlaylist = CurrentPlaylist.routeName;
 }
 
 class AppRoutes {
@@ -47,6 +49,18 @@ class AppRoutes {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => ArtistScreen(key: Key(id)),
+        );
+      case RouteName.currentPlaylist:
+        if (settings.arguments == null) {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => CurrentPlaylist(),
+          );
+        }
+        final id = (settings.arguments as List)[0] as String;
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => CurrentPlaylist(),
         );
       default:
         return MaterialPageRoute(

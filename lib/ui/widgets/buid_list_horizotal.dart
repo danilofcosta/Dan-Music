@@ -1,5 +1,7 @@
 import 'package:danmusic/ui/widgets/cards/song_card.dart';
+import 'package:get/get.dart';
 
+import '../screens/player/player_controller.dart';
 import '/models/song.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +46,7 @@ class _BuidListHorizotalState extends State<BuidListHorizotal> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(15.0),
             child: Row(
               children: [
                 Text(
@@ -57,7 +59,15 @@ class _BuidListHorizotalState extends State<BuidListHorizotal> {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: const Icon(Icons.arrow_forward, color: Colors.white),
+                  tooltip: 'Play All Songs',
+                  icon: const Icon(Icons.play_arrow, color: Colors.white),
+                  onPressed: () async {
+                    final controller = Get.find<PlayerController>();
+                    await controller.uploadQuere(widget.songs);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () {},
                 ),
               ],

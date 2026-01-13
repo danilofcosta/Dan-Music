@@ -1,5 +1,6 @@
 import 'package:danmusic/models/playlist.dart';
 import 'package:danmusic/services/parses/parse_artist.dart';
+import 'package:danmusic/services/parses/parse_related_recommendations.dart';
 import 'package:danmusic/services/parses/parse_song.dart';
 import 'package:danmusic/services/parses/parse_thumbnail.dart';
 import 'package:danmusic/services/uteis/helper.dart';
@@ -18,11 +19,12 @@ class ParsePlaylist {
     final trackCount = data['track_count'];
     final year = data['year'];
     final related = data['related'];
-    
-    final List<Song> tracks = (data['tracks'] as List<dynamic>)
-        .map((e) => ParseSong.song(e as Map<String, dynamic>))
-        .toList();
-      printInfoDebug('Tracks: ${tracks.length}');
+
+    final List<Song> tracks =
+        (data['tracks'] as List<dynamic>)
+            .map((e) => ParseSong.song(e as Map<String, dynamic>))
+            .toList();
+    printInfoDebug('Tracks: ${tracks.length}');
 
     return PlaylistFull(
       id: id,
@@ -34,7 +36,12 @@ class ParsePlaylist {
       secondsduration: durationSeconds,
       trackCount: trackCount,
       year: year,
-      releted: related,
+      releted:
+          related is List
+              ? ParseRelatedRecommendations.parse(
+                related.cast<Map<String, dynamic>>(),
+              )
+              : null,
       tracks: tracks,
     );
   }

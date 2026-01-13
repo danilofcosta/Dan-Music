@@ -1,12 +1,14 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:danmusic/models/home_section.dart';
 import 'package:danmusic/models/search/search_song.dart';
 
-class Song extends MediaItem {
+class Song extends MediaItem implements HomeContent {
   final String? albumId;
   final List<dynamic>? artists;
   final String? views;
   final String? durationText;
   final bool? isExplicit;
+  bool? topic;
 
   Song({
     required super.id,
@@ -16,7 +18,11 @@ class Song extends MediaItem {
     super.duration,
     super.album,
     super.artUri,
-    this.artists, this.views, this.isExplicit, this.durationText,
+    this.artists,
+    this.views,
+    this.isExplicit,
+    this.durationText,
+    this.topic,
   });
 
   factory Song.fromMediaItem(
@@ -36,7 +42,6 @@ class Song extends MediaItem {
     );
   }
 
-  
   factory Song.fromSearchSong(SearchSong s) {
     final artistText = s.artists.isNotEmpty
         ? s.artists.map((a) => a.name).join(', ')

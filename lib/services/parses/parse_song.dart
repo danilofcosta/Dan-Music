@@ -1,12 +1,15 @@
 import 'package:danmusic/models/artist.dart';
 import 'package:danmusic/services/parses/parse_artist.dart';
 
+import '../../models/album.dart';
 import '../../models/song.dart';
 import '../../models/thumbnail.dart';
+import 'parse_album.dart';
 import 'parse_thumbnail.dart';
 
 class ParseSong {
   static Song song(Map<String, dynamic> jsonData) {
+    AlbumBasic? album;
     final List<ArtistBasic> artists = (jsonData['artists'] as List)
         .map<ArtistBasic>((artist) {
           return ParseArtist.artistBasic(artist);
@@ -21,6 +24,14 @@ class ParseSong {
     final List<Thumbnail> cover = ParseThumbnail.thumbnail(
       jsonData['thumbnails'],
     );
+    if (jsonData.containsKey('album') && jsonData['album'] != null) {
+      if (jsonData['album'].runtimeType == String) {
+        final String albumName = jsonData['album'];
+        album = AlbumBasic(title: albumName);
+      } else {
+        album = ParseAlbum.albumBasic(jsonData["album"]);
+      }
+    }
 
     return Song(
       id: id,
@@ -28,6 +39,8 @@ class ParseSong {
       artist: rawArtist,
       artUri: cover.isNotEmpty ? Uri.parse(cover.first.url) : null,
       artists: artists,
+      album: album?.title,
+      albumId: album?.albumId,
     );
   }
 

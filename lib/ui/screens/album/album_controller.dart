@@ -38,11 +38,16 @@ class AlbumController extends GetxController {
 
     // Se já veio um álbum parcial (preview), popula o básico
     if (albumPreview != null) {
-      album.value = AlbumFull(title: albumPreview.title, thumbnails:  albumPreview.thumbnails);
+      album.value = AlbumFull(
+        title: albumPreview.title,
+        thumbnails: albumPreview.thumbnails,
+      );
     }
 
     // Depois carrega o álbum completo da API
-    final AlbumFull? data = await youTubeService.getAlbumFull(id);
+    final AlbumFull? data = await youTubeService.getAlbumFull(
+      albumPreview?.browseId ?? id,
+    );
     if (data == null) {
       return;
     }

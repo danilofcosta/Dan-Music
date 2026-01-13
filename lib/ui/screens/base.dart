@@ -1,9 +1,12 @@
 import 'package:danmusic/models/song.dart';
+import 'package:danmusic/services/uteis/helper.dart';
 import 'package:danmusic/ui/widgets/card_medio.dart';
 import 'package:danmusic/ui/widgets/cards/song_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../services/uteis/load_image.dart';
 import '../../services/uteis/update_papilite.dart';
+import 'player/player_controller.dart';
 
 class BaseScreen extends StatefulWidget {
   final String thumb;
@@ -28,12 +31,37 @@ class BaseScreen extends StatefulWidget {
 class _BaseScreenState extends State<BaseScreen> {
   Color _dominantColor = const Color.fromARGB(255, 7, 7, 7);
 
+  final ScrollController _scrollController = ScrollController();
+  bool _showFab = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scrollController.addListener(() {
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final currentScroll = _scrollController.offset;
+
+      final shouldShow = currentScroll > maxScroll * 0.2;
+      printInfoDebug("Current Scroll: $currentScroll");
+      printInfoDebug("Max Scroll: $maxScroll");
+
+      if (shouldShow != _showFab) {
+        setState(() => _showFab = shouldShow);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   Future<void> _updatePalette(String imagePath) async {
     if (!mounted) return;
     final dominantColor = await updatePalette(imagePath);
-    setState(() {
-      _dominantColor = dominantColor;
-    });
+    setState(() => _dominantColor = dominantColor);
   }
 
   @override
@@ -46,11 +74,30 @@ class _BaseScreenState extends State<BaseScreen> {
       widget.relatedRecommendations != null &&
       widget.relatedRecommendations!.isNotEmpty;
 
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: AnimatedScale(
+        scale: _showFab ? 1 : 0,
+        //   scale: 1,
+        duration: const Duration(milliseconds: 200),
+        child: FloatingActionButton.extended(
+          onPressed: _scrollToTop,
+          label: const Icon(Icons.keyboard_arrow_up),
+          // label: const Text("Topo"),
+        ),
+      ),
       backgroundColor: _dominantColor.withValues(alpha: 0.7),
       body: CustomScrollView(
+        controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
           // ===========================
@@ -113,9 +160,9 @@ class _BaseScreenState extends State<BaseScreen> {
                   Text(
                     widget.title,
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -130,7 +177,8 @@ class _BaseScreenState extends State<BaseScreen> {
                   Row(
                     children: [
                       FilledButton.icon(
-                        onPressed: () {},
+                        onPressed: () async {  final controller = Get.find<PlayerController>();
+                    await controller.uploadQuere(widget.tracks);},
                         icon: const Icon(Icons.play_arrow),
                         label: const Text('Tocar Playlist'),
                       ),
@@ -151,18 +199,15 @@ class _BaseScreenState extends State<BaseScreen> {
           // ===========================
           if (widget.tracks.isEmpty)
             const SliverToBoxAdapter(
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text('Nenhuma faixa encontrada.'),
-                ),
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: Text('Nenhuma faixa encontrada.')),
               ),
             )
           else
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
                 final track = widget.tracks[index];
-
                 return TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: 1),
                   duration: Duration(milliseconds: 250 + index * 35),
@@ -181,7 +226,7 @@ class _BaseScreenState extends State<BaseScreen> {
             ),
 
           // ===========================
-          // RECOMENDADOS (REFATORADO)
+          // RECOMENDADOS
           // ===========================
           if (hasRecommendations) ...[
             SliverToBoxAdapter(
@@ -207,7 +252,6 @@ class _BaseScreenState extends State<BaseScreen> {
                   itemCount: widget.relatedRecommendations!.length,
                   itemBuilder: (context, index) {
                     final related = widget.relatedRecommendations![index];
-
                     return CardMedio(
                       image: related.thumbnails.last.url,
                       title: related.title,

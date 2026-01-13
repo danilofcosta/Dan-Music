@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../../navigation.dart';
 import '../../widgets/buid_list_horizotal.dart';
+import '../../widgets/buid_list_horizotal_card.dart';
 import '../player/player_controller.dart';
 import 'home_screen_controller.dart';
 
@@ -19,59 +20,51 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final controller = Get.find<HomeScreenController>();
-  final controllerPlayerController = Get.find<PlayerController>();
+  final playerController = Get.find<PlayerController>();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Obx(() {
+        if (controller.homeSection.isEmpty) {
+          return const Scaffold(body: ProgressIndicator());
+        }
+
         return Scaffold(
-          // appBar: AppBar(
-          //   centerTitle: true,
-          //   title: Text(
-          //     controller.greeting.value,
-          //     style: TextStyle(fontWeight: FontWeight.bold),
-          //   ),
-          // ),
-          //bottomSheet: Player(),
-          // floatingActionButton: controllerPlayerController.playerOpen.value
-          //     ? null
-          //     : FloatingActionButton(
-          //         onPressed: () {
-          //           Get.toNamed(RouteName.search);
-          //         },
-          //         child: const Icon(Icons.search),
-          //       ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Get.toNamed(RouteName.search);
-            },
+            onPressed: () => Get.toNamed(RouteName.search),
             child: const Icon(Icons.search),
           ),
-
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           persistentFooterButtons: [Player()],
-          persistentFooterDecoration: BoxDecoration(color: Colors.transparent),
-
-          body: controller.homeSection.isEmpty
-              ? ProgressIndicator()
-              : Stack(
-                  children: [
-                    CustomScrollView(
-                      slivers: [
-                        SliverToBoxAdapter(
-                          child: BuidListHorizotal(
-                            title: controller.homeSection.first.title,
-                            songs: controller.homeSection.first.contents
-                                .cast<Song>(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    //    Player(),
-                  ],
-                ),
+          persistentFooterDecoration: const BoxDecoration(
+            color: Colors.transparent,
+          ),
+          body: CustomScrollView(
+            slivers: controller.homeSection
+                .map<Widget>((section) => _buildSection(section))
+                .toList(),
+          ),
         );
       }),
+    );
+  }
+
+  Widget _buildSection(dynamic section) {
+    // Seção só de músicas
+    final songs = section.contents.whereType<Song>().toList();
+    if (songs.isNotEmpty) {
+      return SliverToBoxAdapter(
+        child: BuidListHorizotal(title: section.title, songs: songs),
+      );
+    }
+
+    // Seção mista (álbum, artista, playlist, etc)
+    return SliverToBoxAdapter(
+      child: BuidListHorizotalCard(
+        title: section.title,
+        list: section.contents,
+      ),
     );
   }
 }

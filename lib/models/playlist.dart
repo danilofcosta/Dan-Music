@@ -1,7 +1,8 @@
+import 'package:danmusic/models/home_section.dart';
 import 'package:danmusic/models/song.dart';
 import 'package:danmusic/models/thumbnail.dart';
 
-class Playlist {
+class Playlist implements HomeContent {
   final String browseId;
   final String title;
   final String? author;
@@ -43,8 +44,5 @@ class PlaylistFull {
     this.year,
     this.releted,
     this.tracks,
-  }
-
-  
-  );
+  });
 }

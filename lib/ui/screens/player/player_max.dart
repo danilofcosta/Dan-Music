@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../navigation.dart';
 import 'widgets_player/buil_buttons.dart';
 import 'widgets_player/build_cover.dart';
 import 'player_controller.dart' show PlayerController;
@@ -19,60 +20,76 @@ class _PlayerMaxState extends State<PlayerMax> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-
-    return SafeArea(
-      child: SizedBox(
-        width: width,
-        height: height,
-
-        child: Column(
-          spacing: 5,
+    return Column(
+      children: [
+        // Header
+        Row(
           children: [
-            Flexible(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      controller.setminplayer();
-                    },
-                    icon: Icon(Icons.keyboard_arrow_down),
-                  ),
-                  Text('Tocando a playlisy ... ${controller.songNow.value.id}'),
-                  IconButton(
-                    onPressed: () {
-                      controller.setminplayer();
-                    },
-                    icon: Icon(Icons.more_vert),
-                  ),
-                ],
-              ),
-            ),
-            //  Spacer(flex: 2),
-            BuildCover(),
-            BulidText(), MusicProgressBar(),
-            BuilButtons(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Spacer(),
-                  FloatingActionButton(
-                    onPressed: () {},
-                    child: const Icon(Icons.playlist_play_outlined),
-                  ),
-                ],
-              ),
+            IconButton(
+              onPressed: controller.setminplayer,
+              icon: const Icon(Icons.keyboard_arrow_down),
             ),
 
-            //Spacer(),
+            // Área central que pode encolher
+            Expanded(
+              child: Obx(() {
+                return Text(
+                  controller.songNow.value.album ?? 'sem album',
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  style: Theme.of(context).textTheme.titleMedium,
+                );
+              }),
+            ),
+
+            IconButton(
+              onPressed: controller.setminplayer,
+              icon: const Icon(Icons.more_vert),
+            ),
           ],
         ),
-      ),
+
+        const SizedBox(height: 8),
+
+        BuildCover(),
+
+        const SizedBox(height: 12),
+
+        BulidText(),
+
+        const SizedBox(height: 8),
+
+        MusicProgressBar(),
+
+        const SizedBox(height: 12),
+
+        BuilButtons(),
+
+        const Spacer(),
+
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              const Spacer(),
+              FloatingActionButton(
+                heroTag: null,
+
+                onPressed: () {
+                  Get.toNamed(
+                    RouteName.currentPlaylist,
+
+                    preventDuplicates: false,
+                  );
+                },
+                child: const Icon(Icons.playlist_play_outlined),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

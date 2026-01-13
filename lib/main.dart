@@ -5,7 +5,13 @@ import 'package:get/get.dart';
 
 import 'app.dart';
 import 'services/manager_audio/audio_handler.dart';
+import 'ui/screens/album/album_controller.dart';
+import 'ui/screens/artist/artist_cotroller.dart';
+import 'ui/screens/current_playlist/current_playlist_controller.dart';
 import 'ui/screens/home/home_screen_controller.dart';
+import 'ui/screens/playlist/playlist_controller.dart';
+import 'ui/screens/search/seach_controller_result.dart';
+import 'ui/screens/search/search_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +26,15 @@ void main() async {
 
 Future<void> startApplicationServices() async {
   Get.lazyPut(() => HomeScreenController(), fenix: true);
-  // Tornar o PlayerController permanente para evitar problemas de dispose
+  Get.lazyPut(() => AlbumController(), fenix: true);
+  Get.lazyPut(() => ArtistCotroller(), fenix: true);
+  Get.lazyPut(() => PlaylistController(), fenix: true); 
+   Get.lazyPut(() => SearchResultsController(), fenix: true);
+   Get.lazyPut(() => SearchResultsController(), fenix: true);
+   Get.lazyPut(() => SearchController(), fenix: true);
+   Get.lazyPut(() => CurrentPlaylistController(), fenix: true);
+
+
+ 
   Get.put(PlayerController(), permanent: true);
 }

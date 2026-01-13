@@ -1,0 +1,56 @@
+
+
+
+import 'dart:io';
+
+import 'package:danmusic/services/manager_audio/manage_audio_url.dart';
+import 'package:flutter_new_pipe_extractor/flutter_new_pipe_extractor.dart';
+import 'package:just_audio/just_audio.dart';
+class ApiAudioSource extends StreamAudioSource {
+  final String musicId;
+
+  ApiAudioSource(this.musicId);
+
+  @override
+  Future<StreamAudioResponse> request([int? start, int? end]) async {
+    // Busca sempre um link novo (porque ele expira)
+    final VideoInfo? videoInfo = await ManageAudioURL.videoInfo(musicId);
+    if (videoInfo == null) {
+      throw Exception("Vídeo não encontrado");
+    }
+
+    final AudioStream audio = videoInfo.audioStreams.first;
+
+    // A URL direta do áudio
+    final Uri uri = Uri.parse(audio.content);
+
+    // Monta headers para suporte a streaming parcial (seek)
+    final headers = <String, String>{};
+    if (start != null || end != null) {
+      final range =
+          'bytes=${start ?? 0}-${end != null ? end : ''}';
+      headers[HttpHeaders.rangeHeader] = range;
+    }
+
+    final httpClient = HttpClient();
+    final request = await httpClient.getUrl(uri);
+
+    headers.forEach((key, value) {
+      request.headers.set(key, value);
+    });
+
+    final response = await request.close();
+
+    final contentLength = response.contentLength == -1
+        ? audio.itagItem?.contentLength ?? -1
+        : response.contentLength;
+
+    return StreamAudioResponse(
+      sourceLength: audio.itagItem?.contentLength,
+      contentLength: contentLength,
+      offset: start,
+      contentType: audio.itagItem?.codec ?? audio.codec,
+      stream: response.map((event) => event),
+    );
+  }
+}

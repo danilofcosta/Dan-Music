@@ -16,7 +16,7 @@ class BuildCover extends StatelessWidget {
     return Obx(() {
       Song? mediaItemNow = controller.songNow.value;
 
-     // printInfoDebug(mediaItemNow?.extras.toString());
+      // printInfoDebug(mediaItemNow?.extras.toString());
       // bool istop=mediaItemNow.extras.containsKey('isTop')??false;
 
       // Tem capa?
@@ -33,7 +33,7 @@ class BuildCover extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
               image: DecorationImage(
-                fit: BoxFit.contain,
+                fit: BoxFit.fitHeight,
                 image:
                     LoadImage.loadProvider(mediaItemNow.artUri.toString())
                         as ImageProvider,

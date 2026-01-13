@@ -3,43 +3,72 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../services/uteis/load_image.dart';
+import 'widgets_player/animated_play_button.dart';
 
 class PlayerMini extends StatelessWidget {
   const PlayerMini({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<PlayerController>();
+
     return Obx(() {
-      final controller = Get.find<PlayerController>();
+      final song = controller.songNow.value;
+
       return Container(
-        margin: EdgeInsets.only(left: 12, right: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
-          //   color: Colors.amber,
-          borderRadius: BorderRadius.circular(8),
-
-          border: BoxBorder.all(color: Colors.white, width: 2),
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).cardColor,
         ),
-
-        child: ListTile(
-          onTap: () => controller.setMaxplayer(),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LoadImage.loadWidget(
-              controller.songNow.value.artUri.toString(),
-
-              errorBuildericon: Icons.music_note,
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: controller.setMaxplayer,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: LoadImage.loadWidget(
+                    song.artUri.toString(),
+                    fit: BoxFit.cover,
+                    errorBuildericon: Icons.music_note,
+                  ),
+                ),
+              ),
             ),
-          ),
-          title: Text(
-            controller.songNow.value.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            controller.songNow.value.artist ?? '',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+
+            const SizedBox(width: 10),
+
+            Expanded(
+              child: GestureDetector(
+                onTap: controller.setMaxplayer,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      song.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      song.artist ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 8),
+
+            AnimatedPlayButton(iconSize: 26),
+          ],
         ),
       );
     });

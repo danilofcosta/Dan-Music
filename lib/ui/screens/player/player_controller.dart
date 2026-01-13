@@ -20,6 +20,12 @@ class PlayerController extends GetxController {
     listenMediaItem();
   }
 
+  @override
+  void dispose() {
+    draggableController.dispose();
+    super.dispose();
+  }
+
   void _listenerSize() {
     draggableController.addListener(() {
       final size = draggableController.size;
@@ -64,6 +70,15 @@ class PlayerController extends GetxController {
 
   void playById(Song song) async {
     await audioHandler.playById(song);
+  }
+
+  Future<void> uploadQuere(List<Song> songs) async {
+    if (songs.isEmpty) return;
+    await audioHandler.uploadQuere(songs);
+  }
+
+  void playByIndex(int index) {
+    audioHandler.playByIndex(index);
   }
 
   @override
