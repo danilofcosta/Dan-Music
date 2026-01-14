@@ -17,139 +17,182 @@ import '../../widgets/cards/playlist_card.dart';
 import '../../widgets/cards/profile_card.dart';
 import '../../widgets/cards/song_card.dart';
 import 'search_controller.dart';
-
 class SearchResultsController extends GetxController {
   final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
-  final RxString query = ''.obs;
+
   final RxString searchQuery = ''.obs;
-  final RxString searchText = ''.obs;
-  final RxList<String> suggestions = <String>[].obs;
+
   final RxList<SearchResult> searchResults = <SearchResult>[].obs;
   final RxList<Widget> selectedItems = <Widget>[].obs;
+
+  // Cache por filtro
   final RxList<Widget> all = <Widget>[].obs;
   final RxList<Widget> songs = <Widget>[].obs;
   final RxList<Widget> artist = <Widget>[].obs;
   final RxList<Widget> albums = <Widget>[].obs;
   final RxList<Widget> playlists = <Widget>[].obs;
+
   final RxBool isLoading = false.obs;
-  final RxBool showSuggestions = false.obs;
   final RxString selectedFilter = Filtros.all.obs;
-  final RxList<String> currentResults = <String>[].obs;
 
-  Future<void> fetchSuggestions(String query) async {
-    if (query.isEmpty) {
-      suggestions.clear();
-      showSuggestions.value = false;
-      return;
-    }
-
-    try {
-      isLoading.value = true;
-      final results = await youTubeService.getSearchSuggestions(query);
-      suggestions.value = results;
-      showSuggestions.value = true;
-    } catch (e, s) {
-      printErrorDebug('Error fetching suggestions: $e');
-      printErrorDebug(s);
-      suggestions.clear();
-    } finally {
-      isLoading.value = false;
-    }
-  }
+  /* ================= BUSCA PRINCIPAL ================= */
 
   Future<void> search(String query) async {
     if (query.isEmpty) return;
 
     try {
       isLoading.value = true;
-      showSuggestions.value = false;
       searchQuery.value = query;
 
       final results = await youTubeService.search(query);
-
       final parsedResults = ParseSearchResult.parseSearchResults(
         results.cast<Map<String, dynamic>>(),
       );
 
-      searchResults.value = parsedResults;
-      printInfoDebug('Found ${parsedResults.length} results');
+      searchResults.assignAll(parsedResults);
+
+      // Limpa caches
+      all.clear();
+      songs.clear();
+      artist.clear();
+      albums.clear();
+      playlists.clear();
+
       featdataResults();
     } catch (e, s) {
       printErrorDebug('Error searching: $e');
       printErrorDebug(s);
-      searchResults.clear();
     } finally {
       isLoading.value = false;
     }
   }
 
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  // }
+  /* ================= CONTROLE DE FILTRO ================= */
+
+  void changeFilter(String filter) {
+    selectedFilter.value = filter;
+    featdataResults();
+  }
 
   void featdataResults() {
     switch (selectedFilter.value) {
       case Filtros.all:
         if (all.isNotEmpty) {
           selectedItems.assignAll(all);
-          break;
+        } else {
+          getResultsAll();
         }
-        getResultsAll();
+        break;
 
+      case Filtros.songs:
+        if (songs.isNotEmpty) {
+          selectedItems.assignAll(songs);
+        } else {
+          getResultsSongs();
+        }
+        break;
+
+      case Filtros.artist:
+        if (artist.isNotEmpty) {
+          selectedItems.assignAll(artist);
+        } else {
+          getResultsArtist();
+        }
+        break;
+
+      case Filtros.albums:
+        if (albums.isNotEmpty) {
+          selectedItems.assignAll(albums);
+        } else {
+          getResultsAlbums();
+        }
+        break;
+
+      case Filtros.playlists:
+        if (playlists.isNotEmpty) {
+          selectedItems.assignAll(playlists);
+        } else {
+          getResultsPlaylists();
+        }
         break;
 
       default:
+        printErrorDebug('Filtro inválido: ${selectedFilter.value}');
         break;
     }
   }
 
-  void getResultsAll() async {
+  /* ================= MÉTODOS POR FILTRO ================= */
+
+  void getResultsSongs() async {
+    isLoading.value = true;
+    try {
+      final result = await youTubeService.searchSong(searchQuery.value);
+      final widgets = result.map((e) => SongCard(song: e)).toList();
+
+      songs.assignAll(widgets);
+      selectedItems.assignAll(widgets);
+    } catch (e, s) {
+      printErrorDebug(e);
+      printErrorDebug(s);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void getResultsArtist() {
+    final widgets = searchResults
+        .where((r) => r.content is ArtistDetail)
+        .map((r) => ArtistCard(artist: r.content as ArtistDetail))
+        .toList();
+
+    artist.assignAll(widgets);
+    selectedItems.assignAll(widgets);
+  }
+
+  void getResultsAlbums() {
+    final widgets = searchResults
+        .where((r) => r.content is SearchAlbum)
+        .map((r) => AlbumCard(album: r.content as SearchAlbum))
+        .toList();
+
+    albums.assignAll(widgets);
+    selectedItems.assignAll(widgets);
+  }
+
+  void getResultsPlaylists() {
+    final widgets = searchResults
+        .where((r) => r.content is SearchPlaylist)
+        .map((r) => PlaylistCard(playlist: r.content as SearchPlaylist))
+        .toList();
+
+    playlists.assignAll(widgets);
+    selectedItems.assignAll(widgets);
+  }
+
+  void getResultsAll() {
     Widget widgetFromResult(SearchResult res) {
       final content = res.content;
 
       if (content is ArtistDetail) return ArtistCard(artist: content);
       if (content is Song) return SongCard(song: content);
       if (content is SearchAlbum) return AlbumCard(album: content);
-      if (content is SearchPlaylist) return PlaylistCard(playlist: content);
-      if (content is SearchProfile) return ProfileCard(profile: content);
-
-      // Fallback by declared type
-      switch (res.type) {
-        case 'artist':
-          return ArtistCard(artist: content as ArtistDetail);
-        case 'song':
-        case 'video':
-          return SongCard(song: content as Song);
-        case 'album':
-          return AlbumCard(album: content as SearchAlbum);
-        case 'playlist':
-          return PlaylistCard(playlist: content as SearchPlaylist);
-        case 'profile':
-          return ProfileCard(profile: content as SearchProfile);
-        default:
-          return ListTile(
-            leading: const Icon(Icons.error, color: Colors.redAccent),
-            title: Text('Unknown result: ${res.type}'),
-          );
+      if (content is SearchPlaylist) {
+        return PlaylistCard(playlist: content);
       }
+      if (content is SearchProfile) {
+        return ProfileCard(profile: content);
+      }
+
+      return const ListTile(
+        leading: Icon(Icons.error, color: Colors.red),
+        title: Text('Unknown result'),
+      );
     }
 
     final widgets = searchResults.map(widgetFromResult).toList();
 
     all.assignAll(widgets);
     selectedItems.assignAll(widgets);
-  }
-
-  void clearSearch() {
-    searchQuery.value = '';
-    suggestions.clear();
-    searchResults.clear();
-    showSuggestions.value = false;
-  }
-
-  void changeFilter(String filter) {
-    selectedFilter.value = filter;
-    featdataResults();
   }
 }

@@ -1,4 +1,3 @@
-
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:danmusic/services/manager_audio/instance_test_audio.dart';
@@ -139,9 +138,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   PlaybackState _transformEvent(PlaybackEvent event) {
     return PlaybackState(
       controls: [
-        MediaControl.rewind,
         _player.playing ? MediaControl.pause : MediaControl.play,
-        MediaControl.stop,
         MediaControl.fastForward,
       ],
       systemActions: const {

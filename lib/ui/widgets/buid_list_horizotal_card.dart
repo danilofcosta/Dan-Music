@@ -67,7 +67,7 @@ class BuidListHorizotalCard<T> extends StatelessWidget {
   String _getTitle(T item) {
     try {
       final dynamic obj = item;
-      return obj.title ?? '';
+      return obj.title ?? obj.name ?? '';
     } catch (_) {
       return '';
     }
@@ -76,7 +76,10 @@ class BuidListHorizotalCard<T> extends StatelessWidget {
   String _getSubtitle(T item) {
     try {
       final dynamic obj = item;
-      return obj.year?.toString() ?? obj.author ?? '';
+      return obj.year?.toString() ??
+          obj.author ??
+          obj.subscribers?.toString() ??
+          '';
     } catch (_) {
       return '';
     }

@@ -3,6 +3,7 @@ import 'package:danmusic/models/song.dart';
 import 'package:danmusic/services/parses/parse_artist.dart';
 import 'package:danmusic/services/parses/parse_related_recommendations.dart';
 import 'package:danmusic/services/parses/parse_song.dart';
+import 'package:ytmusicapi_dart/enums.dart';
 import 'package:ytmusicapi_dart/ytmusicapi_dart.dart';
 
 import '../models/album.dart';
@@ -26,13 +27,15 @@ class YouTubeMusicService {
     }
   }
 
-  Future<List<HomeSection>> getHome() async {
+  Future<List<HomeSection>?> getHome() async {
     if (ytmusic == null) {
       throw Exception('YTMusic not initialized');
     }
-    final res = await ytmusic!.getHome();
-
+    try {final res = await ytmusic!.getHome();
     return ParseHomeSessions.parseHomeSections(res);
+    } catch (e,s){printErrorDebug('Error fetching home sections: $e');}
+    
+
   }
 
   Future<List<String>> getSearchSuggestions(String query) async {
@@ -66,6 +69,21 @@ class YouTubeMusicService {
       return [];
     }
   }
+
+Future<List<Song>> searchSong(String query) async {
+
+ if (ytmusic == null) {
+      throw Exception('YTMusic not initialized');
+    }
+    try{
+       final result = await ytmusic!.search(query,filter:SearchFilter.songs);
+        return ParseSong.songs(result);
+    }catch(e){
+      printErrorDebug('Error searching: $e');
+      return [];
+    }
+}
+
 
   Future<PlaylistFull?> getPlaylist(String playlistId) async {
     if (ytmusic == null) {

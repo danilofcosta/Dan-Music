@@ -47,9 +47,18 @@ class _SearchScreenState extends State<SearchScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
+                autocorrect: true,
+                autofocus: true,
+                enableSuggestions: true,
+                maxLines: 1,
                 controller: textController,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.search,
+                textCapitalization: TextCapitalization.words,
+                style: Theme.of(context).textTheme.bodyLarge!,
+
                 decoration: InputDecoration(
-                  hintText: 'Search songs, artists...',
+                  hintText: 'Pesquise Musicas, artists...',
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: textController.text.isNotEmpty
                       ? IconButton(
@@ -97,7 +106,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   itemBuilder: (context, index) {
                     final suggestion = controller.suggestions[index];
                     return ListTile(
-                      leading: const Icon(Icons.history),
+                      //  leading: const Icon(Icons.history),
                       title: Text(suggestion),
                       onTap: () {
                         textController.text = suggestion;
@@ -117,7 +126,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         if (!mounted) return;
                         // ignore: use_build_context_synchronously
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('$suggestion copied')),
+                          SnackBar(content: Text('$suggestion Copiado')),
                         );
                       },
                     );

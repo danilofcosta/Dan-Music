@@ -78,7 +78,7 @@ class SearchController extends GetxController {
   // =============================
   List<SearchResult> get filteredResults {
     switch (selectedFilter.value) {
-      case Filtros.artists:
+      case Filtros.artist:
         return searchResults.where((e) => e.type == 'artist').toList();
 
       case Filtros.songs:
@@ -117,7 +117,7 @@ class Filtros {
   static const songs = 'Songs';
   static const albums = 'Albums';
   static const playlists = 'Playlists';
-  static const artists = 'Artists';
+  static const artist = 'Artists';
 
-  static List<String> get filters => [all, songs, albums, playlists, artists];
+  static List<String> get filters => [all, songs, albums, playlists, artist];
 }

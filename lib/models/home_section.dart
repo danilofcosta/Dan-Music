@@ -2,6 +2,7 @@
 import 'package:danmusic/models/album.dart';
 import 'package:danmusic/models/artist.dart';
 import 'package:danmusic/models/playlist.dart';
+import 'package:danmusic/services/parses/parse_artist.dart';
 import 'package:danmusic/services/parses/parse_song.dart';
 import 'package:danmusic/services/parses/parse_thumbnail.dart';
 
@@ -46,7 +47,7 @@ class ParseHomeSessions {
       return Playlist(
         browseId: item['browseId'] as String? ?? item['playlistId'],
         title: item['title'] as String? ?? '',
-        author: _extractAuthorName(item['author']),
+        author: _extractAuthorName(item['author'])?? item['description'],
         itemCount: item['count'] as String?,
         thumbnails: ParseThumbnail.thumbnail(item['thumbnails']),
       );
@@ -74,12 +75,14 @@ class ParseHomeSessions {
         );
       } else {
         // É um álbum
+       // final artist =ParseArtist.artistBasic(item['artists']) ??'';
         return Album(
           albumId: item['browseId'] as String? ?? '',
           browseId: item['browseId'] as String?,
           title: item['title'] as String? ?? '',
           year: item['year'] as String?,
           thumbnails: ParseThumbnail.thumbnail(item['thumbnails']),
+          
         );
       }
     }

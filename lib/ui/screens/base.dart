@@ -47,6 +47,7 @@ class _BaseScreenState extends State<BaseScreen> {
       printInfoDebug("Max Scroll: $maxScroll");
 
       if (shouldShow != _showFab) {
+        if (!mounted) return;
         setState(() => _showFab = shouldShow);
       }
     });
@@ -61,6 +62,7 @@ class _BaseScreenState extends State<BaseScreen> {
   Future<void> _updatePalette(String imagePath) async {
     if (!mounted) return;
     final dominantColor = await updatePalette(imagePath);
+    if (!mounted) return;
     setState(() => _dominantColor = dominantColor);
   }
 
@@ -177,8 +179,10 @@ class _BaseScreenState extends State<BaseScreen> {
                   Row(
                     children: [
                       FilledButton.icon(
-                        onPressed: () async {  final controller = Get.find<PlayerController>();
-                    await controller.uploadQuere(widget.tracks);},
+                        onPressed: () async {
+                          final controller = Get.find<PlayerController>();
+                          await controller.uploadQuere(widget.tracks);
+                        },
                         icon: const Icon(Icons.play_arrow),
                         label: const Text('Tocar Playlist'),
                       ),
