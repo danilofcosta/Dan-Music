@@ -25,8 +25,20 @@ class ParseArtist {
 
       return ArtistBasic(name: name, id: id);
     }
+    if (data is List<Map<String, dynamic>>) {
+      final firstItem = data.first;
+
+      final name = firstItem['name']?.toString() ?? '';
+      final id = firstItem['id']?.toString() ?? '';
+
+      return ArtistBasic(name: name, id: id);
+    }
 
     throw Exception('Formato inválido para ArtistBasic: ${data.runtimeType}');
+  }
+
+  static List<ArtistBasic> artists(List<dynamic> data) {
+    return data.map((d) => artistBasic(d)).toList();
   }
 
   static ArtistFull artistFull(Map<String, dynamic> jsondata) {
@@ -46,55 +58,55 @@ class ParseArtist {
     final songsData = jsondata['songs'];
     final List<Song>? songs = songsData != null && songsData['results'] != null
         ? (songsData['results'] as List)
-            .map((e) => ParseSong.song(e as Map<String, dynamic>))
-            .toList()
+              .map((e) => ParseSong.song(e as Map<String, dynamic>))
+              .toList()
         : null;
     final String? songsBrowseId = songsData?['browseId'];
 
     final albumsData = jsondata['albums'];
     final List<Album>? albums =
         albumsData != null && albumsData['results'] != null
-            ? (albumsData['results'] as List)
-                .map((e) => ParseAlbum.album(e as Map<String, dynamic>))
-                .toList()
-            : null;
+        ? (albumsData['results'] as List)
+              .map((e) => ParseAlbum.album(e as Map<String, dynamic>))
+              .toList()
+        : null;
     final String? albumsBrowseId = albumsData?['browseId'];
     final String? albumsParams = albumsData?['params'];
 
     final singlesData = jsondata['singles'];
     final List<Album>? singles =
         singlesData != null && singlesData['results'] != null
-            ? (singlesData['results'] as List)
-                .map((e) => ParseAlbum.album(e as Map<String, dynamic>))
-                .toList()
-            : null;
+        ? (singlesData['results'] as List)
+              .map((e) => ParseAlbum.album(e as Map<String, dynamic>))
+              .toList()
+        : null;
     final String? singlesBrowseId = singlesData?['browseId'];
     final String? singlesParams = singlesData?['params'];
 
     final videosData = jsondata['videos'];
     final List<Song>? videos =
         videosData != null && videosData['results'] != null
-            ? (videosData['results'] as List)
-                .map((e) => ParseSong.song(e as Map<String, dynamic>))
-                .toList()
-            : null;
+        ? (videosData['results'] as List)
+              .map((e) => ParseSong.song(e as Map<String, dynamic>))
+              .toList()
+        : null;
     final String? videosBrowseId = videosData?['browseId'];
 
     final relatedData = jsondata['related'];
     final List<ArtistDetail>? related =
         relatedData != null && relatedData['results'] != null
-            ? (relatedData['results'] as List).map((e) {
-                final artist = e as Map<String, dynamic>;
-                return ArtistDetail(
-                  name: artist['title'] ?? '',
-                  browseId: artist['browseId'] ,
-                  shuffleId: artist['shuffleId'] ,
-                  radioId: artist['radioId'] ,
-                  subscribers: artist['subscribers'] ?? '',
-                  thumbnails: ParseThumbnail.thumbnail(artist['thumbnails']),
-                );
-              }).toList()
-            : null;
+        ? (relatedData['results'] as List).map((e) {
+            final artist = e as Map<String, dynamic>;
+            return ArtistDetail(
+              name: artist['title'] ?? '',
+              browseId: artist['browseId'],
+              shuffleId: artist['shuffleId'],
+              radioId: artist['radioId'],
+              subscribers: artist['subscribers'] ?? '',
+              thumbnails: ParseThumbnail.thumbnail(artist['thumbnails']),
+            );
+          }).toList()
+        : null;
 
     return ArtistFull(
       name: name,

@@ -75,13 +75,18 @@ class ParseHomeSessions {
         );
       } else {
         // É um álbum
-       // final artist =ParseArtist.artistBasic(item['artists']) ??'';
+       final ArtistBasic? artist =ParseArtist.artistBasic(item['artists']??item['artist']);
+       final rawartist =artist !=null ? ParseArtist.artistsToString([artist]):null;
+      
         return Album(
           albumId: item['browseId'] as String? ?? '',
           browseId: item['browseId'] as String?,
           title: item['title'] as String? ?? '',
           year: item['year'] as String?,
           thumbnails: ParseThumbnail.thumbnail(item['thumbnails']),
+          artist: artist
+          ,rawArtist: rawartist
+
           
         );
       }

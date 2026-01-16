@@ -6,10 +6,10 @@ import 'dart:io';
 import 'package:danmusic/services/manager_audio/manage_audio_url.dart';
 import 'package:flutter_new_pipe_extractor/flutter_new_pipe_extractor.dart';
 import 'package:just_audio/just_audio.dart';
-class ApiAudioSource extends StreamAudioSource {
+class CustomAudioSource extends StreamAudioSource {
   final String musicId;
 
-  ApiAudioSource(this.musicId);
+  CustomAudioSource(this.musicId);
 
   @override
   Future<StreamAudioResponse> request([int? start, int? end]) async {

@@ -23,6 +23,7 @@ class Album implements HomeContent {
   final String title;
   final String? type;
   final ArtistBasic? artist;
+  final String? rawArtist;
   final String? year;
   final bool? isExplicit;
   final List<Thumbnail>? thumbnails;
@@ -36,7 +37,7 @@ class Album implements HomeContent {
     this.year,
     this.isExplicit,
     this.thumbnails,
-    this.browseId,
+    this.browseId, this.rawArtist,
   });
 }
 

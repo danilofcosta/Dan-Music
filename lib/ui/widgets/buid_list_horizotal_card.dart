@@ -1,5 +1,10 @@
+import 'package:danmusic/models/album.dart';
+import 'package:danmusic/models/playlist.dart';
+import 'package:danmusic/services/uteis/helper.dart';
 import 'package:danmusic/ui/widgets/card_medio.dart';
 import 'package:flutter/material.dart';
+
+import '../../models/artist.dart';
 
 class BuidListHorizotalCard<T> extends StatelessWidget {
   final String title;
@@ -58,7 +63,7 @@ class BuidListHorizotalCard<T> extends StatelessWidget {
   String _getImage(T item) {
     try {
       final dynamic obj = item;
-      return obj.thumbnails?.first.url ?? '';
+      return obj.thumbnails?.last?.url ?? '';
     } catch (_) {
       return '';
     }
@@ -75,11 +80,17 @@ class BuidListHorizotalCard<T> extends StatelessWidget {
 
   String _getSubtitle(T item) {
     try {
-      final dynamic obj = item;
-      return obj.year?.toString() ??
-          obj.author ??
-          obj.subscribers?.toString() ??
-          '';
+      return switch (item) {
+        Album() => item.rawArtist ?? item.year.toString() ?? '',
+        Playlist() => item.author ?? '',
+        AlbumFull() => item.year.toString(),
+        PlaylistFull() => item.author ?? '',
+        ArtistDetail() => item.subscribers ?? '',
+        _ => () {
+          printInfoDebug(item.runtimeType);
+          return '';
+        }(),
+      };
     } catch (_) {
       return '';
     }

@@ -67,7 +67,7 @@ class _BuidListHorizotalState extends State<BuidListHorizotal> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(Icons.arrow_forward, color: Colors.white),
                   onPressed: () {},
                 ),
               ],

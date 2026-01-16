@@ -36,15 +36,29 @@ class _PlayerMaxState extends State<PlayerMax> {
                 // Área central que pode encolher
                 Expanded(
                   child: Obx(() {
-                    return Text(
-                      controller.songNow.value.album ?? 'sem album',
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleMedium?.copyWith(fontSize: 12),
+                    return Column(
+                      children: [
+                        Text(
+                          controller.songNow.value.album != null ? "Album" : '',
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleMedium?.copyWith(fontSize: 16),
+                        ),
+                        Text(
+                          controller.songNow.value.album ?? '',
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleMedium?.copyWith(fontSize: 12),
+                        ),
+                      ],
                     );
                   }),
                 ),

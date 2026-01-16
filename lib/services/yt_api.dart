@@ -33,7 +33,8 @@ class YouTubeMusicService {
     }
     try {final res = await ytmusic!.getHome();
     return ParseHomeSessions.parseHomeSections(res);
-    } catch (e,s){printErrorDebug('Error fetching home sections: $e');}
+    } catch (e,s){printErrorDebug('Error fetching home sections: $e $s');}
+    return null;
     
 
   }
@@ -129,12 +130,12 @@ Future<List<Song>> searchSong(String query) async {
     return null;
   }
 
-  Future<Song> getSong(String songId) async {
+ Future<Map<String, dynamic>> getSong(String songId) async {
     if (ytmusic == null) {
       throw Exception('YTMusic not initialized');
     }
     final jsonData = await ytmusic!.getSong(songId);
-    return ParseSong.song(jsonData);
+    return jsonData;
   }
 
   Future<Recommendations> getNextSongs({

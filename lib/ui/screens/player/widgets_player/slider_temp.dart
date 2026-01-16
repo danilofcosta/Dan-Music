@@ -82,7 +82,7 @@ class _MusicProgressBarState extends State<MusicProgressBar> {
           max: durationMs.toDouble(),
           onChanged: (_) {},
           secondaryTrackValue: bufferMs.clamp(0, durationMs).toDouble(),
-          secondaryActiveColor: Colors.green,
+          // secondaryActiveColor: Colors.green,
           onChangeEnd: (value) {
             player.seek(Duration(milliseconds: value.toInt()));
           },

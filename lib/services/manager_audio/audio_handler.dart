@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
-import 'package:danmusic/services/manager_audio/instance_test_audio.dart';
+import 'package:danmusic/services/manager_audio/custom_audio_source.dart';
 import 'package:danmusic/services/uteis/helper.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -78,8 +78,14 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       if (queue.value.isEmpty) return;
       final song = queue.value[event.currentIndex ?? 0];
       if (currentIndex != event.currentIndex && event.currentIndex != null) {
-        final Map<String, dynamic> data = await ManageAudioURL.getdata(song.id);
-        final songn = song.copyWith(artUri: Uri.parse(data['cover']));
+      //  final Map<String, dynamic> data = await ManageAudioURL.getdata(song.id);
+        final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
+        final couver = await youTubeService.getSong(song.id);
+
+      final s = couver["videoDetails"]?["thumbnail"]?["thumbnails"]?.last?["url"];
+
+      
+        final songn = song.copyWith(artUri: Uri.parse(s));
         mediaItem.add(songn);
         currentIndex = event.currentIndex;
       }
@@ -103,11 +109,11 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     if (playquere) {
       queue.value = songs;
 
-      _player.setAudioSources(songs.map((e) => ApiAudioSource(e.id)).toList());
+      _player.setAudioSources(songs.map((e) => CustomAudioSource(e.id)).toList());
       play();
       return;
     } else {
-      _player.addAudioSources(songs.map((e) => ApiAudioSource(e.id)).toList());
+      _player.addAudioSources(songs.map((e) => CustomAudioSource(e.id)).toList());
       queue.value = [...queue.value, ...songs];
       return;
     }
@@ -129,7 +135,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     // mediaItem.add(songn);
     queue.value = [song];
 
-    await _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
+     _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
 
     //  mediaItem.add(songn);
     _player.play();

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../services/uteis/load_image.dart';
 import '../../services/uteis/update_papilite.dart';
 import 'player/player_controller.dart';
+import 'player/widgets_player/animated_play_button.dart';
 
 class BaseScreen extends StatefulWidget {
   final String thumb;
@@ -43,8 +44,8 @@ class _BaseScreenState extends State<BaseScreen> {
       final currentScroll = _scrollController.offset;
 
       final shouldShow = currentScroll > maxScroll * 0.2;
-      printInfoDebug("Current Scroll: $currentScroll");
-      printInfoDebug("Max Scroll: $maxScroll");
+      // printInfoDebug("Current Scroll: $currentScroll");
+      // printInfoDebug("Max Scroll: $maxScroll");
 
       if (shouldShow != _showFab) {
         if (!mounted) return;
@@ -86,6 +87,7 @@ class _BaseScreenState extends State<BaseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<PlayerController>();
     return Scaffold(
       floatingActionButton: AnimatedScale(
         scale: _showFab ? 1 : 0,
@@ -176,23 +178,46 @@ class _BaseScreenState extends State<BaseScreen> {
                       ),
                     ),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      FilledButton.icon(
-                        onPressed: () async {
-                          final controller = Get.find<PlayerController>();
-                          await controller.uploadQuere(widget.tracks);
-                        },
-                        icon: const Icon(Icons.play_arrow),
-                        label: const Text('Tocar Playlist'),
-                      ),
-                      const SizedBox(width: 12),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.favorite_border),
-                      ),
-                    ],
-                  ),
+                  Obx(() {
+                    // Força a reatividade quando a música muda
+                    // ignore: unused_local_variable
+                    final dummy = controller.songNow.value;
+                    final isCurrentQueue =
+                        controller.audioHandler.queue.value == widget.tracks;
+
+                    return Row(
+                      children: [
+                        FilledButton.icon(
+                          onPressed: () async {
+                            await controller.uploadQuere(widget.tracks);
+                          },
+                          style: Theme.of(context)
+                              .filledButtonTheme
+                              .style
+                              ?.copyWith(
+                                  elevation: WidgetStateProperty.all(7.0)),
+                          icon: isCurrentQueue
+                              ? const SizedBox.shrink()
+                              : const Icon(Icons.play_arrow),
+                          label: isCurrentQueue
+                              ? const AnimatedPlayButton(iconSize: 32)
+                              : Text(
+                                  'Tocar Playlist',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                          autofocus: true,
+                        ),
+                        const SizedBox(width: 12),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.favorite_border),
+                        ),
+                      ],
+                    );
+                  }),
                 ],
               ),
             ),
