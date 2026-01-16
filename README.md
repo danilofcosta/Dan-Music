@@ -1,6 +1,10 @@
 # 🎵 Dan Music
 
 Dan Music é um aplicativo de música moderno e intuitivo, criado para oferecer a melhor experiência na descoberta, reprodução e organização das suas músicas favoritas diretamente do YouTube Music.
+## 📥 Download
+
+[![Baixar APK](https://img.shields.io/badge/Baixar-Última%20Release-green?style=for-the-badge)](https://github.com/danilofcosta/Dan-Music/releases/latest)
+
 ## 🖼️ Screenshots
 
 <p align="center">
