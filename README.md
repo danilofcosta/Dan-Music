@@ -1,16 +1,32 @@
-# danmusic
+# 🎵 Dan Music
 
-A new Flutter project.
+Dan Music é um aplicativo de música moderno e intuitivo, criado para oferecer a melhor experiência na descoberta, reprodução e organização das suas músicas favoritas diretamente do YouTube Music.
+## 🖼️ Screenshots
 
-## Getting Started
+<p align="center">
+  <img src="screenshots/home.png" width="250" />
+  <img src="screenshots/Album_playlist.png" width="250" />
+  <img src="screenshots/artist.png" width="250" />
+</p>
 
-This project is a starting point for a Flutter application.
+## 🚀 Funcionalidades
 
-A few resources to get you started if this is your first Flutter project:
+- 🎧 Reprodução de músicas em alta qualidade  
+- 🔍 Busca rápida por artistas, álbuns e músicas  
+- 📱 Interface simples, bonita e responsiva  
+- 🔄 Modo aleatório e repetição  
+- ▶️ Streaming de áudio do YouTube  
+- 📡 Extração de dados e faixas diretamente da plataforma  
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🛠️ Tecnologias Utilizadas
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Framework:** Flutter  
+- **Linguagem:** Dart  
+
+### 📦 Gerenciamento e Extração de Áudio
+- `flutter_new_pipe_extractor`  
+  Utilizado para extrair informações e streams de áudio:
+  ```yaml
+  flutter_new_pipe_extractor:
+    git:
+      url: https://github.com/danilofcosta/flutter_new_pipe_extractor.git

@@ -1,4 +1,3 @@
-import 'package:danmusic/services/uteis/helper.dart';
 import 'package:danmusic/ui/screens/search/seach_controller_result.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -101,7 +100,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
-                                    color: Colors.blueAccent.withOpacity(0.5),
+                                    color: Colors.blueAccent.withValues(alpha: 0.5),
                                     blurRadius: 10,
                                     spreadRadius: 2,
                                   ),

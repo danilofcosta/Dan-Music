@@ -81,7 +81,7 @@ class BuidListHorizotalCard<T> extends StatelessWidget {
   String _getSubtitle(T item) {
     try {
       return switch (item) {
-        Album() => item.rawArtist ?? item.year.toString() ?? '',
+        Album() => item.rawArtist ?? item.year.toString(),
         Playlist() => item.author ?? '',
         AlbumFull() => item.year.toString(),
         PlaylistFull() => item.author ?? '',
