@@ -68,7 +68,8 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   Future<void> stop() => _player.stop();
 
   @override
-  Future<void> skipToNext() => _player.seekToNext();
+  Future<void> skipToNext() async { _player.seekToNext();
+  play();}
   @override
   Future<void> skipToPrevious() => _player.seekToPrevious();
 
@@ -78,13 +79,14 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       if (queue.value.isEmpty) return;
       final song = queue.value[event.currentIndex ?? 0];
       if (currentIndex != event.currentIndex && event.currentIndex != null) {
-      //  final Map<String, dynamic> data = await ManageAudioURL.getdata(song.id);
-        final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
+        //  final Map<String, dynamic> data = await ManageAudioURL.getdata(song.id);
+        final YouTubeMusicService youTubeService =
+            Get.find<YouTubeMusicService>();
         final couver = await youTubeService.getSong(song.id);
 
-      final s = couver["videoDetails"]?["thumbnail"]?["thumbnails"]?.last?["url"];
+        final s =
+            couver["videoDetails"]?["thumbnail"]?["thumbnails"]?.last?["url"];
 
-      
         final songn = song.copyWith(artUri: Uri.parse(s));
         mediaItem.add(songn);
         currentIndex = event.currentIndex;
@@ -109,11 +111,15 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     if (playquere) {
       queue.value = songs;
 
-      _player.setAudioSources(songs.map((e) => CustomAudioSource(e.id)).toList());
+      _player.setAudioSources(
+        songs.map((e) => CustomAudioSource(e.id)).toList(),
+      );
       play();
       return;
     } else {
-      _player.addAudioSources(songs.map((e) => CustomAudioSource(e.id)).toList());
+      _player.addAudioSources(
+        songs.map((e) => CustomAudioSource(e.id)).toList(),
+      );
       queue.value = [...queue.value, ...songs];
       return;
     }
@@ -135,7 +141,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     // mediaItem.add(songn);
     queue.value = [song];
 
-     _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
+    _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
 
     //  mediaItem.add(songn);
     _player.play();
@@ -144,8 +150,11 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   PlaybackState _transformEvent(PlaybackEvent event) {
     return PlaybackState(
       controls: [
+        MediaControl.skipToPrevious,
+
         _player.playing ? MediaControl.pause : MediaControl.play,
-        MediaControl.fastForward,
+        MediaControl.skipToNext,
+        MediaControl.stop,
       ],
       systemActions: const {
         MediaAction.seek,
@@ -154,7 +163,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
         MediaAction.skipToPrevious,
         MediaAction.skipToNext,
       },
-      androidCompactActionIndices: const [0, 1, 3],
+      androidCompactActionIndices: const [0, 1, 2],
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
         ProcessingState.loading: AudioProcessingState.loading,
