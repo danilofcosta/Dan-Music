@@ -32,8 +32,22 @@ dependencies:
   #manage state  
   get: ^4.7.3
   path_provider: ^2.1.5
+  flutter_native_splash: ^2.4.7
+  flutter_launcher_icons: ^0.14.4
  # rxdart: ^0.28.0
   # extras
+
+flutter_native_splash:
+  color: "#3F51B5"
+  image: "assets/app/splash.png"
+  android: true
+
+flutter_icons:
+  image_path: "assets/app/icon.png"
+  remove_alpha_ios: true
+  android: "launcher_icon"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/app/icon-android.png"
 
 
 
