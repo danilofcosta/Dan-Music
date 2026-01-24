@@ -3,6 +3,7 @@ import 'package:danmusic/ui/screens/artist/artist_screen.dart';
 import 'package:danmusic/ui/screens/current_playlist/current_playlist.dart';
 import 'package:danmusic/ui/screens/player/player_max.dart';
 
+import 'ui/home.dart';
 import 'ui/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ import 'ui/screens/playlist/playlist_screen.dart';
 import 'ui/screens/search/search_screen.dart';
 
 class RouteName {
-  static const String home = HomeScreen.routeName;
+  static const String home = Home.routeName;
   static const String playeMax = PlayerMax.routeName;
   static const String search = SearchScreen.routeName;
   static const String playlist = PlaylistScreen.routeName;
@@ -23,7 +24,7 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case RouteName.home:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute(builder: (_) => const Home());
 
       // case RouteName.player:
       //   return MaterialPageRoute(builder: (_) => Player());

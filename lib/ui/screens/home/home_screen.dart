@@ -1,16 +1,15 @@
 import 'package:danmusic/models/song.dart';
-import 'package:danmusic/ui/screens/player/player_mini.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../navigation.dart';
+import '../../../services/uteis/greeting.dart';
 import '../../widgets/buid_list_horizotal.dart';
 import '../../widgets/buid_list_horizotal_card.dart';
 import '../player/player_controller.dart';
 import 'home_screen_controller.dart';
 
 class HomeScreen extends StatefulWidget {
-  static const String routeName = '/';
+
 
   const HomeScreen({super.key});
 
@@ -26,30 +25,47 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Obx(() {
-        if (controller.homeSection.isEmpty) {
-          return const Scaffold(body: ProgressIndicator());
-        }
+        // if (controller.homeSection.isEmpty) {
+        //   return const Scaffold(body: ProgressIndicator());
+        // }
 
         return Scaffold(
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => Get.toNamed(RouteName.search),
-            child: const Icon(Icons.search),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          persistentFooterButtons: [ PlayerMini()],
-          persistentFooterDecoration: const BoxDecoration(
-            color: Colors.transparent,
-          ),
+
+
+         
+
           body: CustomScrollView(
-            slivers: controller.homeSection
-                .map<Widget>((section) => _buildSection(section))
-                .toList(),
+slivers: [
+  _buildAppBar(),
+
+  if (controller.homeSection.isEmpty)
+    const SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
+    ),
+
+  ...controller.homeSection
+      .map<Widget>((section) => _buildSection(section))
+      .toList(),
+],
+
           ),
         );
       }),
     );
   }
+Widget _buildAppBar(){
 
+
+return  SliverAppBar(
+    title: Text(getGreeting(), style: const TextStyle(color: Colors.white)),
+    pinned: true,
+  );
+
+
+}
   Widget _buildSection(dynamic section) {
     // Seção só de músicas
     final songs = section.contents.whereType<Song>().toList();
