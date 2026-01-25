@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'app_library/app_library.dart' show AppLibrary;
 import 'device_library/device_library.dart';
 
 class Library extends StatelessWidget {
@@ -21,7 +22,7 @@ class Library extends StatelessWidget {
               labelColor: Colors.greenAccent,
               unselectedLabelColor: Colors.white54,
               tabs: [
-                Tab(text: "base"),
+                Tab(text: "lib"),
                 Tab(text: "base2"),
                 Tab(text: "Do Dispositivo"),
               ],
@@ -30,9 +31,11 @@ class Library extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
-            Center(child: Text("base1", style: TextStyle(color: Colors.white))),
-            Center(child: Text("base2", style: TextStyle(color: Colors.white))),
-           DeviceLibrary()
+            AppLibrary(),
+            Center(
+              child: Text("base2", style: TextStyle(color: Colors.white)),
+            ),
+            DeviceLibrary(),
           ],
         ),
       ),

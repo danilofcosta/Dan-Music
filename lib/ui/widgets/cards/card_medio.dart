@@ -6,9 +6,9 @@ import 'package:danmusic/services/uteis/load_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../models/album.dart';
-import '../../models/artist.dart';
-import '../../navigation.dart';
+import '../../../models/album.dart';
+import '../../../models/artist.dart';
+import '../../../navigation.dart';
 
 class CardMedio extends StatelessWidget {
   final Object? object;

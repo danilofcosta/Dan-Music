@@ -1,10 +1,12 @@
 import 'package:danmusic/models/song.dart';
-import 'package:danmusic/ui/widgets/card_medio.dart';
+import 'package:danmusic/ui/widgets/cards/card_medio.dart';
 import 'package:danmusic/ui/widgets/cards/song_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../services/manager_audio/download.dart';
 import '../../services/uteis/load_image.dart';
 import '../../services/uteis/update_papilite.dart';
+import '../widgets/play_playlist.dart';
 import 'player/player_controller.dart';
 import 'player/widgets_player/animated_play_button.dart';
 
@@ -86,7 +88,7 @@ class _BaseScreenState extends State<BaseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<PlayerController>();
+    // final controller = Get.find<PlayerController>();
     return Scaffold(
       floatingActionButton: AnimatedScale(
         scale: _showFab ? 1 : 0,
@@ -94,6 +96,7 @@ class _BaseScreenState extends State<BaseScreen> {
         duration: const Duration(milliseconds: 200),
         child: FloatingActionButton.extended(
           onPressed: _scrollToTop,
+          heroTag: 'null',
           label: const Icon(Icons.keyboard_arrow_up),
           // label: const Text("Topo"),
         ),
@@ -177,46 +180,29 @@ class _BaseScreenState extends State<BaseScreen> {
                       ),
                     ),
                   const SizedBox(height: 16),
-                  Obx(() {
-                    // Força a reatividade quando a música muda
-                    // ignore: unused_local_variable
-                    final dummy = controller.songNow.value;
-                    final isCurrentQueue =
-                        controller.audioHandler.queue.value == widget.tracks;
 
-                    return Row(
-                      children: [
-                        FilledButton.icon(
-                          onPressed: () async {
-                            await controller.uploadQuere(widget.tracks);
-                          },
-                          style: Theme.of(context)
-                              .filledButtonTheme
-                              .style
-                              ?.copyWith(
-                                  elevation: WidgetStateProperty.all(7.0)),
-                          icon: isCurrentQueue
-                              ? const SizedBox.shrink()
-                              : const Icon(Icons.play_arrow),
-                          label: isCurrentQueue
-                              ? const AnimatedPlayButton(iconSize: 32)
-                              : Text(
-                                  'Tocar Playlist',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                          autofocus: true,
-                        ),
-                        const SizedBox(width: 12),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.favorite_border),
-                        ),
-                      ],
-                    );
-                  }),
+                  // Força a reatividade quando a música muda
+                  // ignore: unused_local_variable
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        isSelected: false,
+                        onPressed: () async {
+                          await AudioDownloader.audioDownloaderList(
+                            widget.tracks.map((e) => e.id).toList(),
+                          );
+                          print(
+                            'vjklç~]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]',
+                          );
+                        },
+
+                        icon: const Icon(Icons.download),
+                      ),
+
+                      PlayPlaylistBt(playlist: widget.tracks),
+                    ],
+                  ),
                 ],
               ),
             ),

@@ -1,7 +1,7 @@
 import 'package:danmusic/ui/widgets/cards/song_card.dart';
 import 'package:get/get.dart';
 
-import '../screens/player/player_controller.dart';
+import '../../screens/player/player_controller.dart';
 import '/models/song.dart';
 import 'package:flutter/material.dart';
 

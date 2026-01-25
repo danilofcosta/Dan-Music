@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:danmusic/ui/screens/artist/artist_cotroller.dart';
-import 'package:danmusic/ui/widgets/buid_list_horizotal.dart';
+import 'package:danmusic/ui/widgets/list_horizontal/buid_list_horizotal.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../services/uteis/load_image.dart';
 import '../../../services/uteis/update_papilite.dart';
-import '../../widgets/buid_list_horizotal_card.dart';
+import '../../widgets/list_horizontal/buid_list_horizotal_card.dart';
 
 class ArtistScreen extends StatefulWidget {
   const ArtistScreen({super.key});

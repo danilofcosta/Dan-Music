@@ -1,10 +1,10 @@
 import 'package:danmusic/models/album.dart';
 import 'package:danmusic/models/playlist.dart';
 import 'package:danmusic/services/uteis/helper.dart';
-import 'package:danmusic/ui/widgets/card_medio.dart';
+import 'package:danmusic/ui/widgets/cards/card_medio.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/artist.dart';
+import '../../../models/artist.dart';
 
 class BuidListHorizotalCard<T> extends StatelessWidget {
   final String title;

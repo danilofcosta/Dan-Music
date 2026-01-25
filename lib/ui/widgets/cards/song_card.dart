@@ -9,7 +9,7 @@ class SongCard extends StatefulWidget {
   final Song song;
   final int? index;
   final Function()? onTap;
-  const SongCard({super.key, required this.song, this.index, this.onTap});
+  const  SongCard({super.key, required this.song, this.index, this.onTap});
 
   @override
   State<SongCard> createState() => _SongCardState();

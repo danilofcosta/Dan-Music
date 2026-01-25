@@ -94,7 +94,8 @@ class _PlayerMaxState extends State<PlayerMax> {
                 children: [
                   const Spacer(),
                   FloatingActionButton(
-                    heroTag: null,
+                
+                    heroTag:'playermax' ,
 
                     onPressed: () {
                       Get.toNamed(

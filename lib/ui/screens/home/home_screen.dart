@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../services/uteis/greeting.dart';
-import '../../widgets/buid_list_horizotal.dart';
-import '../../widgets/buid_list_horizotal_card.dart';
+import '../../widgets/list_horizontal/buid_list_horizotal.dart';
+import '../../widgets/list_horizontal/buid_list_horizotal_card.dart';
 import '../player/player_controller.dart';
 import 'home_screen_controller.dart';
 

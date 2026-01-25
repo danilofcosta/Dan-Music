@@ -8,7 +8,6 @@ import 'package:just_audio/just_audio.dart';
 import '../../models/recommendations.dart';
 import '../../models/song.dart';
 import '../yt_api.dart';
-import 'manage_audio_url.dart';
 
 Future<MyAudioHandler> initAudioService() async {
   final session = await AudioSession.instance;
@@ -68,8 +67,11 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   Future<void> stop() => _player.stop();
 
   @override
-  Future<void> skipToNext() async { _player.seekToNext();
-  play();}
+  Future<void> skipToNext() async {
+    _player.seekToNext();
+    play();
+  }
+
   @override
   Future<void> skipToPrevious() => _player.seekToPrevious();
 
@@ -79,6 +81,11 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       if (queue.value.isEmpty) return;
       final song = queue.value[event.currentIndex ?? 0];
       if (currentIndex != event.currentIndex && event.currentIndex != null) {
+        if (song.artUri == null ||song.id.contains('.'))  {
+          mediaItem.add(song);
+          currentIndex = event.currentIndex;
+          return;
+        }
         //  final Map<String, dynamic> data = await ManageAudioURL.getdata(song.id);
         final YouTubeMusicService youTubeService =
             Get.find<YouTubeMusicService>();
@@ -100,6 +107,19 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     });
   }
 
+  AudioSource createAudioSources(MediaItem song) {
+    final String id = song.id;
+
+    // Arquivo local (.mp3, .aac, .ac3, etc)
+    if (id.contains('.')) {
+      return AudioSource.file(id);
+    }
+    // Ex: streaming / vídeo / id remoto
+    else {
+      return CustomAudioSource(id);
+    }
+  }
+
   Future<void> uploadQuere(
     List<Song> songs, {
     bool clearQueue = false,
@@ -109,17 +129,17 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       queue.value.clear();
     }
     if (playquere) {
+      currentIndex = null;
       queue.value = songs;
 
-      _player.setAudioSources(
-        songs.map((e) => CustomAudioSource(e.id)).toList(),
-      );
+      _player.clearAudioSources();
+      
+
+      _player.setAudioSources(songs.map((e) => createAudioSources(e)).toList());
       play();
       return;
     } else {
-      _player.addAudioSources(
-        songs.map((e) => CustomAudioSource(e.id)).toList(),
-      );
+      _player.addAudioSources(songs.map((e) => createAudioSources(e)).toList());
       queue.value = [...queue.value, ...songs];
       return;
     }
@@ -133,15 +153,15 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       return;
     }
 
-    final url = await ManageAudioURL.getAudioUrlNewpipe(song.id);
-    // final url = data['url'];
-    // final cover = data['cover'];
+    // final url = createAudioSources(song);
+    // // final url = data['url'];
+    // // final cover = data['cover'];
 
-    // final songn = song.copyWith(id: url, artUri: Uri.parse(cover));
-    // mediaItem.add(songn);
+    // // final songn = song.copyWith(id: url, artUri: Uri.parse(cover));
+    // // mediaItem.add(songn);
     queue.value = [song];
 
-    _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
+    _player.setAudioSource(createAudioSources(song));
 
     //  mediaItem.add(songn);
     _player.play();
@@ -179,6 +199,7 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> nextsogs(MediaItem song) async {
+    if (song.id.contains('.')) return;
     final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
     final Recommendations newQuere = await youTubeService.getNextSongs(
       videoId: song.id,

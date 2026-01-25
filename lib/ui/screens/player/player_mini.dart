@@ -42,7 +42,7 @@ class PlayerMini extends StatelessWidget {
             const SizedBox(width: 10),
 
             Expanded(
-              child: GestureDetector(
+              child: InkWell(
                 onTap: controller.setMaxplayer,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

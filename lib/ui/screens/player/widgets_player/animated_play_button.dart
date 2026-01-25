@@ -6,7 +6,7 @@ import '../../../../services/manager_audio/audio_handler.dart'
     show MyAudioHandler;
 class AnimatedPlayButton extends StatelessWidget {
   final double iconSize;
-  const AnimatedPlayButton({super.key, this.iconSize = 20});
+  const   AnimatedPlayButton({super.key, this.iconSize = 20});
 
   @override
   Widget build(BuildContext context) {

@@ -56,10 +56,10 @@ class ManageAudioURL {
 
   static Future<VideoInfo?> videoInfo(String videoId) async {
     printInfoDebug("getdata: $videoId com NewPipeExtractor");
-    await NewPipeExtractor.init();
+   // await NewPipeExtractor.init();
     try {
       VideoInfo streams = await NewPipeExtractor.getVideoInfo(videoId);
-      printInfoDebug("getdata: ${streams.category}");
+     // printInfoDebug("getdata: ${streams}");
 
       return  streams;
 
