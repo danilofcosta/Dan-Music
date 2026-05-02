@@ -75,7 +75,7 @@ class ParseHomeSessions {
         );
       } else {
         // É um álbum
-       final ArtistBasic? artist =ParseArtist.artistBasic(item['artists']??item['artist']);
+       final ArtistBasic artist =ParseArtist.artistBasic(item['artists']??item['artist']);
        final rawartist =artist !=null ? ParseArtist.artistsToString([artist]):null;
       
         return Album(

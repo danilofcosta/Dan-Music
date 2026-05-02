@@ -13,7 +13,7 @@ class AppLibraryController extends GetxController {
   }
 
   void getsongs() async {
-    final songs = await HiveConfig.getAllMusic();
+    final songs = HiveConfig.getAllMusic();
     final tomedia = songs.map((song) {
       return Song(
         id: song.path,

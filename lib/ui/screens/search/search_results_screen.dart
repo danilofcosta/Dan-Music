@@ -56,7 +56,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           return const Center(child: Text('No results'));
         }
 
-        final _Filtros = Filtros.filters;
+        final filtros = Filtros.filters;
 
         return Column(
           children: [
@@ -65,24 +65,24 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 70),
                 child: Obx(() {
-                  final selectedIndex = _Filtros.indexOf(
+                  final selectedIndex = filtros.indexOf(
                     controller.selectedFilter.value,
                   );
 
                   final flexWeights = buildFlexWeights(
                     selectedIndex < 0 ? 2 : selectedIndex,
-                    _Filtros.length,
+                    filtros.length,
                   );
 
                   return CarouselView.weighted(
                     flexWeights: flexWeights,
                     consumeMaxWeight: false,
                     onTap: (value) {
-                      final filtro = _Filtros[value];
+                      final filtro = filtros[value];
                       controller.changeFilter(filtro);
                     },
-                    children: List.generate(_Filtros.length, (index) {
-                      final filtro = _Filtros[index];
+                    children: List.generate(filtros.length, (index) {
+                      final filtro = filtros[index];
                       final bool isSelected =
                           controller.selectedFilter.value == filtro;
 

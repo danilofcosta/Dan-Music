@@ -48,7 +48,7 @@ slivers: [
 
   ...controller.homeSection
       .map<Widget>((section) => _buildSection(section))
-      .toList(),
+      ,
 ],
 
           ),

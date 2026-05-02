@@ -17,11 +17,10 @@ dependencies:
 
 
   #maneger get audio
-  flutter_new_pipe_extractor:
+  youtube_explode_dart:
     git:
-     url: https://github.com/danilofcosta/flutter_new_pipe_extractor.git
-  youtube_explode_dart: ^3.0.5
-  
+      url: https://github.com/anandnet/youtube_explode_dart.git
+      ref: 1d9ec9baa806705b1d859260eeb389ec28c6b024
  # api youtube
   ytmusicapi_dart: ^2.3.0
   

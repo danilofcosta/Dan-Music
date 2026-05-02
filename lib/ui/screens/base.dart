@@ -2,13 +2,10 @@ import 'package:danmusic/models/song.dart';
 import 'package:danmusic/ui/widgets/cards/card_medio.dart';
 import 'package:danmusic/ui/widgets/cards/song_card.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../../services/manager_audio/download.dart';
 import '../../services/uteis/load_image.dart';
 import '../../services/uteis/update_papilite.dart';
 import '../widgets/play_playlist.dart';
-import 'player/player_controller.dart';
-import 'player/widgets_player/animated_play_button.dart';
 
 class BaseScreen extends StatefulWidget {
   final String thumb;
