@@ -27,7 +27,6 @@ class _MusicProgressBarState extends State<MusicProgressBar> {
   void initState() {
     super.initState();
 
-    /// Escuta posição atual
     _positionSub = player.positionStream.listen((pos) {
       setState(() {
         _position = pos;
@@ -40,7 +39,6 @@ class _MusicProgressBarState extends State<MusicProgressBar> {
       });
     });
 
-    /// Escuta duração total
     _durationSub = player.durationStream.listen((dur) {
       if (dur != null) {
         setState(() {
@@ -74,24 +72,49 @@ class _MusicProgressBarState extends State<MusicProgressBar> {
 
     return Column(
       children: [
-        Slider(
-          // ignore: deprecated_member_use
-          year2023: false,
-          value: positionMs.clamp(0, durationMs).toDouble(),
-          min: 0,
-          max: durationMs.toDouble(),
-          onChanged: (_) {},
-          secondaryTrackValue: bufferMs.clamp(0, durationMs).toDouble(),
-          // secondaryActiveColor: Colors.green,
-          onChangeEnd: (value) {
-            player.seek(Duration(milliseconds: value.toInt()));
-          },
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: Colors.white,
+            inactiveTrackColor: Colors.white24,
+            secondaryActiveTrackColor: Colors.white38,
+            thumbColor: Colors.white,
+            overlayColor: Colors.white.withValues(alpha: 0.2),
+            trackHeight: 2.0,
+            thumbShape: const RoundSliderThumbShape(
+              enabledThumbRadius: 6,
+            ),
+          ),
+          child: Slider(
+            value: positionMs.clamp(0, durationMs).toDouble(),
+            min: 0,
+            max: durationMs.toDouble(),
+            onChanged: (_) {},
+            secondaryTrackValue: bufferMs.clamp(0, durationMs).toDouble(),
+            onChangeEnd: (value) {
+              player.seek(Duration(milliseconds: value.toInt()));
+            },
+          ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [Text(_format(_position)), Text(_format(_duration))],
+            children: [
+              Text(
+                _format(_position),
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                _format(_duration),
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  fontSize: 12,
+                ),
+              ),
+            ],
           ),
         ),
       ],

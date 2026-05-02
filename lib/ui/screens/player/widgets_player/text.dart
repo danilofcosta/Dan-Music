@@ -1,4 +1,3 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -12,41 +11,36 @@ class BulidText extends StatelessWidget {
     final controller = Get.find<PlayerController>();
 
     return Obx(() {
-      MediaItem? mediaItemNow = controller.songNow.value;
+      final mediaItemNow = controller.songNow.value;
 
-      return Container(
-        margin: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          color: Theme.of(
-            context,
-          ).scaffoldBackgroundColor.withValues(alpha: 0.2),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            mediaItemNow.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 6),
+          if (mediaItemNow.artist != null)
             Text(
-              mediaItemNow.title ,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              mediaItemNow.artist!,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: Theme.of(context).textTheme.headlineSmall!.fontSize,
+                fontSize: 16,
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
-
-            if (mediaItemNow.artist != null)
-              Text(
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                mediaItemNow.artist!,
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.headlineSmall!.fontSize,
-                ),
-              ),
-          ],
-        ),
+        ],
       );
     });
   }

@@ -16,31 +16,51 @@ class PlayerMini extends StatelessWidget {
       final song = controller.songNow.value;
 
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).cardColor.withValues(alpha: 0.5),
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Colors.grey.shade900,
+              Colors.black,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
+            // Cover image
             GestureDetector(
               onTap: controller.setMaxplayer,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: LoadImage.loadWidget(
-                    song.artUri.toString(),
-                    fit: BoxFit.cover,
-                    errorBuildericon: Icons.music_note,
+              child: Hero(
+                tag: 'mini_cover',
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: SizedBox(
+                    height: 48,
+                    width: 48,
+                    child: LoadImage.loadWidget(
+                      song.artUri.toString(),
+                      fit: BoxFit.cover,
+                      errorBuildericon: Icons.music_note,
+                    ),
                   ),
                 ),
               ),
             ),
 
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
 
+            // Title and artist
             Expanded(
               child: InkWell(
                 onTap: controller.setMaxplayer,
@@ -52,14 +72,22 @@ class PlayerMini extends StatelessWidget {
                       song.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
                     ),
-                    Text(
-                      song.artist ?? '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                    if (song.artist != null)
+                      Text(
+                        song.artist!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.white.withValues(alpha: 0.7),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -67,7 +95,8 @@ class PlayerMini extends StatelessWidget {
 
             const SizedBox(width: 8),
 
-            AnimatedPlayButton(iconSize: 26),
+            // Play/Pause button
+            AnimatedPlayButton(iconSize: 28),
           ],
         ),
       );

@@ -4,9 +4,10 @@ import 'package:just_audio/just_audio.dart';
 
 import '../../../../services/manager_audio/audio_handler.dart'
     show MyAudioHandler;
+
 class AnimatedPlayButton extends StatelessWidget {
   final double iconSize;
-  const   AnimatedPlayButton({super.key, this.iconSize = 20});
+  const AnimatedPlayButton({super.key, this.iconSize = 20});
 
   @override
   Widget build(BuildContext context) {
@@ -19,21 +20,8 @@ class AnimatedPlayButton extends StatelessWidget {
         final isPlaying = state?.playing ?? false;
         final processingState = state?.processingState;
 
-        Widget icon;
-
-        if (processingState == ProcessingState.loading ||
-            processingState == ProcessingState.buffering) {
-          icon = SizedBox(
-            width: iconSize,
-            height: iconSize,
-            child: const CircularProgressIndicator(strokeWidth: 2),
-          );
-        } else {
-          icon = Icon(
-            isPlaying ? Icons.pause : Icons.play_arrow,
-            size: iconSize,
-          );
-        }
+        final isLoadingState = processingState == ProcessingState.loading ||
+            processingState == ProcessingState.buffering;
 
         return GestureDetector(
           onTap: () {
@@ -44,20 +32,40 @@ class AnimatedPlayButton extends StatelessWidget {
             }
           },
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 200),
             transitionBuilder: (child, animation) {
               return ScaleTransition(scale: animation, child: child);
             },
             child: Container(
               key: ValueKey(
-                processingState == ProcessingState.loading ||
-                        processingState == ProcessingState.buffering
+                isLoadingState
                     ? 'loading'
                     : isPlaying
                         ? 'pause'
                         : 'play',
               ),
-              child: icon,
+              width: iconSize + 20,
+              height: iconSize + 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+              child: Center(
+                child: isLoadingState
+                    ? SizedBox(
+                        width: iconSize * 0.6,
+                        height: iconSize * 0.6,
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                        ),
+                      )
+                    : Icon(
+                        isPlaying ? Icons.pause : Icons.play_arrow,
+                        size: iconSize * 0.7,
+                        color: Colors.black,
+                      ),
+              ),
             ),
           ),
         );
