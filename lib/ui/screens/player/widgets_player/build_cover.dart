@@ -26,14 +26,14 @@ class BuildCover extends StatelessWidget {
 
       if (hasCover) {
         return Card(
-          elevation: 8.0,
+          //  elevation: 8.0,
           child: Container(
             width: size.width * 0.8,
             height: size.width * 0.8,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
               image: DecorationImage(
-                fit: BoxFit.contain,
+                fit: BoxFit.cover,
                 image:
                     LoadImage.loadProvider(mediaItemNow.artUri.toString())
                         as ImageProvider,

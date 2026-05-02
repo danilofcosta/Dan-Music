@@ -19,7 +19,7 @@ class PlayerMini extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).cardColor,
+          color: Theme.of(context).cardColor.withValues(alpha: 0.5),
         ),
         child: Row(
           children: [

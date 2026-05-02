@@ -9,6 +9,9 @@ class ArtistCotroller extends GetxController {
   final Rxn<ArtistFull> artistFull = Rxn<ArtistFull>();
   final RxBool isLoading = true.obs;
 
+  // Cache
+  final Map<String, ArtistFull> _cache = {};
+
   @override
   void onInit() {
     super.onInit();
@@ -19,10 +22,18 @@ class ArtistCotroller extends GetxController {
   }
 
   Future<void> featdata(String artistId) async {
+    // Verifica cache
+    if (_cache.containsKey(artistId)) {
+      artistFull.value = _cache[artistId];
+      isLoading.value = false;
+      return;
+    }
+
     try {
       isLoading.value = true;
       final data = await youTubeService.getArtistFull(artistId);
       artistFull.value = data;
+      if (data != null) _cache[artistId] = data;
     } catch (e) {
       printErrorDebug("Error fetching artist data: $e");
     } finally {

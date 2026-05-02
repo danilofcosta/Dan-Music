@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:danmusic/services/manager_audio/manage_audio_url.dart';
+import 'package:danmusic/services/cache_service.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
 
 import '../../db/hive_config.dart';
 import '../../db/models_db/song_db.dart';
@@ -16,42 +16,24 @@ class AudioDownloader {
     }
   }
 
-  /// Baixa uma música e salva no app + Hive
+  /// Baixa uma música usando cache manager + salva no app + Hive
   static Future<File> baixarMusica({required String musicId}) async {
-    // Pega informações do vídeo
-    // final VideoInfo? videoInfo = await ManageAudioURL.videoInfo(musicId);
-    // if (videoInfo == null) throw Exception("Vídeo não encontrado $musicId");
+    final audioUrl = await ManageAudioURL.getAudioUrl(musicId);
 
-    // if (videoInfo.audioStreams.isEmpty) throw Exception("Não há streams de áudio disponíveis");
-
-    // final AudioStream audio = videoInfo.audioStreams.first;
-    final audio = await ManageAudioURL.getAudioUrl(musicId);
-    final Uri uri = Uri.parse(audio);
-
-    // Download do áudio
-    final response = await http.get(uri);
-    if (response.statusCode != 200) {
-      throw Exception("Erro ao baixar áudio: ${response.statusCode}");
-    }
+    // Tenta obter do cache primeiro, senão faz download
+    final file = await AudioCacheManager().getSingleFile(audioUrl);
 
     // Diretório seguro do app
     final Directory dir = await getApplicationDocumentsDirectory();
     final musicDir = Directory('${dir.path}/savemusic');
     if (!await musicDir.exists()) await musicDir.create(recursive: true);
 
-    // Salva o áudio
+    // Salva o áudio no caminho local
     final String savePath = '${musicDir.path}/$musicId.m4a';
-    final file = File(savePath);
-    await file.writeAsBytes(response.bodyBytes);
-
-    // Baixa a capa (se existir)
-    Uint8List? coverBytes;
-    // if (videoInfo.thumbnails.isNotEmpty) {
-    //   final String? artworkUrl = videoInfo.thumbnails.last.url;
-    //   if (artworkUrl != null) {
-    //     coverBytes = await _downloadArtworkBytes(artworkUrl);
-    //   }
-    // }
+    final localFile = File(savePath);
+    if (!await localFile.exists()) {
+      await file.copy(savePath);
+    }
 
     // Salva dados no Hive
     await HiveConfig.addSongDb(
@@ -61,21 +43,10 @@ class AudioDownloader {
         artist: "Artist",
         durationSeconds: 0,
         path: savePath,
-        cover: coverBytes,
+        cover: null,
       ),
     );
 
-    return file;
-  }
-
-  /// Baixa a capa e retorna bytes
-  static Future<Uint8List?> _downloadArtworkBytes(String url) async {
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) return response.bodyBytes;
-    } catch (e) {
-      print("Erro ao baixar capa: $e");
-    }
-    return null;
+    return localFile;
   }
 }

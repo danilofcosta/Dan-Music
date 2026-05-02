@@ -22,6 +22,10 @@ class SearchController extends GetxController {
   // FILTER
   final RxString selectedFilter = Filtros.all.obs;
 
+  // CACHE
+  final Map<String, List<String>> _suggestionsCache = {};
+  final Map<String, List<SearchResult>> _searchCache = {};
+
   // =============================
   // SUGGESTIONS
   // =============================
@@ -32,9 +36,17 @@ class SearchController extends GetxController {
       return;
     }
 
+    // Verifica cache de sugestões
+    if (_suggestionsCache.containsKey(query)) {
+      suggestions.assignAll(_suggestionsCache[query]!);
+      showSuggestions.value = true;
+      return;
+    }
+
     try {
       final result = await youTubeService.getSearchSuggestions(query);
       suggestions.assignAll(result);
+      _suggestionsCache[query] = result;
       showSuggestions.value = true;
     } catch (e, s) {
       printErrorDebug('Suggestion error: $e');
@@ -49,13 +61,16 @@ class SearchController extends GetxController {
   Future<void> search(String query) async {
     if (query.isEmpty) return;
 
+    // Verifica cache de busca
+    if (_searchCache.containsKey(query)) {
+      searchResults.assignAll(_searchCache[query]!);
+      return;
+    }
+
     try {
       isLoading.value = true;
       showSuggestions.value = false;
       searchQuery.value = query;
-
-      // 🔥 limpa dados antigos
-      searchResults.clear();
 
       final rawResults = await youTubeService.search(query);
 
@@ -64,6 +79,7 @@ class SearchController extends GetxController {
       );
 
       searchResults.assignAll(parsed);
+      _searchCache[query] = parsed;
     } catch (e, s) {
       printErrorDebug('Search error: $e');
       printErrorDebug(s);
@@ -108,6 +124,8 @@ class SearchController extends GetxController {
     suggestions.clear();
     searchResults.clear();
     showSuggestions.value = false;
+    _suggestionsCache.clear();
+    _searchCache.clear();
   }
 }
 

@@ -41,6 +41,7 @@ class _PlayerMaxState extends State<PlayerMax> {
                         Text(
                           controller.songNow.value.album != null ? "Album" : '',
                           textAlign: TextAlign.center,
+                          
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,

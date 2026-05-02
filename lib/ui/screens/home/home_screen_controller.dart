@@ -11,6 +11,9 @@ class HomeScreenController extends GetxController {
   final RxString greeting = 'Welcome back'.obs;
   final RxList<HomeSection> homeSection = <HomeSection>[].obs;
 
+  // Cache
+  List<HomeSection>? _cachedHomeSections;
+
   @override
   void onInit() {
     super.onInit();
@@ -24,11 +27,18 @@ class HomeScreenController extends GetxController {
   }
 
   Future<void> getHomeSections() async {
+    // Retorna cache se existir
+    if (_cachedHomeSections != null) {
+      homeSection.assignAll(_cachedHomeSections!);
+      return;
+    }
+
     try {
       final temp = await youTubeService.getHome();
       if (temp == null || temp.isEmpty) return; // TODO: tratar erro
       
-      homeSection.addAll(temp);
+      _cachedHomeSections = temp;
+      homeSection.assignAll(temp);
     } catch (error, stackTrace) {
       printErrorDebug('Erro ao acessar a API: $error');
       printErrorDebug(stackTrace);

@@ -20,7 +20,9 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   void initState() {
     super.initState();
     controller = Get.put(SearchResultsController());
-    controller.search(widget.query);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.search(widget.query);
+    });
   }
 
   List<int> buildFlexWeights(int selectedIndex, int length) {

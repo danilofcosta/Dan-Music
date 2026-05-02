@@ -22,6 +22,9 @@ class AlbumController extends GetxController {
     relatedRecommendations: null,
   ).obs;
 
+  // Cache
+  final Map<String, AlbumFull> _cache = {};
+
   @override
   void onInit() {
     super.onInit();
@@ -35,6 +38,12 @@ class AlbumController extends GetxController {
 
   void featData(String id, Album? albumPreview) async {
     albumId.value = id;
+
+    // Verifica cache
+    if (_cache.containsKey(id)) {
+      album.value = _cache[id]!;
+      return;
+    }
 
     // Se já veio um álbum parcial (preview), popula o básico
     if (albumPreview != null) {
@@ -52,5 +61,6 @@ class AlbumController extends GetxController {
       return;
     }
     album.value = data;
+    _cache[id] = data;
   }
 }
