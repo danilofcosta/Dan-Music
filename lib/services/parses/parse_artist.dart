@@ -1,5 +1,5 @@
-import 'package:danmusic/models/album.dart';
 import 'package:danmusic/models/artist.dart';
+import 'package:danmusic/models/album.dart';
 import 'package:danmusic/models/song.dart';
 import 'package:danmusic/services/parses/parse_album.dart';
 import 'package:danmusic/services/parses/parse_song.dart';
@@ -8,105 +8,104 @@ import 'package:danmusic/services/parses/parse_thumbnail.dart';
 import '../../models/thumbnail.dart';
 
 class ParseArtist {
-  static String artistsToString(List<ArtistBasic> artists) {
-    return artists.map((a) => a.name).join(', ');
-  }
+  // ── String helpers ──────────────────────────────────────────────────────────
+
+  static String artistsToString(List<ArtistBasic> artists) =>
+      artists.map((a) => a.name).where((n) => n.isNotEmpty).join(', ');
+
+  // ── Basic ───────────────────────────────────────────────────────────────────
 
   static ArtistBasic artistBasic(dynamic data) {
-    // Quando vem só o nome do artista como String
-    if (data is String) {
-      return ArtistBasic(name: data, id: '');
-    }
+    if (data is String) return ArtistBasic(name: data, id: '');
 
-    // Quando vem o objeto completo
     if (data is Map<String, dynamic>) {
-      final name = data['name']?.toString() ?? '';
-      final id = data['id']?.toString() ?? '';
-
-      return ArtistBasic(name: name, id: id);
-    }
-    if (data is List<Map<String, dynamic>>) {
-      final firstItem = data.first;
-
-      final name = firstItem['name']?.toString() ?? '';
-      final id = firstItem['id']?.toString() ?? '';
-
-      return ArtistBasic(name: name, id: id);
+      return ArtistBasic(
+        name: data['name']?.toString() ?? '',
+        id: (data['id'] ?? data['browseId'])?.toString() ?? '',
+      );
     }
 
-    throw Exception('Formato inválido para ArtistBasic: ${data.runtimeType}');
+    if (data is List) {
+      // Accepts List<Map> — picks the first element
+      if (data.isNotEmpty && data.first is Map<String, dynamic>) {
+        return artistBasic(data.first as Map<String, dynamic>);
+      }
+      return ArtistBasic(name: '', id: '');
+    }
+
+    // Graceful fallback instead of throwing
+    return ArtistBasic(name: '', id: '');
   }
 
-  static List<ArtistBasic> artists(List<dynamic> data) {
-    return data.map((d) => artistBasic(d)).toList();
-  }
+  static List<ArtistBasic> artists(List<dynamic> data) =>
+      data.map(artistBasic).toList();
 
-  static ArtistFull artistFull(Map<String, dynamic> jsondata) {
-    final String name = jsondata['name'] ?? '';
-    final String? description = jsondata['description'];
-    final String? views = jsondata['views'];
-    final String? channelId = jsondata['channelId'];
-    final String? shuffleId = jsondata['shuffleId'];
-    final String? radioId = jsondata['radioId'];
-    final String? subscribers = jsondata['subscribers'];
-    final bool? subscribed = jsondata['subscribed'];
+  // ── Full ────────────────────────────────────────────────────────────────────
 
-    final List<Thumbnail>? thumbnails = jsondata['thumbnails'] != null
-        ? ParseThumbnail.thumbnail(jsondata['thumbnails'])
+  static ArtistFull artistFull(Map<String, dynamic> data) {
+    final String name = data['name']?.toString() ?? '';
+    final String? description = data['description']?.toString();
+    final String? views = data['views']?.toString();
+    final String? channelId = data['channelId']?.toString();
+    final String? shuffleId = data['shuffleId']?.toString();
+    final String? radioId = data['radioId']?.toString();
+    final String? subscribers = data['subscribers']?.toString();
+    final bool? subscribed = data['subscribed'] is bool ? data['subscribed'] as bool : null;
+
+    final List<Thumbnail>? thumbnails = data['thumbnails'] != null
+        ? ParseThumbnail.thumbnail(data['thumbnails'])
         : null;
 
-    final songsData = jsondata['songs'];
-    final List<Song>? songs = songsData != null && songsData['results'] != null
-        ? (songsData['results'] as List)
-              .map((e) => ParseSong.song(e as Map<String, dynamic>))
-              .toList()
-        : null;
-    final String? songsBrowseId = songsData?['browseId'];
+    // Songs
+    final songsData = data['songs'] as Map<String, dynamic>?;
+    final List<Song>? songs = _mapResults(
+      songsData?['results'],
+      (e) => ParseSong.song(e as Map<String, dynamic>),
+    );
+    final String? songsBrowseId = songsData?['browseId']?.toString();
 
-    final albumsData = jsondata['albums'];
-    final List<Album>? albums =
-        albumsData != null && albumsData['results'] != null
-        ? (albumsData['results'] as List)
-              .map((e) => ParseAlbum.album(e as Map<String, dynamic>))
-              .toList()
-        : null;
-    final String? albumsBrowseId = albumsData?['browseId'];
-    final String? albumsParams = albumsData?['params'];
+    // Albums
+    final albumsData = data['albums'] as Map<String, dynamic>?;
+    final List<Album>? albums = _mapResults(
+      albumsData?['results'],
+      (e) => ParseAlbum.album(e as Map<String, dynamic>),
+    );
+    final String? albumsBrowseId = albumsData?['browseId']?.toString();
+    final String? albumsParams = albumsData?['params']?.toString();
 
-    final singlesData = jsondata['singles'];
-    final List<Album>? singles =
-        singlesData != null && singlesData['results'] != null
-        ? (singlesData['results'] as List)
-              .map((e) => ParseAlbum.album(e as Map<String, dynamic>))
-              .toList()
-        : null;
-    final String? singlesBrowseId = singlesData?['browseId'];
-    final String? singlesParams = singlesData?['params'];
+    // Singles
+    final singlesData = data['singles'] as Map<String, dynamic>?;
+    final List<Album>? singles = _mapResults(
+      singlesData?['results'],
+      (e) => ParseAlbum.album(e as Map<String, dynamic>),
+    );
+    final String? singlesBrowseId = singlesData?['browseId']?.toString();
+    final String? singlesParams = singlesData?['params']?.toString();
 
-    final videosData = jsondata['videos'];
-    final List<Song>? videos =
-        videosData != null && videosData['results'] != null
-        ? (videosData['results'] as List)
-              .map((e) => ParseSong.song(e as Map<String, dynamic>))
-              .toList()
-        : null;
-    final String? videosBrowseId = videosData?['browseId'];
+    // Videos
+    final videosData = data['videos'] as Map<String, dynamic>?;
+    final List<Song>? videos = _mapResults(
+      videosData?['results'],
+      (e) => ParseSong.song(e as Map<String, dynamic>),
+    );
+    final String? videosBrowseId = videosData?['browseId']?.toString();
 
-    final relatedData = jsondata['related'];
-    final List<ArtistDetail>? related =
-        relatedData != null && relatedData['results'] != null
-        ? (relatedData['results'] as List).map((e) {
-            final artist = e as Map<String, dynamic>;
-            return ArtistDetail(
-              name: artist['title'] ?? '',
-              browseId: artist['browseId'],
-              shuffleId: artist['shuffleId'],
-              radioId: artist['radioId'],
-              subscribers: artist['subscribers'] ?? '',
-              thumbnails: ParseThumbnail.thumbnail(artist['thumbnails']),
-            );
-          }).toList()
-        : null;
+    // Related artists
+    final relatedData = data['related'] as Map<String, dynamic>?;
+    final List<ArtistDetail>? related = _mapResults(
+      relatedData?['results'],
+      (e) {
+        final artist = e as Map<String, dynamic>;
+        return ArtistDetail(
+          name: artist['title']?.toString() ?? '',
+          browseId: artist['browseId']?.toString() ?? '',
+          shuffleId: artist['shuffleId']?.toString(),
+          radioId: artist['radioId']?.toString(),
+          subscribers: artist['subscribers']?.toString() ?? '',
+          thumbnails: ParseThumbnail.thumbnail(artist['thumbnails']),
+        );
+      },
+    );
 
     return ArtistFull(
       name: name,
@@ -130,5 +129,13 @@ class ParseArtist {
       videosBrowseId: videosBrowseId,
       related: related,
     );
+  }
+
+  // ── Private helpers ─────────────────────────────────────────────────────────
+
+  static List<T>? _mapResults<T>(dynamic results, T Function(dynamic) mapper) {
+    if (results == null) return null;
+    if (results is! List) return null;
+    return results.map(mapper).toList();
   }
 }

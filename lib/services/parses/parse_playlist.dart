@@ -5,26 +5,36 @@ import 'package:danmusic/services/parses/parse_song.dart';
 import 'package:danmusic/services/parses/parse_thumbnail.dart';
 import 'package:danmusic/services/uteis/helper.dart';
 
-import '../../models/song.dart';
-
 class ParsePlaylist {
   static PlaylistFull parsePlaylistFull(Map<String, dynamic> data) {
-    final durationSeconds = data['duration_seconds'];
-    final durationText = data['duration'];
-    final id = data['id'];
-    final title = data['title'];
-    final thumbnail = ParseThumbnail.thumbnail(data['thumbnails']);
-    final description = data['description'];
-    final author = ParseArtist.artistBasic(data['author']);
-    final trackCount = data['track_count'];
-    final year = data['year'];
-    final related = data['related'];
+    final id = data['id']?.toString() ?? '';
+    final title = data['title']?.toString() ?? '';
+    final description = data['description']?.toString();
+    final durationText = data['duration']?.toString();
+    final durationSeconds = data['duration_seconds'] is int
+        ? data['duration_seconds'] as int
+        : int.tryParse(data['duration_seconds']?.toString() ?? '');
+    final trackCount = data['track_count'] is int
+        ? data['track_count'] as int
+        : int.tryParse(data['track_count']?.toString() ?? '');
+    final year = data['year']?.toString();
 
-    final List<Song> tracks =
-        (data['tracks'] as List<dynamic>)
-            .map((e) => ParseSong.song(e as Map<String, dynamic>))
-            .toList();
-    printInfoDebug('Tracks: ${tracks.length}');
+    final thumbnail = ParseThumbnail.thumbnail(data['thumbnails']);
+    final author = ParseArtist.artistBasic(data['author']);
+
+    final List tracks = (data['tracks'] as List?) ?? [];
+    final parsedTracks = tracks
+        .whereType<Map<String, dynamic>>()
+        .map(ParseSong.song)
+        .toList();
+    printInfoDebug('Playlist "${title}" — ${parsedTracks.length} tracks');
+
+    final related = data['related'];
+    final relatedRecommendations = related is List
+        ? ParseRelatedRecommendations.parse(
+            related.whereType<Map<String, dynamic>>().toList(),
+          )
+        : null;
 
     return PlaylistFull(
       id: id,
@@ -36,13 +46,8 @@ class ParsePlaylist {
       secondsduration: durationSeconds,
       trackCount: trackCount,
       year: year,
-      releted:
-          related is List
-              ? ParseRelatedRecommendations.parse(
-                related.cast<Map<String, dynamic>>(),
-              )
-              : null,
-      tracks: tracks,
+      releted: relatedRecommendations,
+      tracks: parsedTracks,
     );
   }
 }

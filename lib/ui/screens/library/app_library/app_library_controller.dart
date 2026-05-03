@@ -1,18 +1,18 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:danmusic/models/song.dart';
 import 'package:get/get.dart';
 
 import '../../../../db/hive_config.dart';
 
 class AppLibraryController extends GetxController {
-  final songsapp = [].obs;
+  final songsApp = <Song>[].obs;
+
   @override
   void onReady() {
     super.onReady();
     getsongs();
   }
 
-  void getsongs() async {
+  void getsongs() {
     final songs = HiveConfig.getAllMusic();
     final tomedia = songs.map((song) {
       return Song(
@@ -25,6 +25,6 @@ class AppLibraryController extends GetxController {
             : null,
       );
     }).toList();
-    songsapp.addAll(tomedia);
+    songsApp.assignAll(tomedia);
   }
 }

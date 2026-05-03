@@ -26,8 +26,10 @@ class CardMedio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
         printErrorDebug('$object  ${object.runtimeType}');
         if (object == null) return;
         printInfoDebug(object.toString());
@@ -147,6 +149,7 @@ class CardMedio extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_library/app_library.dart' show AppLibrary;
+
 import 'device_library/device_library.dart';
 
 class Library extends StatelessWidget {
@@ -10,33 +11,52 @@ class Library extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          title: const Text('Biblioteca'),
-          backgroundColor: Colors.black,
-          bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(50),
-            child: TabBar(
-              indicatorColor: Colors.greenAccent,
-              labelColor: Colors.greenAccent,
-              unselectedLabelColor: Colors.white54,
-              tabs: [
-                Tab(text: "lib"),
-                Tab(text: "base2"),
-                Tab(text: "Do Dispositivo"),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.grey.shade900,
+              Colors.black,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              title: const Text(
+                'BIBLIOTECA',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              centerTitle: true,
+              bottom: TabBar(
+                indicatorColor: Colors.white,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white54,
+                labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                tabs: const [
+                  Tab(text: "CACHE"),
+                  Tab(text: "BAIXADAS"),
+                  Tab(text: "DISPOSITIVO"),
+                ],
+              ),
+            ),
+            body: const TabBarView(
+              children: [
+                AppLibrary(),
+                DeviceLibrary(),
               ],
             ),
           ),
-        ),
-        body: const TabBarView(
-          children: [
-            AppLibrary(),
-            Center(
-              child: Text("base2", style: TextStyle(color: Colors.white)),
-            ),
-            DeviceLibrary(),
-          ],
         ),
       ),
     );

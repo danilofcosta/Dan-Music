@@ -22,10 +22,7 @@ class PlayerMini extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-            colors: [
-              Colors.grey.shade900,
-              Colors.black,
-            ],
+            colors: [Colors.grey.shade900, Colors.red],
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [

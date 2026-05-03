@@ -3,113 +3,94 @@ import 'package:danmusic/models/song.dart';
 import 'package:danmusic/services/parses/parse_artist.dart';
 import 'package:danmusic/services/parses/parse_thumbnail.dart';
 import '../../models/artist.dart';
-import '../../models/thumbnail.dart';
 import '../../models/search/search_album.dart';
 import '../../models/search/search_playlist.dart';
 import '../../models/search/search_profile.dart';
 
 class ParseSearchResult {
   static SearchResult parseResult(Map<String, dynamic> data) {
-    final type = data['resultType'] as String? ?? '';
+    final type = data['resultType']?.toString() ?? '';
+
     switch (type) {
+      // ── Artist ──────────────────────────────────────────────────────────────
       case 'artist':
         final thumbnails = ParseThumbnail.thumbnail(data['thumbnails']);
         final shuffleId = data['shuffleId']?.toString();
         final radioId = data['radioId']?.toString();
         final browseId = data['browseId']?.toString();
+
         final rawArtists = data['artists'] ?? data['artist'];
-
         final List<ArtistBasic> artists = rawArtists == null
-            ? <ArtistBasic>[]
+            ? []
             : rawArtists is List
-            ? rawArtists.map((e) => ParseArtist.artistBasic(e)).toList()
-            : <ArtistBasic>[ParseArtist.artistBasic(rawArtists)];
+                ? rawArtists.map((e) => ParseArtist.artistBasic(e)).toList()
+                : [ParseArtist.artistBasic(rawArtists)];
 
-        if (artists.isEmpty) {
-          throw Exception('Nenhum artista encontrado');
-        }
-
-        final artistRaw = ParseArtist.artistsToString(artists);
-        final subscribers = data['subscribers']?.toString() ;
+        final artistName = artists.isNotEmpty
+            ? ParseArtist.artistsToString(artists)
+            : data['title']?.toString() ?? '';
+        final subscribers = data['subscribers']?.toString();
 
         return SearchResult(
           type: type,
           content: ArtistDetail(
-            name: artistRaw,
-
+            name: artistName,
             subscribers: subscribers,
             thumbnails: thumbnails,
-            browseId: browseId ?? artists.first.id,
+            browseId: browseId ?? (artists.isNotEmpty ? artists.first.id : ''),
             shuffleId: shuffleId,
             radioId: radioId,
           ),
         );
 
+      // ── Song ────────────────────────────────────────────────────────────────
       case 'song':
-        String? artist;
-        int seconds = 0;
-
-        if (data.containsKey('artists') &&
-            (data['artists'] as List).isNotEmpty) {
-          artist = data['artists'][0]['name'];
-        }
-        if (data.containsKey('artist')) {
-          // ignore: unused_local_variable
-          final artist = data['artist'];
-        }
-
-        final videoId = (data['videoId'] ?? '').toString();
-        final title = (data['title'] ?? '').toString();
-
-        final album = data['album'];
-        final views = data['views'].toString();
+        final videoId = data['videoId']?.toString() ?? '';
+        final title = data['title']?.toString() ?? '';
+        final views = data['views']?.toString();
         final isExplicit = data['isExplicit'] is bool
             ? data['isExplicit'] as bool
             : (data['isExplicit'] == 'true' || data['isExplicit'] == 1);
         final thumbs = ParseThumbnail.thumbnail(data['thumbnails']);
-        if (data.containsKey('duration_seconds')) {
-          seconds = data['duration_seconds'];
-        }
+        final durationSec = data['duration_seconds'] is int
+            ? data['duration_seconds'] as int
+            : int.tryParse(data['duration_seconds']?.toString() ?? '') ?? 0;
+
+        // Resolve artist name from 'artists' list or 'artist' string
+        final String? artistName = _resolveArtistName(data);
+
+        final albumRaw = data['album'];
+        final String? albumName = albumRaw is Map<String, dynamic>
+            ? albumRaw['name']?.toString()
+            : albumRaw?.toString();
 
         return SearchResult(
           type: type,
           content: Song(
             id: videoId,
             title: title,
-            artist: artist ?? '',
-            album: album,
+            artist: artistName,
+            album: albumName,
             views: views,
-            durationText: data['duration'],
-
-            isExplicit: isExplicit, //
-            duration: Duration(seconds: seconds),
-            artUri: thumbs.isNotEmpty ? Uri.parse(thumbs.first.url) : null,
+            durationText: data['duration']?.toString(),
+            isExplicit: isExplicit,
+            duration: Duration(seconds: durationSec),
+            artUri: thumbs.isNotEmpty ? Uri.tryParse(thumbs.first.url) : null,
           ),
         );
 
+      // ── Album ───────────────────────────────────────────────────────────────
       case 'album':
-        final browseId = (data['browseId'] ?? '').toString();
+        final browseId = data['browseId']?.toString() ?? '';
         final playlistId = data['playlistId']?.toString();
-        final title = (data['title'] ?? '').toString();
+        final title = data['title']?.toString() ?? '';
         final typeStr = data['type']?.toString();
         final artistName = data['artist']?.toString();
         final year = data['year']?.toString();
         final isExplicit = data['isExplicit'] is bool
             ? data['isExplicit'] as bool
             : (data['isExplicit'] == 'true' || data['isExplicit'] == 1);
-
-        final thumbnails =
-            (data['thumbnails'] as List?)
-                ?.whereType<Map<String, dynamic>>()
-                .map(
-                  (e) => Thumbnail(
-                    url: e['url'] ?? '',
-                    width: e['width'] ?? 0,
-                    height: e['height'] ?? 0,
-                  ),
-                )
-                .toList() ??
-            <Thumbnail>[];
+        final thumbnails = ParseThumbnail.thumbnail(data['thumbnails']);
 
         return SearchResult(
           type: type,
@@ -125,24 +106,13 @@ class ParseSearchResult {
           ),
         );
 
+      // ── Playlist ────────────────────────────────────────────────────────────
       case 'playlist':
-        final browseId = (data['browseId'] ?? '').toString();
-        final title = (data['title'] ?? '').toString();
+        final browseId = data['browseId']?.toString() ?? '';
+        final title = data['title']?.toString() ?? '';
         final author = data['author']?.toString();
         final itemCount = data['itemCount']?.toString();
-
-        final thumbnails =
-            (data['thumbnails'] as List?)
-                ?.whereType<Map<String, dynamic>>()
-                .map(
-                  (e) => Thumbnail(
-                    url: e['url'] ?? '',
-                    width: e['width'] ?? 0,
-                    height: e['height'] ?? 0,
-                  ),
-                )
-                .toList() ??
-            <Thumbnail>[];
+        final thumbnails = ParseThumbnail.thumbnail(data['thumbnails']);
 
         return SearchResult(
           type: type,
@@ -155,59 +125,45 @@ class ParseSearchResult {
           ),
         );
 
+      // ── Video ───────────────────────────────────────────────────────────────
       case 'video':
-        final videoId = (data['videoId'] ?? '').toString();
-        final title = (data['title'] ?? '').toString();
+        final videoId = data['videoId']?.toString() ?? '';
+        final title = data['title']?.toString() ?? '';
         final views = data['views']?.toString();
-        final durationSeconds = data['duration_seconds'] is int
+        final durationSec = data['duration_seconds'] is int
             ? data['duration_seconds'] as int
-            : int.tryParse(data['duration_seconds']?.toString() ?? '0');
+            : int.tryParse(data['duration_seconds']?.toString() ?? '') ?? 0;
 
         final artistsRaw = data['artists'];
-        List<ArtistBasic> videoArtists = [];
-        if (artistsRaw is List) {
-          videoArtists = artistsRaw
-              .whereType<Map<String, dynamic>>()
-              .map((a) => ParseArtist.artistBasic(a))
-              .toList();
-        }
-
+        final List<ArtistBasic> videoArtists = artistsRaw is List
+            ? artistsRaw
+                .whereType<Map<String, dynamic>>()
+                .map(ParseArtist.artistBasic)
+                .toList()
+            : [];
+        final artistText = ParseArtist.artistsToString(videoArtists);
         final thumbnails = ParseThumbnail.thumbnail(data['thumbnails']);
-        final artistRaw = ParseArtist.artistsToString(videoArtists);
 
         return SearchResult(
           type: type,
           content: Song(
             id: videoId,
             title: title,
-            artist: artistRaw,
+            artist: artistText.isNotEmpty ? artistText : null,
             views: views,
-            duration: Duration(seconds: durationSeconds ?? 0),
-            durationText: data['duration'],
-            artUri: thumbnails.isNotEmpty
-                ? Uri.parse(thumbnails.first.url)
-                : null,
+            duration: Duration(seconds: durationSec),
+            durationText: data['duration']?.toString(),
+            artUri: thumbnails.isNotEmpty ? Uri.tryParse(thumbnails.first.url) : null,
             artists: videoArtists,
           ),
         );
 
+      // ── Profile ─────────────────────────────────────────────────────────────
       case 'profile':
-        final title = (data['title'] ?? '').toString();
-        final name = (data['name'] ?? '').toString();
-        final browseId = (data['browseId'] ?? '').toString();
-
-        final thumbnails =
-            (data['thumbnails'] as List?)
-                ?.whereType<Map<String, dynamic>>()
-                .map(
-                  (e) => Thumbnail(
-                    url: e['url'] ?? '',
-                    width: e['width'] ?? 0,
-                    height: e['height'] ?? 0,
-                  ),
-                )
-                .toList() ??
-            <Thumbnail>[];
+        final title = data['title']?.toString() ?? '';
+        final name = data['name']?.toString() ?? '';
+        final browseId = data['browseId']?.toString() ?? '';
+        final thumbnails = ParseThumbnail.thumbnail(data['thumbnails']);
 
         return SearchResult(
           type: type,
@@ -224,7 +180,19 @@ class ParseSearchResult {
     }
   }
 
-  static List<SearchResult> parseSearchResults(List<dynamic> data) {
-    return data.whereType<Map<String, dynamic>>().map(parseResult).toList();
+  static List<SearchResult> parseSearchResults(List<dynamic> data) =>
+      data.whereType<Map<String, dynamic>>().map(parseResult).toList();
+
+  // ── Private helpers ─────────────────────────────────────────────────────────
+
+  static String? _resolveArtistName(Map<String, dynamic> data) {
+    final artistsList = data['artists'];
+    if (artistsList is List && artistsList.isNotEmpty) {
+      final first = artistsList.first;
+      if (first is Map<String, dynamic>) return first['name']?.toString();
+    }
+    final artist = data['artist'];
+    if (artist is String) return artist;
+    return null;
   }
 }

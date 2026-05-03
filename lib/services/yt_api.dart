@@ -17,147 +17,149 @@ import 'uteis/helper.dart';
 class YouTubeMusicService {
   YTMusic? ytmusic;
 
+  // ─── Init ──────────────────────────────────────────────────────────────────
+
   Future<void> init() async {
     try {
       ytmusic = await YTMusic.create(language: 'en');
       printInfoDebug('YTMusic initialized');
     } catch (e, s) {
-      printErrorDebug('Failed to initialize YTMusic: $e');
-      printErrorDebug(s);
+      printErrorDebug('Failed to initialize YTMusic: $e\n$s');
     }
   }
+
+  // ─── Guard ─────────────────────────────────────────────────────────────────
+
+  /// Throws if [ytmusic] has not been initialized yet.
+  void _assertReady() {
+    if (ytmusic == null) throw StateError('YTMusic is not initialized. Call init() first.');
+  }
+
+  // ─── Home ──────────────────────────────────────────────────────────────────
 
   Future<List<HomeSection>?> getHome() async {
-    if (ytmusic == null) {
-      throw Exception('YTMusic not initialized');
-    }
-    try {final res = await ytmusic!.getHome();
-    return ParseHomeSessions.parseHomeSections(res);
-    } catch (e,s){printErrorDebug('Error fetching home sections: $e $s');}
-    return null;
-    
-
-  }
-
-  Future<List<String>> getSearchSuggestions(String query) async {
-    if (ytmusic == null) {
-      throw Exception('YTMusic not initialized');
-    }
+    _assertReady();
     try {
-      final dynamic suggestions = await ytmusic!.getSearchSuggestions(query);
-      final filteredSuggestions = suggestions
-          .map((item) => item is String ? item : null)
-          .where((item) => item != null)
-          .cast<String>()
-          .toList();
-
-      return filteredSuggestions;
-    } catch (e) {
-      printErrorDebug('Error fetching suggestions: $e');
-      return [];
-    }
-  }
-
-  Future<List<dynamic>> search(String query) async {
-    if (ytmusic == null) {
-      throw Exception('YTMusic not initialized');
-    }
-    try {
-      final results = await ytmusic!.search(query);
-      return results;
-    } catch (e) {
-      printErrorDebug('Error searching: $e');
-      return [];
-    }
-  }
-
-Future<List<Song>> searchSong(String query) async {
-
- if (ytmusic == null) {
-      throw Exception('YTMusic not initialized');
-    }
-    try{
-       final result = await ytmusic!.search(query,filter:SearchFilter.songs);
-        return ParseSong.songs(result);
-    }catch(e){
-      printErrorDebug('Error searching: $e');
-      return [];
-    }
-}
-
-
-  Future<PlaylistFull?> getPlaylist(String playlistId) async {
-    if (ytmusic == null) {
-      throw Exception('YTMusic not initialized');
-    }
-    try {
-      final playlist = await ytmusic!.getPlaylist(playlistId);
-      return ParsePlaylist.parsePlaylistFull(playlist);
-    } catch (e, stack) {
-      printErrorDebug('Error getting playlist: $e');
-      printErrorDebug('StackTrace:\n$stack');
+      final res = await ytmusic!.getHome();
+      return ParseHomeSessions.parseHomeSections(res);
+    } catch (e, s) {
+      printErrorDebug('Error fetching home sections: $e\n$s');
       return null;
     }
   }
 
-  Future<AlbumFull?> getAlbumFull(String albumId) async {
-    if (ytmusic == null) {
-      throw Exception('YTMusic not initialized');
-    }
+  // ─── Search ────────────────────────────────────────────────────────────────
 
+  Future<List<String>> getSearchSuggestions(String query) async {
+    _assertReady();
+    try {
+      final dynamic suggestions = await ytmusic!.getSearchSuggestions(query);
+      return (suggestions as List)
+          .whereType<String>()
+          .toList();
+    } catch (e, s) {
+      printErrorDebug('Error fetching suggestions: $e\n$s');
+      return [];
+    }
+  }
+
+  /// Generic search — returns the raw list from the API.
+  Future<List<Map<String, dynamic>>> search(String query) async {
+    _assertReady();
+    try {
+      final results = await ytmusic!.search(query);
+      return results.whereType<Map<String, dynamic>>().toList();
+    } catch (e, s) {
+      printErrorDebug('Error searching: $e\n$s');
+      return [];
+    }
+  }
+
+  /// Typed song search — parses results into [Song] objects.
+  Future<List<Song>> searchSong(String query) async {
+    _assertReady();
+    try {
+      final result = await ytmusic!.search(query, filter: SearchFilter.songs);
+      return ParseSong.songs(result);
+    } catch (e, s) {
+      printErrorDebug('Error searching songs: $e\n$s');
+      return [];
+    }
+  }
+
+  // ─── Playlist ──────────────────────────────────────────────────────────────
+
+  Future<PlaylistFull?> getPlaylist(String playlistId) async {
+    _assertReady();
+    try {
+      final playlist = await ytmusic!.getPlaylist(playlistId);
+      return ParsePlaylist.parsePlaylistFull(playlist);
+    } catch (e, s) {
+      printErrorDebug('Error getting playlist: $e\n$s');
+      return null;
+    }
+  }
+
+  // ─── Album ─────────────────────────────────────────────────────────────────
+
+  Future<AlbumFull?> getAlbumFull(String albumId) async {
+    _assertReady();
     try {
       final album = await ytmusic!.getAlbum(albumId);
       return ParseAlbum.albumFull(album);
     } catch (e, s) {
-      printErrorDebug('Error getting album full: $e');
-      printErrorDebug(s);
+      printErrorDebug('Error getting album: $e\n$s');
       return null;
     }
   }
 
+  // ─── Artist ────────────────────────────────────────────────────────────────
+
   Future<ArtistFull?> getArtistFull(String artistId) async {
-    if (ytmusic == null) {
-      throw Exception('YTMusic not initialized');
-    }
+    _assertReady();
     try {
       final data = await ytmusic!.getArtist(artistId);
-
       return ParseArtist.artistFull(data);
     } catch (e, s) {
-      printErrorDebug(e);
-      printErrorDebug(s);
+      printErrorDebug('Error getting artist: $e\n$s');
+      return null;
     }
-    return null;
   }
 
- Future<Map<String, dynamic>> getSong(String songId) async {
-    if (ytmusic == null) {
-      throw Exception('YTMusic not initialized');
+  // ─── Song ──────────────────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>?> getSong(String songId) async {
+    _assertReady();
+    try {
+      return await ytmusic!.getSong(songId);
+    } catch (e, s) {
+      printErrorDebug('Error getting song $songId: $e\n$s');
+      return null;
     }
-    final jsonData = await ytmusic!.getSong(songId);
-    return jsonData;
   }
 
-  Future<Recommendations> getNextSongs({
+  // ─── Watch / Recommendations ───────────────────────────────────────────────
+
+  Future<Recommendations?> getNextSongs({
     String? videoId,
     String? playlistId,
     int limit = 25,
     bool radio = false,
     bool shuffle = false,
   }) async {
-    if (ytmusic == null) {
-      throw Exception('YTMusic not initialized');
+    _assertReady();
+    try {
+      final jsonData = await ytmusic!.getWatchPlaylist(
+        videoId: videoId,
+        playlistId: playlistId,
+        limit: limit,
+        radio: radio,
+        shuffle: shuffle,
+      );
+      return ParseRelatedRecommendations.getWatchPlaylist(jsonData);
+    } catch (e, s) {
+      printErrorDebug('Error getting next songs: $e\n$s');
+      return null;
     }
-
-    final jsonData = await ytmusic!.getWatchPlaylist(
-      videoId: videoId,
-      playlistId: playlistId,
-      limit: limit,
-      radio: radio,
-      shuffle: shuffle,
-    );
-    return ParseRelatedRecommendations.getWatchPlaylist(
-      jsonData,
-    ); //return ParseSong.song(jsonData);
   }
 }

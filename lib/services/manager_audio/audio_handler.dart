@@ -91,10 +91,11 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
             Get.find<YouTubeMusicService>();
         final couver = await youTubeService.getSong(song.id);
 
-        final s =
-            couver["videoDetails"]?["thumbnail"]?["thumbnails"]?.last?["url"];
+        final s = couver?['videoDetails']?['thumbnail']?['thumbnails']?.last?['url'];
 
-        final songn = song.copyWith(artUri: Uri.parse(s));
+        final songn = song.copyWith(
+          artUri: s != null ? Uri.tryParse(s) : null,
+        );
         mediaItem.add(songn);
         currentIndex = event.currentIndex;
       }
@@ -114,9 +115,10 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
     if (id.contains('.')) {
       return AudioSource.file(id);
     }
-    // Ex: streaming / vídeo / id remoto
+
+    // Tenta usar cache do flutter_cache_manager
     else {
-      return CustomAudioSource(id);
+      return CustomLockCachingAudioSource(id);
     }
   }
 
@@ -135,14 +137,49 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
       _player.clearAudioSources();
       
 
-      _player.setAudioSources(songs.map((e) => createAudioSources(e)).toList());
-      play();
+      try {
+        await _player.setAudioSources(
+          songs.map((e) => createAudioSources(e)).toList(),
+        );
+        play();
+      } catch (e) {
+        printErrorDebug("Erro ao carregar fontes de áudio: $e");
+      }
       return;
     } else {
-      _player.addAudioSources(songs.map((e) => createAudioSources(e)).toList());
-      queue.value = [...queue.value, ...songs];
+      try {
+        await _player.addAudioSources(
+          songs.map((e) => createAudioSources(e)).toList(),
+        );
+        queue.value = [...queue.value, ...songs];
+      } catch (e) {
+        printErrorDebug("Erro ao adicionar fontes de áudio: $e");
+      }
       return;
     }
+  }
+
+  /// Reorganiza a fila sem pausar a música atual.
+  /// A música tocando fica no index 0 e continua do mesmo ponto.
+  Future<void> shuffleQueue(List<Song> newOrder) async {
+    // Salva estado de reprodução
+    final wasPlaying = _player.playing;
+    final savedPosition = _player.position;
+
+    // Recarrega as fontes na nova ordem
+    currentIndex = null;
+    queue.value = newOrder;
+
+    _player.clearAudioSources();
+    _player.setAudioSources(
+      newOrder.map((e) => createAudioSources(e)).toList(),
+    );
+
+    // Volta para a mesma posição no index 0
+    await _player.seek(savedPosition, index: 0);
+
+    // Retoma se estava tocando
+    if (wasPlaying) _player.play();
   }
 
   Future<void> playById(Song song) async {
@@ -201,13 +238,17 @@ class MyAudioHandler extends BaseAudioHandler with SeekHandler {
   Future<void> nextsogs(MediaItem song) async {
     if (song.id.contains('.')) return;
     final YouTubeMusicService youTubeService = Get.find<YouTubeMusicService>();
-    final Recommendations newQuere = await youTubeService.getNextSongs(
+    final Recommendations? newQuere = await youTubeService.getNextSongs(
       videoId: song.id,
     );
-    List tackes = newQuere.tracks;
-    tackes.removeAt(0);
+    if (newQuere == null) {
+      loging = false;
+      return;
+    }
+    final tracks = List<Song>.from(newQuere.tracks);
+    if (tracks.isNotEmpty) tracks.removeAt(0);
 
-    await uploadQuere(newQuere.tracks, playquere: false);
+    await uploadQuere(tracks, playquere: false);
     loging = false;
   }
 }

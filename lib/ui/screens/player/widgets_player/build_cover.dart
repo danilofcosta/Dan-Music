@@ -36,18 +36,17 @@ class BuildCover extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           child: hasCover
               ? Image(
-                  image: LoadImage.loadProvider(mediaItemNow.artUri.toString()) as ImageProvider,
-                  fit: BoxFit.cover,
+                  image:
+                      LoadImage.loadProvider(mediaItemNow.artUri.toString())
+                          as ImageProvider,
+                  fit: BoxFit.contain,
                 )
               : Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Colors.grey.shade800,
-                        Colors.grey.shade900,
-                      ],
+                      colors: [Colors.grey.shade800, Colors.grey.shade900],
                     ),
                   ),
                   child: const Center(

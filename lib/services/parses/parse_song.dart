@@ -8,42 +8,69 @@ import 'parse_album.dart';
 import 'parse_thumbnail.dart';
 
 class ParseSong {
-  static Song song(Map<String, dynamic> jsonData) {
-    AlbumBasic? album;
-    final List<ArtistBasic> artists = (jsonData['artists'] as List)
-        .map<ArtistBasic>((artist) {
-          return ParseArtist.artistBasic(artist);
-        })
-        .toList();
+  static Song song(Map<String, dynamic> data) {
+    final String id = data['videoId']?.toString() ?? '';
+    final String title = data['title']?.toString() ?? '';
 
-    final String rawArtist = ParseArtist.artistsToString(artists);
+    // ── Artists ──────────────────────────────────────────────────────────────
+    final rawArtists = data['artists'];
+    final List<ArtistBasic> artists = _parseArtists(rawArtists);
+    final String artistText = ParseArtist.artistsToString(artists);
 
-    final String id = jsonData['videoId'] ?? '';
-    final String title = jsonData['title'] ?? '';
-
+    // ── Thumbnails ───────────────────────────────────────────────────────────
     final List<Thumbnail> cover = ParseThumbnail.thumbnail(
-      jsonData['thumbnails'] ?? jsonData['thumbnail'],
+      data['thumbnails'] ?? data['thumbnail'],
     );
-    if (jsonData.containsKey('album') && jsonData['album'] != null) {
-      if (jsonData['album'].runtimeType == String) {
-        final String albumName = jsonData['album'];
-        album = AlbumBasic(title: albumName);
-      } else {
-        album = ParseAlbum.albumBasic(jsonData["album"]);
+
+    // ── Album ─────────────────────────────────────────────────────────────────
+    AlbumBasic? album;
+    final albumRaw = data['album'];
+    if (albumRaw != null) {
+      if (albumRaw is String) {
+        album = AlbumBasic(title: albumRaw);
+      } else if (albumRaw is Map<String, dynamic>) {
+        album = ParseAlbum.albumBasic(albumRaw);
       }
     }
+
+    // ── Duration ──────────────────────────────────────────────────────────────
+    final int? durationSec = data['duration_seconds'] is int
+        ? data['duration_seconds'] as int
+        : int.tryParse(data['duration_seconds']?.toString() ?? '');
 
     return Song(
       id: id,
       title: title,
-      artist: rawArtist,
-      artUri: cover.isNotEmpty ? Uri.parse(cover.first.url) : null,
+      artist: artistText.isNotEmpty ? artistText : null,
+      artUri: cover.isNotEmpty ? Uri.tryParse(cover.first.url) : null,
       artists: artists,
       album: album?.title,
       albumId: album?.albumId,
+      durationText: data['duration']?.toString(),
+      duration: durationSec != null ? Duration(seconds: durationSec) : null,
+      isExplicit: data['isExplicit'] is bool ? data['isExplicit'] as bool : null,
     );
   }
 
-  static List<Song> songs(List<dynamic> jsonData) =>
-      jsonData.map((songData) => song(songData)).toList();
+  static List<Song> songs(List<dynamic> data) =>
+      data.whereType<Map<String, dynamic>>().map(song).toList();
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+
+  static List<ArtistBasic> _parseArtists(dynamic raw) {
+    if (raw == null) return [];
+    if (raw is List) {
+      return raw
+          .whereType<Map<String, dynamic>>()
+          .map(ParseArtist.artistBasic)
+          .toList();
+    }
+    if (raw is Map<String, dynamic>) {
+      return [ParseArtist.artistBasic(raw)];
+    }
+    if (raw is String) {
+      return [ArtistBasic(name: raw, id: '')];
+    }
+    return [];
+  }
 }

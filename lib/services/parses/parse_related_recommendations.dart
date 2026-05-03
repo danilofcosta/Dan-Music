@@ -6,45 +6,45 @@ import '../../models/recommendations.dart';
 import 'parse_thumbnail.dart';
 
 class ParseRelatedRecommendations {
+  /// Parses a list of related items (Albums/Singles). Returns null if empty.
   static List<dynamic>? parse(List<Map<String, dynamic>>? data) {
     if (data == null || data.isEmpty) return null;
 
-    final List<dynamic> results = data
-        .map((e) {
-          switch (e['type']) {
+    return data
+        .map<dynamic?>((e) {
+          final type = e['type']?.toString();
+          switch (type) {
             case 'Album':
             case 'Single':
+              final rawArtists = e['artists'];
+              final artist = rawArtists is List && (rawArtists as List).isNotEmpty
+                  ? ParseArtist.artistBasic(rawArtists.first)
+                  : rawArtists is Map<String, dynamic>
+                      ? ParseArtist.artistBasic(rawArtists)
+                      : null;
               return Album(
-                albumId: e['audioPlaylistId'],
-
-                title: e['title'],
-                isExplicit: e['isExplicit'],
-                artist:
-                    (e['artists'] is List && (e['artists'] as List).isNotEmpty)
-                    ? ParseArtist.artistBasic(e['artists'][0])
-                    : (e['artists'] is Map<String, dynamic>
-                          ? ParseArtist.artistBasic(e['artists'])
-                          : null),
-                browseId: e['browseId'],
-
+                albumId: e['audioPlaylistId']?.toString() ?? '',
+                title: e['title']?.toString() ?? '',
+                isExplicit: e['isExplicit'] is bool ? e['isExplicit'] as bool : null,
+                artist: artist,
+                browseId: e['browseId']?.toString(),
                 thumbnails: ParseThumbnail.thumbnail(e['thumbnails']),
               );
-
             default:
               return null;
           }
         })
-        .where((element) => element != null)
+        .whereType<dynamic>()
+        .where((e) => e != null)
         .toList();
-
-    return results;
   }
 
+  /// Parses the watch-playlist (getNextSongs) response into [Recommendations].
   static Recommendations getWatchPlaylist(Map<String, dynamic> data) {
-    final playlistId = data['playlistId'];
-    final lyrics = data['lyrics'];
-    final related = data['related'];
-    final tracks = ParseSong.songs(data['tracks']);
+    final playlistId = data['playlistId']?.toString();
+    final lyrics = data['lyrics']?.toString();
+    final related = data['related']?.toString();
+    final tracks = ParseSong.songs((data['tracks'] as List?) ?? []);
 
     return Recommendations(playlistId, related, lyrics, tracks);
   }

@@ -1,52 +1,58 @@
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:danmusic/services/manager_audio/manage_audio_url.dart';
-import 'package:danmusic/services/cache_service.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'dart:io';
 
-import '../../db/hive_config.dart';
-import '../../db/models_db/song_db.dart';
+// import 'package:danmusic/models/song.dart';
+// import 'package:danmusic/services/cache_service.dart';
+// import 'package:danmusic/services/manager_audio/manage_audio_url.dart';
+// import 'package:danmusic/services/uteis/helper.dart';
+// import 'package:path_provider/path_provider.dart';
 
-class AudioDownloader {
-  /// Baixa várias músicas em lotes
-  static Future<void> audioDownloaderList(List<String> videoIds, {int batchSize = 2}) async {
-    for (int i = 0; i < videoIds.length; i += batchSize) {
-      final batch = videoIds.skip(i).take(batchSize).toList();
-      await Future.wait(batch.map((id) => baixarMusica(musicId: id)));
-    }
-  }
+// import '../../db/hive_config.dart';
+// import '../../db/models_db/song_db.dart';
 
-  /// Baixa uma música usando cache manager + salva no app + Hive
-  static Future<File> baixarMusica({required String musicId}) async {
-    final audioUrl = await ManageAudioURL.getAudioUrl(musicId);
+// class AudioDownloader {
+//   static Future<void> audioDownloaderList(List<String> videoIds, {int batchSize = 2}) async {
+//     for (int i = 0; i < videoIds.length; i += batchSize) {
+//       final batch = videoIds.skip(i).take(batchSize).toList();
+//       await Future.wait(batch.map((id) => baixarMusica(musicId: id)));
+//     }
+//   }
 
-    // Tenta obter do cache primeiro, senão faz download
-    final file = await AudioCacheManager().getSingleFile(audioUrl);
+//   static Future<File> baixarMusica({required String musicId}) async {
+//     final audioUrl = await ManageAudioURL.getAudioUrl(musicId);
+//     if (audioUrl == null) throw Exception("URL não encontrada");
 
-    // Diretório seguro do app
-    final Directory dir = await getApplicationDocumentsDirectory();
-    final musicDir = Directory('${dir.path}/savemusic');
-    if (!await musicDir.exists()) await musicDir.create(recursive: true);
+//     final cacheManager = AudioCacheManager();
+//     File? cachedFile = await cacheManager.getCachedFile(musicId);
 
-    // Salva o áudio no caminho local
-    final String savePath = '${musicDir.path}/$musicId.m4a';
-    final localFile = File(savePath);
-    if (!await localFile.exists()) {
-      await file.copy(savePath);
-    }
+//     if (cachedFile == null) {
+//       cachedFile = await cacheManager.downloadAndCache(musicId);
+//     }
 
-    // Salva dados no Hive
-    await HiveConfig.addSongDb(
-      SongDb(
-        id: musicId,
-        title: "Music",
-        artist: "Artist",
-        durationSeconds: 0,
-        path: savePath,
-        cover: null,
-      ),
-    );
+//     if (cachedFile == null) throw Exception("Erro ao baixar música");
 
-    return localFile;
-  }
-}
+//     // Salva no diretório local
+//     final Directory dir = await getApplicationDocumentsDirectory();
+//     final musicDir = Directory('${dir.path}/savemusic');
+//     if (!await musicDir.exists()) await musicDir.create(recursive: true);
+
+//     final String savePath = '${musicDir.path}/$musicId.m4a';
+//     final localFile = File(savePath);
+//     if (!await localFile.exists()) {
+//       await cachedFile.copy(savePath);
+//     }
+
+//     // Salva no Hive
+//     await HiveConfig.addSongDb(
+//       SongDb(
+//         id: musicId,
+//         title: "Music",
+//         artist: "Artist",
+//         durationSeconds: 0,
+//         path: savePath,
+//         cover: null,
+//       ),
+//     );
+
+//     return localFile;
+//   }
+// }

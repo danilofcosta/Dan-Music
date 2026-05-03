@@ -1,8 +1,8 @@
-import 'package:danmusic/ui/widgets/cards/song_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../models/song.dart';
+import '../../../widgets/cards/song_card.dart';
 import '../../../widgets/play_playlist.dart';
 import 'device_library_controller.dart';
 
@@ -19,62 +19,121 @@ class _DeviceLibraryState extends State<DeviceLibrary> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: PlayPlaylistBt(playlist: controller.songs),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
-      body: Obx(() {
-        final directories = controller.musicByDirectory.keys.toList();
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.grey.shade900,
+            Colors.black,
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          floatingActionButton: PlayPlaylistBt(playlist: controller.songs),
+          floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
+          body: Obx(() {
+            final directories = controller.musicByDirectory.keys.toList();
 
-        return Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${controller.songs.length} ♫',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${controller.songs.length} ♫',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-
-              Expanded(
-                child: directories.isEmpty
-                    ? const Center(child: Text("Nenhuma música encontrada"))
-                    : ListView.builder(
-                        itemCount: directories.length,
-                        itemBuilder: (context, index) {
-                          final dir = directories[index];
-                          final musics = controller.musicByDirectory[dir]!;
-                          final folderName = dir.split('/').last;
-
-                          return ListTile(
-                            leading: Icon(
-                              Icons.folder,
-                              color: Theme.of(context).iconTheme.color,
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: directories.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.folder_open_outlined,
+                                  size: 64,
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Nenhuma música encontrada',
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
                             ),
-                            title: Text(folderName),
-                            subtitle: Text('${musics.length} músicas'),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              Get.to(
-                                () => FolderSongsPage(
-                                  folderName: folderName,
-                                  songs: musics,
+                          )
+                        : ListView.builder(
+                            itemCount: directories.length,
+                            itemBuilder: (context, index) {
+                              final dir = directories[index];
+                              final musics = controller.musicByDirectory[dir]!;
+                              final folderName = dir.split('/').last;
+
+                              return Container(
+                                margin: const EdgeInsets.symmetric(vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.05),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: ListTile(
+                                  leading: Icon(
+                                    Icons.folder,
+                                    color: Colors.amber.withValues(alpha: 0.8),
+                                  ),
+                                  title: Text(
+                                    folderName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    '${musics.length} músicas',
+                                    style: TextStyle(
+                                      color: Colors.white.withValues(alpha: 0.6),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.chevron_right,
+                                    color: Colors.white54,
+                                  ),
+                                  onTap: () {
+                                    Get.to(
+                                      () => FolderSongsPage(
+                                        folderName: folderName,
+                                        songs: musics,
+                                      ),
+                                    );
+                                  },
                                 ),
                               );
                             },
-                          );
-                        },
-                      ),
+                          ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      }),
+            );
+          }),
+        ),
+      ),
     );
   }
 }
@@ -91,23 +150,63 @@ class FolderSongsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(folderName)),
-      floatingActionButton: PlayPlaylistBt(playlist: songs),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: songs.length,
-              itemBuilder: (context, index) {
-                final song = songs[index];
-
-                return SongCard(song: song);
-              },
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.grey.shade900,
+            Colors.black,
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Text(
+              folderName,
+              style: const TextStyle(color: Colors.white),
             ),
           ),
-        ],
+          floatingActionButton: PlayPlaylistBt(playlist: songs),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+                child: Text(
+                  '${songs.length} músicas',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.7),
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: songs.length,
+                  itemBuilder: (context, index) {
+                    final song = songs[index];
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SongCard(song: song),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
